@@ -1,13 +1,10 @@
-
-# **开店星商城系统**
-
-![](readme/banner备份.png)
+![](readme/gitte-.png)
 
 &nbsp;
 
-十年电商技术团队打造的首款开源可商用商城系统，主流技术研发，开箱即用，高效二开。
-
-基于Yii2+Vue2.0+uniapp 研发，系统架构稳定；商城商品、订单、用户精细化管理；基础营销插件；PC端+H5+小程序+公众号，全渠道覆盖。
+开店星商城基础版，是由十年电商技术团队打造的首款开源单商户商城系统，功能完善可满足基础运营，开箱即用，便捷二开。
+&nbsp;
+基于Yii2+Vue2.0+uniapp 研发，系统架构稳定；商城商品、订单、用户精细化管理；涵盖基础营销插件；小程序+公众号+H5，全渠道覆盖。功能强大，安全便捷，框架成熟稳定便于扩展，源码开源，支持二次开发，让企业用更低的成本搭建个性化商城。
 
 &nbsp;
 
@@ -23,7 +20,7 @@
 &nbsp;
 
 
-## **开店星商城系统体验**：
+## **开店星基础版体验**：
 
 （附演示站小程序码+公众号二维码，图片展示）
 
@@ -46,13 +43,13 @@
 
 ## **帮助文档**：
 
-[链接]()
+[https://www.kancloud.cn/book/kaidianxing2022/kaidianxing-2022/release/1465908]()
 
 &nbsp;
 
 ## **官网**
 
-[https://www.rrsc.cn/]()
+[ www.kaidianxing.com]()
 
 &nbsp;
 
@@ -67,14 +64,8 @@
 *   前端技术栈 ES6、vue、vuex、vue-router、vue-cli、axios、uni-app、 iView、echarts、vant
 * 后端技术栈：PHP，Yii2，Mysql，Redis
 
-| 核心框架 |   Yii2  |
-| --- | --- |
-|  数据库    |  Mysql   |
-| 缓存    |   Redis  |
-| JS框架 | Vue、Uniapp |
-|  UI框架   | iView UI 、Vant UI    |
-|  数据表格   | iView UI    |
-|  文件上传   | iiView file-upload 、input    |
+![](readme/编组6备份.png)
+
 &nbsp;
 ## **技术亮点**：
 
@@ -120,7 +111,8 @@
 
 
 ## **功能列表：**
+![](readme/编组6.png)
 
-![](readme/系统功能全景.png)
 &nbsp;
+
 ## **页面展示：**
