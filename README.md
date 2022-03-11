@@ -1,4 +1,4 @@
-![](readme/开店星.png)
+![](_readme/开店星.png)
 
 &nbsp;
 
@@ -14,15 +14,15 @@
 
 &nbsp;
 
-![](readme/图片1.png)
+![](_readme/图片1.png)
 
 &nbsp;
 
-![](readme/图片2.png)
+![](_readme/图片2.png)
 
 &nbsp;
 
-![](readme/图片3.png)
+![](_readme/图片3.png)
 
 &nbsp;
 
@@ -37,7 +37,7 @@
 
 ## **官方技术交流群**：
 
-![](readme/gitte-banner备份.png)
+![](_readme/gitte-banner备份.png)
 
 
 &nbsp;
@@ -61,7 +61,7 @@
 *   前端技术栈 ES6、vue、vuex、vue-router、vue-cli、axios、uni-app、 iView、echarts、vant
 * 后端技术栈：PHP，Yii2，Mysql，Redis
 
-![](readme/编组6备份.png)
+![](_readme/编组6备份.png)
 
 &nbsp;
 
@@ -119,20 +119,20 @@
 
 
 ## **功能列表：**
-![](readme/编组6.png)
+![](_readme/编组6.png)
 
 &nbsp;
 
 ## **页面展示：**
 
-![](readme/运营.png)
+![](_readme/运营.png)
 
-![](readme/装修.png)
+![](_readme/装修.png)
 
-![](readme/商品.png)
+![](_readme/商品.png)
 
-![](readme/会员.png)
+![](_readme/会员.png)
 
-![](readme/应用.png)
+![](_readme/应用.png)
 
-![](readme/设置.png)
+![](_readme/设置.png)
