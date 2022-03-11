@@ -1,10 +1,67 @@
-![](readme/gitte-.png)
+![](readme/开店星.png)
 
 &nbsp;
 
-开店星商城基础版，是由十年电商技术团队打造的首款开源单商户商城系统，功能完善可满足基础运营，开箱即用，便捷二开。
+开店星项目团队拥有十年电商系统研发经验，商城已经过数千用户实际使用并认可，开店星为首款开源商城，功能完善可满足基础运营，开箱即用，便捷二开。
+
 &nbsp;
-基于Yii2+Vue2.0+uniapp 研发，系统架构稳定；商城商品、订单、用户精细化管理；涵盖基础营销插件；小程序+公众号+H5，全渠道覆盖。功能强大，安全便捷，框架成熟稳定便于扩展，源码开源，支持二次开发，让企业用更低的成本搭建个性化商城。
+
+开店星基于Yii2+Vue2.0+uniapp 前沿技术研发，易学易用，前后端分离，多端开发，负载均衡，性能优越架构稳定；商城商品、订单、用户精细化管理；涵盖秒杀、消费奖励、超级海报等基础营销插件；H5+小程序+公众号，全渠道覆盖，框架成熟稳定便于扩展，高效二开，低成本快速搭建个性化商城。
+
+&nbsp;
+
+## **移动端页面展示**
+
+&nbsp;
+
+![](readme/图片1.png)
+
+&nbsp;
+
+![](readme/图片2.png)
+
+&nbsp;
+
+![](readme/图片3.png)
+
+&nbsp;
+
+## **开店星后台体验**：
+
+&nbsp;
+
+## 演示站地址：[http://demo-free.kaidianxing.com/](http://demo-free.kaidianxing.com/)
+
+
+&nbsp;
+
+## **官方技术交流群**：
+
+![](readme/gitte-banner备份.png)
+
+
+&nbsp;
+
+
+## **帮助文档**：
+
+[http://wiki.kaidianxing.com/]()
+
+
+&nbsp;
+
+## **如何交流反馈、参与贡献**？
+
+*   gitee仓库——[https://gitee.com/kaidianxing/kaidianxing]()
+
+
+&nbsp;
+## **核心技术**：
+
+*   前端技术栈 ES6、vue、vuex、vue-router、vue-cli、axios、uni-app、 iView、echarts、vant
+* 后端技术栈：PHP，Yii2，Mysql，Redis
+
+![](readme/编组6备份.png)
 
 &nbsp;
 
@@ -16,55 +73,6 @@
 | **高性能**：支持负载均衡、分布式部署、页面缓存，支持高并发    |**数据导出更便捷**：数据导出采用phpExcel,数据更加直观，便于管理统计     |
 |  **静态化分离**：支持多种云储存，阿里云OSS、腾讯云COS等   |  **插件钩子机制**：钩子机制插件，功能模块独立，利于二开   |
 | **一键安装**：自动检查系统环境，错误提示说明、修改方法 | **高频数据缓存**：数据库读写分离，减轻服务器压力，提升访问速度 |
-
-&nbsp;
-
-
-## **开店星基础版体验**：
-
-（附演示站小程序码+公众号二维码，图片展示）
-
-
-## 演示站地址：
-
-## 账号：
-
-## 密码：
-
-&nbsp;
-
-## **官方技术交流群**：
-
-交流①群：
-
-交流②群：
-
-&nbsp;
-
-## **帮助文档**：
-
-[https://www.kancloud.cn/book/kaidianxing2022/kaidianxing-2022/release/1465908]()
-
-&nbsp;
-
-## **官网**
-
-[ www.kaidianxing.com]()
-
-&nbsp;
-
-## **如何交流反馈、参与贡献**？
-
-*   gitee仓库——[链接]()
-*   github仓库——[链接]()
-
-&nbsp;
-## **核心技术**：
-
-*   前端技术栈 ES6、vue、vuex、vue-router、vue-cli、axios、uni-app、 iView、echarts、vant
-* 后端技术栈：PHP，Yii2，Mysql，Redis
-
-![](readme/编组6备份.png)
 
 &nbsp;
 ## **技术亮点**：
@@ -116,3 +124,15 @@
 &nbsp;
 
 ## **页面展示：**
+
+![](readme/运营.png)
+
+![](readme/装修.png)
+
+![](readme/商品.png)
+
+![](readme/会员.png)
+
+![](readme/应用.png)
+
+![](readme/设置.png)
