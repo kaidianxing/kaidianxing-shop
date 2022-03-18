@@ -1,4 +1,4 @@
-![](_readme/开店星.png)
+![](_readme/gitte-banner_1647592828084.png)
 
 &nbsp;
 
@@ -14,15 +14,19 @@
 
 &nbsp;
 
-![](_readme/图片1.png)
+![](_readme/001_1647593246850.png)
 
 &nbsp;
 
-![](_readme/图片2.png)
+![](_readme/004.png)
 
 &nbsp;
 
-![](_readme/图片3.png)
+![](_readme/003.png)
+
+&nbsp;
+
+![](_readme/002_1647593027929.png)
 
 &nbsp;
 
@@ -45,15 +49,16 @@
 
 ## **帮助文档**：
 
-[http://wiki.kaidianxing.com/]()
+[http://wiki.kaidianxing.com/](http://wiki.kaidianxing.com)
 
 
 &nbsp;
 
 ## **如何交流反馈、参与贡献**？
 
-*   gitee仓库——[https://gitee.com/kaidianxing/kaidianxing]()
+*   gitee仓库——[https://gitee.com/kaidianxing/kaidianxing](https://gitee.com/kaidianxing/kaidianxing)
 
+![](_readme/gitte-banner备份2.png)
 
 &nbsp;
 ## **核心技术**：
@@ -125,14 +130,28 @@
 
 ## **页面展示：**
 
-![](_readme/运营.png)
+![](_readme/登录页.png)
 
-![](_readme/装修.png)
+![](_readme/运营_1647593389001.png)
 
-![](_readme/商品.png)
+![](_readme/装修_1647593407866.png)
 
-![](_readme/会员.png)
+![](_readme/商品_1647593421217.png)
 
-![](_readme/应用.png)
+![](_readme/会员_1647593431727.png)
 
-![](_readme/设置.png)
+![](_readme/优惠券.png)
+
+![](_readme/应用_1647593452217.png)
+
+![](_readme/设置_1647593461498.png)
+
+
+
+
+
+
+
+
+
+
