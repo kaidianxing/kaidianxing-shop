@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 开店星新零售管理系统
  * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
@@ -14,10 +13,9 @@
 namespace shopstar\services\commentHelper;
 
 use shopstar\constants\commentHelper\CommentHelperConstant;
-use shopstar\exceptions\commentHelper\CommentHelperException;
 use shopstar\constants\core\CoreAttachmentSceneConstant;
 use shopstar\constants\core\CoreAttachmentTypeConstant;
-use shopstar\helpers\CloudServiceHelper;
+use shopstar\exceptions\commentHelper\CommentHelperException;
 use shopstar\helpers\DateTimeHelper;
 use shopstar\helpers\LiYangHelper;
 use shopstar\helpers\StringHelper;
@@ -34,6 +32,7 @@ use yii\helpers\Json;
  * 抓取评价
  * Class CommentGrabService
  * @package shopstar\services\commentHelper
+ * @author 青岛开店星信息技术有限公司
  */
 class CommentGrabService
 {
@@ -331,7 +330,7 @@ class CommentGrabService
      * 每个渠道返回的字段不一致
      * @author 青岛开店星信息技术有限公司
      */
-    private function unityInfo(array $data)
+    private function unityInfo(array $data): array
     {
         $info = [];
         switch ($this->type) {
@@ -428,7 +427,7 @@ class CommentGrabService
      * 正则获取商品id
      * @author 青岛开店星信息技术有限公司
      */
-    private function getGoodsId()
+    private function getGoodsId(): array
     {
         // 苏宁
         if ($this->type == 'suning') {

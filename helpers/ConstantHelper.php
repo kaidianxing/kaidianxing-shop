@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 开店星新零售管理系统
  * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
@@ -19,6 +18,7 @@ use ReflectionClassConstant;
  * 常量助手
  * Class ConstantHelper
  * @package shopstar\helpers
+ * @author 青岛开店星信息技术有限公司
  */
 class ConstantHelper
 {
@@ -27,7 +27,7 @@ class ConstantHelper
      * 手机指定类中的注解常量
      * @param string|object $className
      * @return array
-     * @author liyang
+     * @author 青岛开店星信息技术有限公司
      */
     public static function collectClass($className): array
     {
@@ -48,9 +48,9 @@ class ConstantHelper
      * 获取注解
      * @param array $classConstants
      * @return array
-     * @author liyang
+     * @author 青岛开店星信息技术有限公司
      */
-    protected static function getAnnotations(array $classConstants)
+    protected static function getAnnotations(array $classConstants): array
     {
         $result = [];
         /** @var ReflectionClassConstant $classConstant */
@@ -69,9 +69,9 @@ class ConstantHelper
      * 解析注解
      * @param string $doc
      * @return array
-     * @author liyang
+     * @author 青岛开店星信息技术有限公司
      */
-    protected static function parse(string $doc)
+    protected static function parse(string $doc): array
     {
         $pattern = '/\\@(\\w+)\\(\\"(.+)\\"\\)/U';
         if (preg_match_all($pattern, $doc, $result)) {

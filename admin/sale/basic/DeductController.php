@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 开店星新零售管理系统
  * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
@@ -13,30 +12,35 @@
 
 namespace shopstar\admin\sale\basic;
 
+use shopstar\bases\KdxAdminApiController;
 use shopstar\constants\log\sale\BasicLogConstant;
 use shopstar\exceptions\sale\BasicException;
 use shopstar\helpers\RequestHelper;
 use shopstar\models\log\LogModel;
 use shopstar\models\shop\ShopSettings;
-use shopstar\bases\KdxAdminApiController;
 use yii\db\Exception;
 use yii\web\Response;
 
 /**
  * 抵扣设置
  * Class DeductController
- * @package app\controllers\manage\sale\basic
+ * @package shopstar\admin\sale\basic
  */
 class DeductController extends KdxAdminApiController
 {
+
+    /**
+     * @var array
+     */
     public $configActions = [
         'allowPermActions' => [
             'index'
         ]
     ];
+
     /**
      * 获取抵扣设置
-     * @return string
+     * @return array|int[]|Response
      * @author 青岛开店星信息技术有限公司
      */
     public function actionIndex()
@@ -52,7 +56,7 @@ class DeductController extends KdxAdminApiController
      * @throws BasicException
      * @author 青岛开店星信息技术有限公司
      */
-    public function actionEdit()
+    public function actionEdit(): Response
     {
         $data = [
             'credit_state' => RequestHelper::post('credit_state', 0), // 积分抵扣

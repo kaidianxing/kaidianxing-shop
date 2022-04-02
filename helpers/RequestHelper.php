@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 开店星新零售管理系统
  * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
@@ -11,7 +10,6 @@
  * @warning 未经许可禁止私自删除版权信息
  */
 
-
 namespace shopstar\helpers;
 
 use Yii;
@@ -22,6 +20,7 @@ use yii\helpers\Json;
  * @package system\core
  * @see \yii\web\Request
  * @method getUserIp() static
+ * @author 青岛开店星信息技术有限公司
  */
 class RequestHelper
 {
@@ -39,10 +38,10 @@ class RequestHelper
 
     /**
      * 是否为 GET请求
-     * @access public
      * @return bool
+     * @author 青岛开店星信息技术有限公司
      */
-    public static function isGet()
+    public static function isGet(): bool
     {
         return Yii::$app->getRequest()->isGet;
     }
@@ -50,88 +49,88 @@ class RequestHelper
     /**
      * 是否为 POST请求
      * @return bool
+     * @author 青岛开店星信息技术有限公司
      */
-    public static function isPost()
+    public static function isPost(): bool
     {
         return Yii::$app->getRequest()->isPost;
     }
 
     /**
      * 是否为 PUT请求
-     * @access public
      * @return bool
+     * @author 青岛开店星信息技术有限公司
      */
-    public static function isPut()
+    public static function isPut(): bool
     {
         return Yii::$app->getRequest()->isPut;
     }
 
     /**
      * 是否为 DELTE请求
-     * @access public
      * @return bool
+     * @author 青岛开店星信息技术有限公司
      */
-    public static function isDelete()
+    public static function isDelete(): bool
     {
         return Yii::$app->getRequest()->isDelete;
     }
 
     /**
      * 是否为HEAD请求
-     * @access public
      * @return bool
+     * @author 青岛开店星信息技术有限公司
      */
-    public static function isHead()
+    public static function isHead(): bool
     {
         return Yii::$app->getRequest()->isHead;
     }
 
     /**
      * 是否为 PATCH请求
-     * @access public
      * @return bool
      */
-    public static function isPatch()
+    public static function isPatch(): bool
     {
         return Yii::$app->getRequest()->isPatch;
     }
 
     /**
      * 是否为OPTIONS请求
-     * @access public
      * @return bool
+     * @author 青岛开店星信息技术有限公司
      */
-    public static function isOptions()
+    public static function isOptions(): bool
     {
         return Yii::$app->getRequest()->isOptions;
     }
 
     /**
      * 是否为cli
-     * @access public
      * @return bool
+     * @author 青岛开店星信息技术有限公司
      */
-    public static function isCli()
+    public static function isCli(): bool
     {
         return PHP_SAPI == 'cli';
     }
 
     /**
      * 是否为cgi
-     * @access public
      * @return bool
+     * @author 青岛开店星信息技术有限公司
      */
-    public static function isCgi()
+    public static function isCgi(): bool
     {
         return strpos(PHP_SAPI, 'cgi') === 0;
     }
 
     /**
      * 当前是否Ajax请求
-     * @access public
      * @return bool
+     * @author 青岛开店星信息技术有限公司
      */
-    public static function isAjax()
+    public static function isAjax(): bool
     {
         return Yii::$app->getRequest()->isAjax;
     }
@@ -139,8 +138,9 @@ class RequestHelper
     /**
      * 是否是ajax获取
      * @return bool
+     * @author 青岛开店星信息技术有限公司
      */
-    public static function isAjaxGet()
+    public static function isAjaxGet(): bool
     {
         return self::isAjax() && self::isGet();
     }
@@ -148,28 +148,29 @@ class RequestHelper
     /**
      * 是否是ajax请求
      * @return bool
+     * @author 青岛开店星信息技术有限公司
      */
-    public static function isAjaxPost()
+    public static function isAjaxPost(): bool
     {
         return self::isAjax() && self::isPost();
     }
 
     /**
      * 当前是否Pjax请求
-     * @access public
      * @return bool
+     * @author 青岛开店星信息技术有限公司
      */
-    public static function isPjax()
+    public static function isPjax(): bool
     {
         return Yii::$app->getRequest()->isPjax;
     }
 
-
     /**
      * Request数据
      * @return string
+     * @author 青岛开店星信息技术有限公司
      */
-    public static function input()
+    public static function input(): string
     {
         return Yii::$app->getRequest()->getRawBody();
     }
@@ -177,7 +178,7 @@ class RequestHelper
     /**
      * GET 数据
      * @param null $name
-     * @param null $default
+     * @param mixed $default
      * @return array|mixed
      */
     public static function get($name = null, $default = '')
@@ -194,7 +195,7 @@ class RequestHelper
      * @param string $default
      * @return int
      */
-    public static function getInt($name, $default = 0)
+    public static function getInt($name, $default = 0): int
     {
         return (int)self::get($name, $default);
     }
@@ -205,8 +206,9 @@ class RequestHelper
      * @param int $dec
      * @param int $default
      * @return float
+     * @author 青岛开店星信息技术有限公司
      */
-    public static function getFloat($name, $dec = 2, $default = 0)
+    public static function getFloat($name, int $dec = 2, int $default = 0): float
     {
         return round(self::get($name, $default), $dec);
     }
@@ -216,8 +218,9 @@ class RequestHelper
      * @param string $name
      * @param string $delimiter
      * @return array
+     * @author 青岛开店星信息技术有限公司
      */
-    public static function getArray($name, $delimiter = ',')
+    public static function getArray(string $name, string $delimiter = ','): array
     {
         $get = self::get($name);
         if (empty($get)) {
@@ -231,10 +234,11 @@ class RequestHelper
     /**
      * POST数据
      * @param null $name
-     * @param null $default
+     * @param string|null $default
      * @return array|mixed
+     * @author 青岛开店星信息技术有限公司
      */
-    public static function post($name = null, $default = '')
+    public static function post($name = null, ?string $default = '')
     {
         $post = Yii::$app->getRequest()->post();
         array_walk($post, function (&$value) {
@@ -282,11 +286,11 @@ class RequestHelper
 
     /**
      * 获取post数据int化
-     * @param null $name
+     * @param string $name
      * @param int $default
      * @return int
      */
-    public static function postInt($name, $default = 0)
+    public static function postInt(string $name, int $default = 0): int
     {
         return (int)self::post($name, $default);
     }
@@ -294,10 +298,12 @@ class RequestHelper
     /**
      * 获取数字数据
      * @param $name
-     * @param string $default
+     * @param int $dec
+     * @param int $default
      * @return int
+     * @author 青岛开店星信息技术有限公司
      */
-    public static function postFloat($name, $dec = 2, $default = 0)
+    public static function postFloat($name, int $dec = 2, $default = 0): int
     {
         return round(self::post($name, $default), $dec);
     }
@@ -308,7 +314,7 @@ class RequestHelper
      * @param string $delimiter
      * @return array
      */
-    public static function postArray($name, $delimiter = ',')
+    public static function postArray(string $name, string $delimiter = ','): array
     {
         $post = self::post($name);
         if (empty($post)) {
@@ -326,17 +332,18 @@ class RequestHelper
      * @return mixed
      * @author likexin
      */
-    public static function header(string $name, $default = '')
+    public static function header(string $name, string $default = '')
     {
         return Yii::$app->request->headers[$name] ?? $default;
     }
 
     /**
      * 获取分页
-     * @param string $key
+     * @param string|null $key
      * @return mixed
+     * @author 青岛开店星信息技术有限公司
      */
-    public static function getPage($key = null)
+    public static function getPage(string $key = null)
     {
         if (is_null($key)) {
             $key = static::get('pagekey', 'page');
@@ -346,11 +353,12 @@ class RequestHelper
 
     /**
      * 获取每页记录数
-     * @param int $default_size
+     * @param null $defaultSize
      * @param string $key
      * @return mixed
+     * @author 青岛开店星信息技术有限公司
      */
-    public static function getPageSize($defaultSize = null, $key = 'pagesize')
+    public static function getPageSize($defaultSize = null, string $key = 'pagesize')
     {
         if (is_null($key)) {
             $key = static::get('pagesizekey', 'pagesize');
@@ -366,7 +374,6 @@ class RequestHelper
      * 获取小程序传回来的json
      * @return mixed|string
      * @author 青岛开店星信息技术有限公司
-     * @func json
      */
     public static function json($name = null)
     {
@@ -374,8 +381,7 @@ class RequestHelper
 
         $tmp_array = Json::decode($result);
 
-        if (is_array($tmp_array))
-        {
+        if (is_array($tmp_array)) {
             return $name ? $tmp_array[$name] : $tmp_array;
         }
         return $name ? $result[$name] : $result;

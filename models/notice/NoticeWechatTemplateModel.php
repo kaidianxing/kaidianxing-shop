@@ -18,7 +18,7 @@ use shopstar\helpers\RequestHelper;
 
 
 /**
- * This is the model class for table "{{%app_notice_customer_template}}".
+ * This is the model class for table "{{%notice_customer_template}}".
  *
  * @property int $id
  * @property string $title 模板名称
@@ -35,7 +35,7 @@ class NoticeWechatTemplateModel extends BaseActiveRecord
      */
     public static function tableName()
     {
-        return '{{%app_notice_wechat_template}}';
+        return '{{%notice_wechat_template}}';
     }
 
     /**

@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 开店星新零售管理系统
  * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
@@ -11,35 +10,34 @@
  * @warning 未经许可禁止私自删除版权信息
  */
 
-
 namespace shopstar\admin\broadcast;
 
+use shopstar\bases\KdxAdminApiController;
 use shopstar\components\wechat\helpers\MiniProgramBroadcastRoomHelper;
-use shopstar\constants\order\OrderSceneConstant;
-use shopstar\constants\order\OrderStatusConstant;
-use shopstar\helpers\DateTimeHelper;
-use shopstar\helpers\RequestHelper;
-use shopstar\models\goods\GoodsModel;
-use shopstar\models\log\LogModel;
-use shopstar\models\order\OrderGoodsModel;
-use shopstar\models\order\OrderModel;
 use shopstar\constants\broadcast\BroadcastLogConstant;
 use shopstar\constants\broadcast\BroadcastRoomIsDeletedConstant;
 use shopstar\constants\broadcast\BroadcastRoomStatusConstant;
+use shopstar\constants\order\OrderSceneConstant;
+use shopstar\constants\order\OrderStatusConstant;
 use shopstar\exceptions\broadcast\BroadcastRoomException;
+use shopstar\helpers\DateTimeHelper;
+use shopstar\helpers\RequestHelper;
 use shopstar\models\broadcast\BroadcastGoodsModel;
 use shopstar\models\broadcast\BroadcastRoomGoodsMapModel;
 use shopstar\models\broadcast\BroadcastRoomModel;
 use shopstar\models\broadcast\BroadcastStatisticsModel;
+use shopstar\models\goods\GoodsModel;
+use shopstar\models\log\LogModel;
+use shopstar\models\order\OrderGoodsModel;
+use shopstar\models\order\OrderModel;
 use shopstar\models\wxapp\WxappUploadLogModel;
-use shopstar\bases\KdxAdminApiController;
 use yii\db\Expression;
 
 /**
  * 直播间
  * Class RoomController
  * @author 青岛开店星信息技术有限公司
- * @package apps\broadcast\manage
+ * @package shopstar\admin\broadcast
  */
 class RoomController extends KdxAdminApiController
 {
@@ -268,7 +266,7 @@ class RoomController extends KdxAdminApiController
                         [
                             'log_data' => $result->attributes,
                             'log_primary' => [
-                                '直播类型' => $result->broadcast_type == 0 ? '手机直播' : '推流设备直播(' . $result->screen_type == 0 ? '竖屏' : '横屏' . ')',
+                                '直播类型' => $result->broadcast_type == 0 ? '手机直播' : ('推流设备直播(' . $result->screen_type == 0 ? '竖屏' : '横屏' . ')'),
                                 '直播间标题' => $result->title,
                                 '开播时间' => $result->start_time . '-' . $result->end_time,
                                 '主播昵称' => $result->anchor_name,

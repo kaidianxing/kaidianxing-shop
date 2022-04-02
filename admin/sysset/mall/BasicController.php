@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 开店星新零售管理系统
  * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
@@ -26,10 +25,15 @@ use yii\web\Response;
 /**
  * 基础设置
  * Class BasicController
- * @package shop\manage\sysset
+ * @package shopstar\admin\sysset
+ * @author 青岛开店星信息技术有限公司
  */
 class BasicController extends KdxAdminApiController
 {
+
+    /**
+     * @var array
+     */
     public $configActions = [
         'postActions' => [
             'edit',
@@ -41,7 +45,7 @@ class BasicController extends KdxAdminApiController
 
     /**
      * 获取商城基础设置
-     * @return string
+     * @return array|int[]|Response
      * @author 青岛开店星信息技术有限公司
      */
     public function actionIndex()
@@ -57,7 +61,7 @@ class BasicController extends KdxAdminApiController
      * @throws MallException
      * @author 青岛开店星信息技术有限公司
      */
-    public function actionEdit()
+    public function actionEdit(): Response
     {
         $data = [
             'mall_status' => RequestHelper::post('mall_status', '1'), // 商城状态
@@ -106,6 +110,5 @@ class BasicController extends KdxAdminApiController
 
         return $this->success();
     }
-
 
 }

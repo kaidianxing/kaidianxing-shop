@@ -14,11 +14,11 @@ namespace shopstar\config\modules\permission;
 
 use shopstar\components\permission\BasePermissionConfig;
 
-
 /**
  * 订单权限
  * Class OrderPermissionConfig
- * @package shop\config\permission
+ * @package shopstar\config\modules\permission
+ * @author 青岛开店星信息技术有限公司
  */
 class OrderPermissionConfig extends BasePermissionConfig
 {

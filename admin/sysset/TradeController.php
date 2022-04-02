@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 开店星新零售管理系统
  * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
@@ -25,10 +24,15 @@ use yii\db\Exception;
 /**
  * 交易设置
  * Class TradeController
- * @package app\controllers\manage\sysset
+ * @package shopstar\admin\sysset
+ * @author 青岛开店星信息技术有限公司
  */
 class TradeController extends KdxAdminApiController
 {
+
+    /**
+     * @var array
+     */
     public $configActions = [
         'allowPermActions' => [
             'get-info'
@@ -40,7 +44,7 @@ class TradeController extends KdxAdminApiController
      * @return \yii\web\Response
      * @author 青岛开店星信息技术有限公司
      */
-    public function actionGetInfo()
+    public function actionGetInfo(): \yii\web\Response
     {
         $res = ShopSettings::get('sysset.trade');
         return $this->success($res);
@@ -52,7 +56,7 @@ class TradeController extends KdxAdminApiController
      * @throws TradeException
      * @author 青岛开店星信息技术有限公司
      */
-    public function actionUpdate()
+    public function actionUpdate(): \yii\web\Response
     {
         $post = [
             'close_type' => RequestHelper::post('close_type', '1'), // 未付款订单关闭类型
@@ -73,6 +77,7 @@ class TradeController extends KdxAdminApiController
             'auto_comment_day' => RequestHelper::post('auto_comment_day'), // 开启自动评价时间
             'auto_comment_content' => RequestHelper::post('auto_comment_content'), // 自动评价内容
         ];
+
         // 未付款订单 自定义关闭时间
         if ($post['close_type'] == SyssetTypeConstant::CUSTOMER_CLOSE_ORDER_TIME) {
             // 关闭时间不能为空
@@ -95,6 +100,7 @@ class TradeController extends KdxAdminApiController
                 }
             }
         }
+
         // 自动收货
         if ($post['auto_receive'] == SyssetTypeConstant::CUSTOMER_AUTO_RECEIVE_TIME) {
             // 自动收货天数不能为空
@@ -106,6 +112,7 @@ class TradeController extends KdxAdminApiController
                 throw new TradeException(TradeException::AUTO_RECEIVE_TIME_ERROR);
             }
         }
+
         // 库存预警通知
         if ($post['stock_warning_state'] == SyssetTypeConstant::STOCK_WARNING_NOTICE_OPEN) {
             // 库存件数不能为空
@@ -117,6 +124,7 @@ class TradeController extends KdxAdminApiController
                 throw new TradeException(TradeException::STOCK_WANING_DAY_ERROR);
             }
         }
+
         // 开启自动评价
         if ($post['auto_comment'] == 1) {
             if (empty($post['auto_comment']) || $post['auto_comment_day'] < 7 || $post['auto_comment_day'] > 180) {
@@ -139,6 +147,7 @@ class TradeController extends KdxAdminApiController
             } else {
                 $invoiceText = '纸质发票;电子发票';
             }
+
             // 记录日志
             LogModel::write(
                 $this->userId,
@@ -177,4 +186,5 @@ class TradeController extends KdxAdminApiController
 
         return $this->success();
     }
+
 }

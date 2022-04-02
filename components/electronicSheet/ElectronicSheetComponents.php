@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 开店星新零售管理系统
  * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
@@ -11,22 +10,20 @@
  * @warning 未经许可禁止私自删除版权信息
  */
 
-
 namespace shopstar\components\electronicSheet;
-
 
 use shopstar\components\electronicSheet\bases\ElectronicSheetApiConstant;
 use shopstar\components\electronicSheet\bases\ElectronicSheetApiInterface;
 use Yii;
 
 /**
- *
  * Class ElectronicSheetComponents
  * @package shopstar\components\electronicSheet\bases
  * @author 青岛开店星信息技术有限公司
  */
 class ElectronicSheetComponents
 {
+
     /**
      * @var ElectronicSheetApiInterface 存储驱动接口
      */
@@ -69,4 +66,5 @@ class ElectronicSheetComponents
 
         return self::$instance;
     }
+
 }

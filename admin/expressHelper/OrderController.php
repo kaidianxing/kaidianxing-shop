@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 开店星新零售管理系统
  * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
@@ -11,30 +10,28 @@
  * @warning 未经许可禁止私自删除版权信息
  */
 
-
-
 namespace shopstar\admin\expressHelper;
 
-
+use shopstar\bases\KdxAdminApiController;
 use shopstar\constants\order\OrderStatusConstant;
 use shopstar\constants\order\OrderTypeConstant;
 use shopstar\constants\RefundConstant;
-use shopstar\models\order\OrderGoodsModel;
-use shopstar\models\order\OrderModel;
 use shopstar\models\expressHelper\ExpressHelperRequestRecordModel;
 use shopstar\models\expressHelper\ExpressHelperSendBillLogModel;
 use shopstar\models\expressHelper\ExpressHelperSuccessRecordModel;
-use shopstar\bases\KdxAdminApiController;
+use shopstar\models\order\OrderGoodsModel;
+use shopstar\models\order\OrderModel;
 use shopstar\models\order\OrderPackageModel;
 
 /**
  * 订单
  * Class OrderController
  * @author 青岛开店星信息技术有限公司
- * @package apps\expressHelper\manage
+ * @package shopstar\admin\expressHelper
  */
 class OrderController extends KdxAdminApiController
 {
+
     /**
      * 订单列表
      * @return array|int[]|\yii\web\Response
@@ -176,9 +173,9 @@ class OrderController extends KdxAdminApiController
 
         }
 
-
         $orderList['list'] = array_values($orderList['list']);
 
         return $this->result($orderList);
     }
+
 }

@@ -16,7 +16,7 @@ namespace shopstar\models\poster;
 use shopstar\bases\model\BaseActiveRecord;
 
 /**
- * This is the model class for table "{{%app_poster_log}}".
+ * This is the model class for table "{{%poster_log}}".
  *
  * @property int $id auto increment id
  * @property int $poster_id 海报ID
@@ -37,7 +37,7 @@ class PosterLogModel extends BaseActiveRecord
      */
     public static function tableName()
     {
-        return '{{%app_poster_log}}';
+        return '{{%poster_log}}';
     }
 
     /**

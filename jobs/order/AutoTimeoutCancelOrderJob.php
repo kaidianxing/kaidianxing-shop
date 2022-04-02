@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 开店星新零售管理系统
  * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
@@ -13,16 +12,14 @@
 
 namespace shopstar\jobs\order;
 
-use shopstar\constants\RefundConstant;
-use shopstar\exceptions\order\RefundException;
-use shopstar\models\order\OrderGoodsModel;
-use shopstar\models\order\OrderModel;
-use shopstar\models\order\refund\OrderRefundModel;
 use shopstar\services\order\refund\OrderRefundService;
 use yii\base\BaseObject;
 use yii\helpers\Json;
 use yii\queue\JobInterface;
 
+/**
+ * @author 青岛开店星信息技术有限公司
+ */
 class AutoTimeoutCancelOrderJob extends BaseObject implements JobInterface
 {
     public $orderId;
@@ -32,9 +29,9 @@ class AutoTimeoutCancelOrderJob extends BaseObject implements JobInterface
     /**
      * 超时维权时间自动关闭维权
      * @param \yii\queue\Queue $queue
+     * @return mixed|void
      * @throws \Throwable
      * @author 青岛开店星信息技术有限公司
-     * @return mixed|void
      */
     public function execute($queue)
     {
@@ -48,7 +45,7 @@ class AutoTimeoutCancelOrderJob extends BaseObject implements JobInterface
                 echo "订单自动关闭失败,id:'{$this->orderId} 失败原因：{$res['message']}'\n";
                 return;
             }
-            
+
             $transaction->commit();
         } catch (\Throwable $exception) {
             $transaction->rollBack();

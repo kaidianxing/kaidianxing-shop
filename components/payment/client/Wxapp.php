@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 开店星新零售管理系统
  * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
@@ -13,12 +12,10 @@
 
 namespace shopstar\components\payment\client;
 
-use shopstar\bases\exception\BaseException;
 use shopstar\components\payment\base\AlipayError;
 use shopstar\components\payment\base\BasePay;
 use shopstar\components\payment\base\PayClientConstant;
 use shopstar\components\payment\base\PayClientInterface;
-use shopstar\components\payment\base\PayOrderTypeConstant;
 use shopstar\components\payment\base\PayTypeConstant;
 use shopstar\components\payment\base\WithdrawOrderTypeConstant;
 use shopstar\components\payment\base\WithdrawTypeConstant;
@@ -31,6 +28,12 @@ use shopstar\models\order\PayOrderModel;
 use Yansongda\Pay\Exceptions\GatewayException;
 use yii\helpers\Json;
 
+/**
+ * 微信小程序支付
+ * Class Wxapp
+ * @package shopstar\components\payment\client
+ * @author 青岛开店星信息技术有限公司
+ */
 class Wxapp extends BasePay implements PayClientInterface
 {
 
@@ -46,18 +49,19 @@ class Wxapp extends BasePay implements PayClientInterface
      * 支付
      * @return mixed
      * @throws PaymentException
+     * @throws \shopstar\exceptions\order\OrderException
      * @author 青岛开店星信息技术有限公司
      */
     public function pay()
     {
         // 写入订单记录
         $this->write();
-    
+
         // 判断订单来源 抖音的不支持切换
         if ($this->orderData[0]['create_from'] >= 30 && $this->orderData[0]['create_from'] <= 32) {
             throw new PaymentException(PaymentException::PAY_CHANNEL_ERROR);
         }
-        
+
         // 获取支付方式
         $payType = PayTypeConstant::getIdentify($this->pay_type);
 
@@ -70,6 +74,8 @@ class Wxapp extends BasePay implements PayClientInterface
     /**
      * 退款
      * @return mixed
+     * @throws PaymentException
+     * @throws \shopstar\exceptions\order\OrderException
      * @author 青岛开店星信息技术有限公司
      */
     public function refund()
@@ -107,7 +113,7 @@ class Wxapp extends BasePay implements PayClientInterface
 
     /**
      * 转账
-     * @return mixed
+     * @return array|bool
      * @throws PaymentException
      * @throws \Exception
      * @author 青岛开店星信息技术有限公司
@@ -257,7 +263,7 @@ class Wxapp extends BasePay implements PayClientInterface
      * @return array
      * @throws PaymentException
      */
-    public function wechat()
+    public function wechat(): array
     {
         $payConf = $this->getConfig(
             PayClientConstant::CLIENT_WXAPP,
@@ -302,6 +308,9 @@ class Wxapp extends BasePay implements PayClientInterface
         }
     }
 
+    /**
+     * @throws \Exception
+     */
     public function alipay()
     {
         throw new \Exception('wxapp undefined alipay method');
@@ -309,7 +318,7 @@ class Wxapp extends BasePay implements PayClientInterface
 
     /**
      * wechat 退款
-     * @return bool
+     * @return bool|array|void
      * @throws PaymentException
      */
     public function wechatRefund()
@@ -317,7 +326,7 @@ class Wxapp extends BasePay implements PayClientInterface
         $payConf = $this->getConfig(
             PayClientConstant::CLIENT_WXAPP,
             PayTypeConstant::getIdentify($this->pay_type));
-        $config = $this->setWxappConfig($payConf, true,true);
+        $config = $this->setWxappConfig($payConf, true, true);
 
 
         $order = current((array)$this->order);

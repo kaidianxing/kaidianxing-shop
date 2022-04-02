@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 开店星新零售管理系统
  * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
@@ -11,8 +10,6 @@
  * @warning 未经许可禁止私自删除版权信息
  */
 
-
-
 namespace shopstar\helpers;
 
 use yii\base\InvalidArgumentException;
@@ -22,6 +19,7 @@ use yii\helpers\Json;
  * 数据值助手类
  * Class ValueHelper
  * @package shopstar\helpers
+ * @author 青岛开店星信息技术有限公司
  */
 class ValueHelper
 {
@@ -68,7 +66,7 @@ class ValueHelper
      * @return bool
      * @author likexin
      */
-    public static function isEnglish(string $value)
+    public static function isEnglish(string $value): bool
     {
         if (preg_match("/^[A-Za-z]+$/", $value)) {
             return true;
@@ -89,14 +87,14 @@ class ValueHelper
         }
         return false;
     }
-    
+
     /**
      * 是否电话号  兼容座机
      * @param string $value
      * @return bool
      * @author 青岛开店星信息技术有限公司
      */
-    public static function isTel(string $value)
+    public static function isTel(string $value): bool
     {
         if (preg_match("/^((0\d{2,3}-\d{7,8})|(^1[3456789]{1}\d{9}$))/", $value)) {
             return true;
@@ -157,7 +155,7 @@ class ValueHelper
      * @return bool
      * @author nizengchao
      */
-    public static function is400(string $value, int $type = 1)
+    public static function is400(string $value, int $type = 1): bool
     {
         if ($type == 1) {
             $pattern = '/^400-[016789]\d{2}-\d{4}$/';
@@ -177,7 +175,7 @@ class ValueHelper
      * @return bool
      * @author likexin
      */
-    static function isTelephone(string $value, bool $needAreaCode = true)
+    static function isTelephone(string $value, bool $needAreaCode = true): bool
     {
         $area_code = '/^(0[0-9]{2,3}-)?';
         if ($needAreaCode) {
@@ -224,7 +222,7 @@ class ValueHelper
      * @return bool
      * @author likexin
      */
-    public static function isUrl(string $value)
+    public static function isUrl(string $value): bool
     {
         if (empty($value)) {
             return false;
@@ -238,7 +236,7 @@ class ValueHelper
      * @return bool
      * @author likexin
      */
-    public static function isUserName(string $value)
+    public static function isUserName(string $value): bool
     {
         if (empty($value)) {
             return false;
@@ -254,7 +252,7 @@ class ValueHelper
      * @return bool
      * @author likexin
      */
-    public static function isChinese(string $value, $charset = 'utf-8')
+    public static function isChinese(string $value, string $charset = 'utf-8'): bool
     {
         if (empty($value)) {
             return false;
@@ -270,7 +268,7 @@ class ValueHelper
      * @return bool
      * @author likexin
      */
-    public static function isUtf8(string $value)
+    public static function isUtf8(string $value): bool
     {
         if (empty($value)) {
             return false;
@@ -288,7 +286,7 @@ class ValueHelper
      * @return bool
      * @author likexin
      */
-    public static function isDate(string $value)
+    public static function isDate(string $value): bool
     {
         if (!StringHelper::exists($value, ['-', '/'], 'OR')) {
             return false;
@@ -310,7 +308,7 @@ class ValueHelper
      * @return bool
      * @author likexin
      */
-    public static function isTime(string $value)
+    public static function isTime(string $value): bool
     {
         $timeArr = explode(":", $value);
         if (is_numeric($timeArr[0]) && is_numeric($timeArr[1]) && is_numeric($timeArr[2])) {
@@ -327,7 +325,7 @@ class ValueHelper
      * @return bool
      * @author likexin
      */
-    public static function isDateTime(string $value)
+    public static function isDateTime(string $value): bool
     {
         $date = substr($value, 0, 10);
         $isDate = self::isDate($date);
@@ -345,7 +343,7 @@ class ValueHelper
      * @return bool
      * @author likexin
      */
-    public static function isChineseName(string $value)
+    public static function isChineseName(string $value): bool
     {
         if (preg_match('/^([\xe4-\xe9][\x80-\xbf]{2}){2,4}$/', $value)) {
             return true;
@@ -360,7 +358,7 @@ class ValueHelper
      * @return bool
      * @author likexin
      */
-    public static function isIdCardNo(string $value)
+    public static function isIdCardNo(string $value): bool
     {
         $vCity = array(
             '11', '12', '13', '14', '15', '21', '22',
@@ -397,7 +395,7 @@ class ValueHelper
      * @return bool|mixed
      * @author 青岛开店星信息技术有限公司
      */
-    public static function isJson($string, $asArray = true)
+    public static function isJson($string, bool $asArray = true)
     {
         try {
             $res = Json::decode($string, $asArray);

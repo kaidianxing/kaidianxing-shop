@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 开店星新零售管理系统
  * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
@@ -11,12 +10,15 @@
  * @warning 未经许可禁止私自删除版权信息
  */
 
-
 namespace shopstar\services\commission;
 
+use shopstar\bases\service\BaseService;
+use shopstar\components\notice\NoticeComponent;
 use shopstar\constants\commission\CommissionAgentConstant;
 use shopstar\constants\commission\CommissionLogConstant;
 use shopstar\constants\commission\CommissionRelationLogConstant;
+use shopstar\constants\components\notice\NoticeTypeConstant;
+use shopstar\helpers\DateTimeHelper;
 use shopstar\models\commission\CommissionAgentModel;
 use shopstar\models\commission\CommissionAgentTotalModel;
 use shopstar\models\commission\CommissionLevelModel;
@@ -24,23 +26,22 @@ use shopstar\models\commission\CommissionOrderDataModel;
 use shopstar\models\commission\CommissionRelationLogModel;
 use shopstar\models\commission\CommissionRelationModel;
 use shopstar\models\commission\CommissionSettings;
-use shopstar\bases\service\BaseService;
-use shopstar\components\notice\NoticeComponent;
-use shopstar\constants\components\notice\NoticeTypeConstant;
-use shopstar\helpers\DateTimeHelper;
 use shopstar\models\log\LogModel;
 use shopstar\models\member\MemberModel;
 use shopstar\models\shop\ShopSettings;
 
+/**
+ * @author 青岛开店星信息技术有限公司
+ */
 class CommissionAgentService extends BaseService
 {
     /**
      * 降级
      * @param array $degradeAgent $degradeAgent['member_id'] 分销商会员id  $degradeAgent['level_id'] 当前等级
-     * @return array|bool 实际执行的降级分销商
+     * @return array 实际执行的降级分销商
      * @author nizengchao
      */
-    public static function degrade(array $degradeAgent = [])
+    public static function degrade(array $degradeAgent = []): array
     {
         // 获取全部的等级
         $levels = CommissionLevelModel::getSimpleList([], 'id,level,status', ['level' => SORT_ASC]);
@@ -108,7 +109,6 @@ class CommissionAgentService extends BaseService
         return array_values($degradeAgent);
     }
 
-
     /**
      * 获取会员分销信息
      * @param int $memberId
@@ -116,7 +116,7 @@ class CommissionAgentService extends BaseService
      * @return array
      * @author 青岛开店星信息技术有限公司
      */
-    public static function getCommissionInfo(int $memberId, int $inviter = 0)
+    public static function getCommissionInfo(int $memberId, int $inviter = 0): array
     {
         $info = [];
         // 获取上级
@@ -161,7 +161,6 @@ class CommissionAgentService extends BaseService
 
         return $info;
     }
-
 
     /**
      * 注册分销商
@@ -257,7 +256,7 @@ class CommissionAgentService extends BaseService
         $member = MemberModel::findOne(['id' => $memberId]);
         if (!$set['is_audit']) {
             // 写入缓存
-            $key = 'show_success_' .  '_' . $memberId;
+            $key = 'show_success_' . '_' . $memberId;
             \Yii::$app->redis->set($key, DateTimeHelper::now());
 
             // 发送通知  买家成为分销商
@@ -303,8 +302,6 @@ class CommissionAgentService extends BaseService
         return true;
     }
 
-
-
     /**
      * 手动设置分销商
      * @param int $memberId
@@ -312,7 +309,7 @@ class CommissionAgentService extends BaseService
      * @return MemberModel|array
      * @author 青岛开店星信息技术有限公司
      */
-    public static function manualAgent(int $memberId,  int $uid)
+    public static function manualAgent(int $memberId, int $uid)
     {
         $member = MemberModel::findOne(['id' => $memberId]);
         if (empty($member)) {
@@ -351,7 +348,7 @@ class CommissionAgentService extends BaseService
 
 
             // 成为分销商设置缓存
-            $key = 'show_success_' .  '_' . $memberId;
+            $key = 'show_success_' . '_' . $memberId;
             \Yii::$app->redis->set($key, DateTimeHelper::now());
 
             // 日志
@@ -430,7 +427,7 @@ class CommissionAgentService extends BaseService
         // 遍历会员处理
         foreach ($memberIds as $memberId) {
             // 通过后写入缓存
-            $key = 'show_success_' .  '_' . $memberId;
+            $key = 'show_success_' . '_' . $memberId;
             \Yii::$app->redis->set($key, DateTimeHelper::now());
             // 更新上级的下级分销商数量
             CommissionAgentTotalModel::updateAgentChildCount($memberId);
@@ -484,15 +481,14 @@ class CommissionAgentService extends BaseService
         return true;
     }
 
-
-
     /**
      * 取消分销商资格
      * @param int $memberId
      * @param int $uid
+     * @throws \yii\db\Exception
      * @author 青岛开店星信息技术有限公司
      */
-    public static function changeStatusCancel(int $memberId,  int $uid)
+    public static function changeStatusCancel(int $memberId, int $uid)
     {
         $agentInfo = CommissionAgentModel::findOne(['member_id' => $memberId]);
         // 取消
@@ -560,8 +556,6 @@ class CommissionAgentService extends BaseService
         );
     }
 
-
-
     /**
      * 删除分销商
      * @param int $memberId
@@ -569,7 +563,7 @@ class CommissionAgentService extends BaseService
      * @throws \yii\db\Exception
      * @author 青岛开店星信息技术有限公司
      */
-    public static function deleteAgent(int $memberId)
+    public static function deleteAgent(int $memberId): array
     {
         $returnData = [];
         // 获取会员分销商记录

@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 开店星新零售管理系统
  * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
@@ -14,14 +13,15 @@
 namespace shopstar\mobile\diypage;
 
 use shopstar\bases\controller\BaseMobileApiController;
-use shopstar\helpers\RequestHelper;
 use shopstar\constants\diypage\DiypageMenuTypeConstant;
+use shopstar\helpers\RequestHelper;
 use shopstar\models\diypage\DiypageMenuModel;
 
 /**
  * 底部菜单
  * Class MenuController
- * @package apps\diypage\client
+ * @package shopstar\mobile\diypage
+ * @author 青岛开店星信息技术有限公司
  */
 class MenuController extends BaseMobileApiController
 {

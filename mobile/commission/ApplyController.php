@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 开店星新零售管理系统
  * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
@@ -13,30 +12,30 @@
 
 namespace shopstar\mobile\commission;
 
+use Exception;
 use shopstar\components\notice\NoticeComponent;
 use shopstar\constants\base\PayTypeConstant;
 use shopstar\constants\ClientTypeConstant;
+use shopstar\constants\commission\CommissionApplyTypeConstant;
+use shopstar\constants\components\notice\NoticeTypeConstant;
+use shopstar\exceptions\commission\CommissionApplyException;
 use shopstar\helpers\DateTimeHelper;
 use shopstar\helpers\OrderNoHelper;
 use shopstar\helpers\RequestHelper;
-use shopstar\mobile\commission\CommissionClientApiController;
-use shopstar\models\order\OrderGoodsModel;
-use Exception;
-use shopstar\constants\commission\CommissionApplyTypeConstant;
-use shopstar\exceptions\commission\CommissionApplyException;
 use shopstar\models\commission\CommissionAgentTotalModel;
 use shopstar\models\commission\CommissionApplyModel;
 use shopstar\models\commission\CommissionOrderDataModel;
 use shopstar\models\commission\CommissionOrderGoodsModel;
 use shopstar\models\commission\CommissionOrderModel;
 use shopstar\models\commission\CommissionSettings;
-use shopstar\constants\components\notice\NoticeTypeConstant;
+use shopstar\models\order\OrderGoodsModel;
 use yii\helpers\Json;
 
 /**
  * 分销佣金提现
  * Class ApplyController
- * @package apps\commission\client
+ * @package shopstar\mobile\commission
+ * @author 青岛开店星信息技术有限公司
  */
 class ApplyController extends CommissionClientApiController
 {
@@ -76,7 +75,6 @@ class ApplyController extends CommissionClientApiController
             ];
 
         }
-
 
         return $this->result([
             'data' => [
@@ -241,7 +239,7 @@ class ApplyController extends CommissionClientApiController
             // 第一次处理该条数据, 记录下阶梯佣金
             if ($item['can_withdraw_commission'] == $item['commission'] && $item['ladder_commission'] > 0) {
                 $one['ladder_commission'] = $item['ladder_commission'];
-                $ladderCommission = bcadd($ladderCommission, $item['ladder_commission'],2);
+                $ladderCommission = bcadd($ladderCommission, $item['ladder_commission'], 2);
             }
 
             $data['commission'][] = $one;

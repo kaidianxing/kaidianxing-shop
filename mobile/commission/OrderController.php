@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 开店星新零售管理系统
  * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
@@ -13,7 +12,6 @@
 
 namespace shopstar\mobile\commission;
 
-use shopstar\constants\order\OrderActivityTypeConstant;
 use shopstar\constants\OrderConstant;
 use shopstar\models\commission\CommissionOrderDataModel;
 use shopstar\models\member\MemberModel;
@@ -22,7 +20,8 @@ use shopstar\models\order\OrderModel;
 /**
  * 分销订单
  * Class OrderController
- * @package apps\commission\client
+ * @package shopstar\mobile\commission
+ * @author 青岛开店星信息技术有限公司
  */
 class OrderController extends CommissionClientApiController
 {
@@ -125,9 +124,8 @@ class OrderController extends CommissionClientApiController
             ],
         ];
 
-        $groupsOrderId = [];
-        $list = CommissionOrderDataModel::getColl($params, [
-            'callable' => function (&$row) use (&$groupsOrderId) {
+        return CommissionOrderDataModel::getColl($params, [
+            'callable' => function (&$row) {
 
                 // 佣金
                 foreach ($row['orderGoods'] as &$item) {
@@ -149,8 +147,6 @@ class OrderController extends CommissionClientApiController
                 unset($item);
             }
         ]);
-
-        return $list;
     }
 
 }

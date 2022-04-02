@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 开店星新零售管理系统
  * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
@@ -13,7 +12,8 @@
 
 namespace shopstar\services\commentHelper;
 
-use shopstar\bases\exception\BaseException;
+use shopstar\constants\commentHelper\CommentHelperLogConstant;
+use shopstar\exceptions\commentHelper\CommentHelperException;
 use shopstar\helpers\DateTimeHelper;
 use shopstar\models\goods\GoodsModel;
 use shopstar\models\goods\GoodsOptionModel;
@@ -21,14 +21,13 @@ use shopstar\models\log\LogModel;
 use shopstar\models\member\MemberLevelModel;
 use shopstar\models\member\MemberModel;
 use shopstar\models\order\OrderGoodsCommentModel;
-use shopstar\constants\commentHelper\CommentHelperLogConstant;
-use shopstar\exceptions\commentHelper\CommentHelperException;
 use yii\helpers\Json;
 
 /**
  * 评论
  * Class CommentService
  * @package shopstar\services\commentHelper
+ * @author 青岛开店星信息技术有限公司
  */
 class CommentService
 {
@@ -40,7 +39,7 @@ class CommentService
      * @throws \yii\db\Exception
      * @author 青岛开店星信息技术有限公司
      */
-    public function manualCreateComment(array $data)
+    public function manualCreateComment(array $data): bool
     {
         $goods = GoodsModel::find()->select(['has_option'])->where(['id' => $data['goods_id'], 'is_deleted' => [0, 1]])->first();
         if (empty($goods)) {
@@ -50,7 +49,7 @@ class CommentService
             $option = GoodsOptionModel::find()->select(['title'])->where(['goods_id' => $data['goods_id']])->get();
             $optionCount = count($option);
         }
-        
+
         // 查找会员
         if ($data['member_type'] == 0) {
             // 自定义 获取等级
@@ -60,7 +59,7 @@ class CommentService
             } else {
                 // 获取等级
                 $level = MemberLevelModel::find()->select(['id', 'level_name'])->where(['id' => $data['level_id']])->first();
-                
+
                 if (empty($level)) {
                     throw new CommentHelperException(CommentHelperException::MANUAL_MEMBER_LEVEL_NOT_EXISTS);
                 }
@@ -75,7 +74,7 @@ class CommentService
                 $member[$index]['level_name'] = $levels[$item['level_id']]['level_name'];
             }
         }
-        
+
         // 插入字段
         $field = ['content', 'level', 'created_at', 'goods_id', 'status', 'images', 'is_have_image', 'is_new', 'type', 'member_id', 'nickname', 'avatar', 'member_level_name', 'option_title', 'level_id'];
         // 插入数据
@@ -100,16 +99,17 @@ class CommentService
                 $data['member_type'] == 0 ? $level['id'] : $member[($index + $memberCount) % $memberCount]['level_id'],
             ];
         }
-        
+
         // 批量插入
         if (!empty($insertData)) {
             OrderGoodsCommentModel::batchInsert($field, $insertData);
         }
         return true;
     }
-    
+
     /**
      * 编辑评价
+     * @param int $userId
      * @param array $data
      * @throws CommentHelperException
      * @author 青岛开店星信息技术有限公司
@@ -120,8 +120,8 @@ class CommentService
         if (empty($comment)) {
             throw new CommentHelperException(CommentHelperException::EDIT_COMMENT_NOT_EXISTS);
         }
-        
-        $comment->content = mb_substr($data['content'],0, 500);
+
+        $comment->content = mb_substr($data['content'], 0, 500);
         $comment->created_at = $data['time'];
         $comment->nickname = $data['nickname'];
         $comment->avatar = $data['avatar'];
@@ -133,7 +133,7 @@ class CommentService
         $comment->images = Json::encode($data['images']);
         $comment->is_have_image = $data['images'] ? 1 : 0;
         $comment->level_id = $data['level_id'];
-    
+
         // 保存
         if (!$comment->save()) {
             throw new CommentHelperException(CommentHelperException::EDIT_FAIL);
@@ -160,5 +160,5 @@ class CommentService
             ]
         );
     }
-    
+
 }

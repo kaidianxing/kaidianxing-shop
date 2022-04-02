@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 开店星新零售管理系统
  * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
@@ -13,7 +12,6 @@
 
 namespace shopstar\mobile\shoppingReward;
 
-use apps\shoppingReward\base\ShoppingRewardClientApiController;
 use shopstar\bases\controller\BaseMobileApiController;
 use shopstar\exceptions\shoppingReward\ShoppingRewardException;
 use shopstar\helpers\RequestHelper;
@@ -26,6 +24,7 @@ use yii\helpers\Json;
  * 购物奖励
  * Class IndexController
  * @package apps\shoppingReward\client
+ * @author 青岛开店星信息技术有限公司
  */
 class IndexController extends BaseMobileApiController
 {

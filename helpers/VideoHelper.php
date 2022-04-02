@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 开店星新零售管理系统
  * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
@@ -11,13 +10,11 @@
  * @warning 未经许可禁止私自删除版权信息
  */
 
-
-
 namespace shopstar\helpers;
 
-
-use yii\redis\Cache;
-
+/**
+ * @author 青岛开店星信息技术有限公司
+ */
 class VideoHelper
 {
 
@@ -25,6 +22,7 @@ class VideoHelper
      * 获取腾讯视频URL
      * @param string $url
      * @return mixed|string
+     * @author 青岛开店星信息技术有限公司
      */
     public static function getTententVideo(string $url)
     {
@@ -56,16 +54,15 @@ class VideoHelper
      * 匹配富文本中的腾讯视频
      * @param string $text
      * @return string
+     * @author 青岛开店星信息技术有限公司
      */
-    public static function parseRichTextTententVideo(string $text)
+    public static function parseRichTextTententVideo(string $text): string
     {
-        $text = preg_replace_callback('/<video((?!data-url).)*data-url[\s]*=[\s]*[\'\"](?<src>(.*):[^\'\"]*)[\'\"]/i', function ($matchs) {
-            if(!empty($matchs['src'])){
+        return preg_replace_callback('/<video((?!data-url).)*data-url[\s]*=[\s]*[\'\"](?<src>(.*):[^\'\"]*)[\'\"]/i', function ($matchs) {
+            if (!empty($matchs['src'])) {
                 return str_replace('src="' . $matchs['src'] . '"', 'src="' . self::getTententVideo($matchs['src']) . '"', $matchs[0]);
             }
         }, $text);
-
-        return $text;
     }
 
 }

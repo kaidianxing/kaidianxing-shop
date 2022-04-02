@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 开店星新零售管理系统
  * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
@@ -19,6 +18,7 @@ use yii\helpers\Url;
  * 链接生成器 - 快速生成各个端的链接
  * Class ShopUrlHelper
  * @package shopstar\models
+ * @author 青岛开店星信息技术有限公司
  */
 class ShopUrlHelper
 {
@@ -31,7 +31,7 @@ class ShopUrlHelper
      * @return string
      * @author likexin
      */
-    public static function build(string $route, array $params = [], bool $scheme = false)
+    public static function build(string $route, array $params = [], bool $scheme = false): string
     {
         $url = Url::base($scheme) . '/' . $route;
         // TODO 青岛开店星信息技术有限公司  放在获取渠道url那里了
@@ -55,7 +55,7 @@ class ShopUrlHelper
      * @return string
      * @author likexin
      */
-    public static function client(string $route, array $params = [], bool $scheme = false)
+    public static function client(string $route, array $params = [], bool $scheme = false): string
     {
         return self::build('client/' . rtrim($route, '/'), $params, $scheme);
     }
@@ -68,7 +68,7 @@ class ShopUrlHelper
      * @return string
      * @author terry
      */
-    public static function pc(string $route = '', array $params = [], bool $scheme = false)
+    public static function pc(string $route = '', array $params = [], bool $scheme = false): string
     {
         $route = trim($route, '/');
         return self::build('pc/' .  $route, $params, $scheme);
@@ -82,13 +82,12 @@ class ShopUrlHelper
      * @return string
      * @author likexin
      */
-    public static function wap(string $route = '', array $params = [], bool $scheme = false)
+    public static function wap(string $route = '', array $params = [], bool $scheme = false): string
     {
         $route = trim($route, '/');
         return self::build('h5/' .  $route, $params, $scheme);
     }
 
-    
     /**
      * 小程序端
      * @param string $path 小程序页面路径
@@ -96,7 +95,7 @@ class ShopUrlHelper
      * @return string
      * @author likexin
      */
-    public static function wxapp(string $path, array $params = [])
+    public static function wxapp(string $path, array $params = []): string
     {
         if (empty($params)) {
             return $path;

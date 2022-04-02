@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 开店星新零售管理系统
  * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
@@ -15,13 +14,13 @@ namespace shopstar\components\dispatch\driver;
 
 use shopstar\components\dispatch\bases\BaseDispatchDriver;
 use shopstar\components\dispatch\bases\DispatchDriverInterface;
-use shopstar\helpers\HttpHelper;
 use yii\helpers\Json;
 
 /**
  * 闪送驱动类
  * Class SfDriver
  * @package shopstar\components\dispatch\driver
+ * @author 青岛开店星信息技术有限公司
  */
 class ShansongDriver extends BaseDispatchDriver implements DispatchDriverInterface
 {
@@ -42,7 +41,7 @@ class ShansongDriver extends BaseDispatchDriver implements DispatchDriverInterfa
     public function addOrder($data)
     {
         // TODO: Implement addOrder() method.
-        return self::getResult($this->orderCalculate,$data);
+        return self::getResult($this->orderCalculate, $data);
     }
 
     /**
@@ -53,7 +52,7 @@ class ShansongDriver extends BaseDispatchDriver implements DispatchDriverInterfa
     public function orderPlace($data)
     {
 
-        return self::getResult($this->orderPlace,$data);
+        return self::getResult($this->orderPlace, $data);
     }
 
     /**
@@ -64,10 +63,10 @@ class ShansongDriver extends BaseDispatchDriver implements DispatchDriverInterfa
     public function queryStatus($orderId)
     {
         // TODO: Implement queryStatus() method.
-        return self::getResult($this->queryStatus,$orderId);
+        return self::getResult($this->queryStatus, $orderId);
     }
 
-    private function getResult($url,$data)
+    private function getResult($url, $data)
     {
         $params = Json::encode($data);
 
@@ -81,15 +80,15 @@ class ShansongDriver extends BaseDispatchDriver implements DispatchDriverInterfa
             'data' => $params
         ];
 
-        $url = $this->url.$url;
+        $url = $this->url . $url;
 
-        $response = self::httpPost($url,$postData);
+        $response = self::httpPost($url, $postData);
 
         $response = Json::decode($response);
 
-        if ($response['status'] == 200){
+        if ($response['status'] == 200) {
             return $response;
-        }else{
+        } else {
             return error($response['msg']);
         }
 
@@ -107,16 +106,16 @@ class ShansongDriver extends BaseDispatchDriver implements DispatchDriverInterfa
 
         ksort($signData);
 
-        foreach($signData as $k => $v) {
-            if("" != $v && "sign" != $k) {
+        foreach ($signData as $k => $v) {
+            if ("" != $v && "sign" != $k) {
                 $signPars .= $k . $v;
             }
         }
-        $signPars = strtoupper(md5($this->app_secret.$signPars));
+        $signPars = strtoupper(md5($this->app_secret . $signPars));
         return $signPars;
     }
 
-    private function httpPost($url,$data)
+    private function httpPost($url, $data)
     {
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $url);

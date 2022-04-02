@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 开店星新零售管理系统
  * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
@@ -11,22 +10,17 @@
  * @warning 未经许可禁止私自删除版权信息
  */
 
-
-
 namespace shopstar\admin\utility;
 
- 
+use shopstar\bases\KdxAdminUtilityController;
 use shopstar\helpers\RequestHelper;
 use shopstar\helpers\ShopUrlHelper;
-use shopstar\bases\KdxAdminUtilityController;
-use shopstar\constants\diypage\DiypageTypeConstant;
-use shopstar\models\diypage\DiypageModel;
 use shopstar\models\wxapp\WxappUploadLogModel;
 
 /**
  * 页面路径
  * Class PagesLinkController
- * @package modules\utility\manage
+ * @package shopstar\admin\utility
  * @author 青岛开店星信息技术有限公司
  */
 class PageLinkController extends KdxAdminUtilityController
@@ -221,26 +215,14 @@ class PageLinkController extends KdxAdminUtilityController
      * 获取列表
      * @author 青岛开店星信息技术有限公司
      */
-    private function getLinks()
+    private function getLinks(): array
     {
         $links = $this->basicLink;
 
         // 判断插件权限 合并插件链接
         foreach ($this->pluginLinks as $pluginLinkIndex => $pluginLinkItem) {
-
-            //判断插件权限
-            //if (PluginHelper::perm($pluginLinkItem['identify'])) {
-
-                //合并插件权限链接
-                $links['plugins']['links'] = array_merge($links['plugins']['links'], $pluginLinkItem['links']);
-            //}
-        }
-
-        foreach ((array)$diyPage as $diyPageIndex => $diyPageItem) {
-            $links['diy_page']['links'] = array_merge($links['diy_page']['links'], [[
-                'id' => $diyPageItem['id'],
-                'name' => $diyPageItem['name'],
-            ]]);
+            //合并插件权限链接
+            $links['plugins']['links'] = array_merge($links['plugins']['links'], $pluginLinkItem['links']);
         }
 
         return $links;
@@ -251,7 +233,7 @@ class PageLinkController extends KdxAdminUtilityController
      * @return array
      * @author 青岛开店星信息技术有限公司
      */
-    public function actionIndex()
+    public function actionIndex(): array
     {
         return $this->result([
             'list' => $this->getLinks(),
@@ -261,6 +243,9 @@ class PageLinkController extends KdxAdminUtilityController
 
     /**
      * 获取小程序二维码
+     * @return array|int[]|\yii\web\Response
+     * @throws \EasyWeChat\Kernel\Exceptions\InvalidArgumentException
+     * @throws \EasyWeChat\Kernel\Exceptions\RuntimeException
      * @author 青岛开店星信息技术有限公司
      */
     public function actionGetQrcode()
@@ -275,4 +260,5 @@ class PageLinkController extends KdxAdminUtilityController
             'page' => $url
         ]);
     }
+
 }

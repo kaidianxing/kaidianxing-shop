@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 开店星新零售管理系统
  * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
@@ -25,6 +24,7 @@ use shopstar\models\core\CoreSettings;
  * 公用执行模型
  * Class AsyncTaskExecuteService
  * @package shopstar\services\utility
+ * @author 青岛开店星信息技术有限公司
  */
 class AsyncTaskExecuteService extends BaseService
 {
@@ -39,7 +39,7 @@ class AsyncTaskExecuteService extends BaseService
      * @return array
      * @author likexin
      */
-    private static function getSystemSettings()
+    private static function getSystemSettings(): array
     {
         return CoreSettings::get('crontab');
     }
@@ -66,7 +66,7 @@ class AsyncTaskExecuteService extends BaseService
      * @return bool|array
      * @author likexin
      */
-    public static function singleShop($check = false, array $settings = [], bool $isAll = false)
+    public static function singleShop(bool $check = false, array $settings = [], bool $isAll = false)
     {
         // 检测
         if ($check) {

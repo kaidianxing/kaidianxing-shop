@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 开店星新零售管理系统
  * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
@@ -13,8 +12,7 @@
 
 namespace shopstar\admin\poster;
 
-use shopstar\helpers\RequestHelper;
-use shopstar\models\log\LogModel;
+use shopstar\bases\KdxAdminApiController;
 use shopstar\constants\poster\PosterAccessTypeConstant;
 use shopstar\constants\poster\PosterCashTypeConstant;
 use shopstar\constants\poster\PosterLogConstant;
@@ -22,15 +20,18 @@ use shopstar\constants\poster\PosterPushTypeConstant;
 use shopstar\constants\poster\PosterTypeConstant;
 use shopstar\constants\poster\PosterVisitPageConstant;
 use shopstar\exceptions\poster\PosterException;
+use shopstar\helpers\RequestHelper;
+use shopstar\models\log\LogModel;
 use shopstar\models\poster\PosterModel;
-use shopstar\bases\KdxAdminApiController;
 
 /**
+ * 海报管理
  * Class ListController
- * @package apps\poster\manage
+ * @package shopstar\admin\poster
  */
 class ListController extends KdxAdminApiController
 {
+
     /**
      * 海报列表
      * @return array|\yii\web\Response
@@ -105,7 +106,6 @@ class ListController extends KdxAdminApiController
 
         return $this->result(['data' => $list]);
     }
-
 
     /**
      * 禁用海报
@@ -343,6 +343,8 @@ class ListController extends KdxAdminApiController
     /**
      * 保存海报
      * @return array|\yii\web\Response
+     * @throws \yii\base\Exception
+     * @throws \yii\db\Exception
      * @author 青岛开店星信息技术有限公司
      */
     public function actionSave()
@@ -401,6 +403,7 @@ class ListController extends KdxAdminApiController
             $logPrimary['关注者获得现金类型'] = PosterCashTypeConstant::getText($params['award']['sub_cash_type']);
             $logPrimary['关注者获得优惠券'] = $params['award']['sub_coupon'];
         }
+
         LogModel::write(
             $this->userId,
             PosterLogConstant::POSTER_SAVE,
@@ -419,6 +422,10 @@ class ListController extends KdxAdminApiController
         return $this->result('修改成功');
     }
 
+    /**
+     * @param $params
+     * @return array|bool
+     */
     private function commonParamsCheck(&$params)
     {
         $type = RequestHelper::post('type');
@@ -487,6 +494,10 @@ class ListController extends KdxAdminApiController
         return true;
     }
 
+    /**
+     * @param $params
+     * @return array|bool
+     */
     private function attentionPosterParamsCheck(&$params)
     {
         // 检测关键词

@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 开店星新零售管理系统
  * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
@@ -13,19 +12,16 @@
 
 namespace shopstar\admin\order;
 
+use shopstar\bases\KdxAdminApiController;
 use shopstar\components\payment\base\PayOrderTypeConstant;
 use shopstar\components\payment\PayComponent;
 use shopstar\constants\finance\RefundLogConstant;
 use shopstar\constants\log\order\OrderLogConstant;
 use shopstar\constants\member\MemberCreditRecordStatusConstant;
-use shopstar\constants\order\OrderActivityTypeConstant;
 use shopstar\constants\order\OrderPaymentTypeConstant;
-use shopstar\constants\order\OrderStatusConstant;
-use shopstar\constants\order\OrderTypeConstant;
 use shopstar\constants\RefundConstant;
 use shopstar\exceptions\order\RefundException;
 use shopstar\helpers\OrderNoHelper;
- 
 use shopstar\helpers\QueueHelper;
 use shopstar\helpers\RequestHelper;
 use shopstar\jobs\order\AutoTimeoutCancelOrderJob;
@@ -43,16 +39,18 @@ use shopstar\services\commission\CommissionOrderService;
 use shopstar\services\consumeReward\ConsumeRewardLogService;
 use shopstar\services\order\refund\OrderRefundService;
 use shopstar\services\tradeOrder\TradeOrderService;
-use shopstar\bases\KdxAdminApiController;
 
 /**
  * 整单维权处理类
  * Class RefundController
- * @package shop\manage\order
+ * @package shopstar\admin\order
  */
 class RefundController extends KdxAdminApiController
 {
 
+    /**
+     * @var array
+     */
     public $configActions = [
         'allowPermActions' => [
             'query-express',
@@ -298,7 +296,6 @@ class RefundController extends KdxAdminApiController
                 OrderGoodsModel::updateAll(['refund_status' => RefundConstant::REFUND_STATUS_WAIT], ['order_id' => $orderId]);
             }
 
-
             // 发送通知
 
             // 记录日志
@@ -513,10 +510,10 @@ class RefundController extends KdxAdminApiController
                 // 修改失败
                 throw new RefundException(RefundException::MANUAL_ORDER_CHANGE_REFUND_PRICE_FAIL);
             }
-            
+
             // 保存订单原始状态
             $oldOrderStatus = $order->status;
-            
+
             // 维权完成 关闭订单
             $isCloseOrder = OrderRefundService::closeOrder($order, $orderGoods, $refund);
             if (is_error($isCloseOrder)) {
@@ -640,7 +637,7 @@ class RefundController extends KdxAdminApiController
             if ($deductInfo['credit_deduct'] != 0 && bccomp($refund->price, $refundPrice['price'], 2) == 0) {
                 $isRefundCredit = true;
                 // 退回积分
-                $resCredit = MemberModel::updateCredit($order->member_id, $deductInfo['credit_deduct'], 0, 'credit', 1, '订单退款-积分抵扣返还', MemberCreditRecordStatusConstant::CREDIT_STATUS_REFUND,[
+                $resCredit = MemberModel::updateCredit($order->member_id, $deductInfo['credit_deduct'], 0, 'credit', 1, '订单退款-积分抵扣返还', MemberCreditRecordStatusConstant::CREDIT_STATUS_REFUND, [
                     'order_id' => $orderId
                 ]);
                 if (is_error($resCredit)) {
@@ -664,7 +661,7 @@ class RefundController extends KdxAdminApiController
                     $refundPrice = bcsub($refundPrice, $backBalance, 2);
                 }
                 if ($backBalance != 0) {
-                    $resBalance = MemberModel::updateCredit($order->member_id, $backBalance, 0, 'balance', 1, '订单退款-余额抵扣返还', MemberCreditRecordStatusConstant::BALANCE_STATUS_REFUND,[
+                    $resBalance = MemberModel::updateCredit($order->member_id, $backBalance, 0, 'balance', 1, '订单退款-余额抵扣返还', MemberCreditRecordStatusConstant::BALANCE_STATUS_REFUND, [
                         'order_id' => $orderId
                     ]);
                     if (is_error($resBalance)) {
@@ -676,7 +673,7 @@ class RefundController extends KdxAdminApiController
 
             // 保存订单原始状态
             $oldOrderStatus = $order->status;
-            
+
             // 修改 order表 refund_price 字段
             $order->refund_price = bcadd($order->refund_price, $refundPrice, 2);
             $order->is_count = 0;

@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 开店星新零售管理系统
  * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
@@ -11,12 +10,9 @@
  * @warning 未经许可禁止私自删除版权信息
  */
 
-
 namespace shopstar\jobs\order;
 
-use shopstar\constants\order\OrderDispatchExpressConstant;
 use shopstar\helpers\LogHelper;
- 
 use shopstar\models\order\OrderModel;
 use shopstar\services\order\OrderService;
 use yii\base\BaseObject;
@@ -35,16 +31,15 @@ class AutoReceiveOrderJob extends BaseObject implements JobInterface
     /**
      * 订单自动收货
      * @inheritDoc
-     * @throws \yii\db\Exception
+     * @throws \yii\db\Exception|\yii\base\Exception
      */
     public function execute($queue)
     {
-
         echo "<<<<<<<<<<<<<<<<<<<<自动收货开始:" . Json::encode([$this->orderId]) . ">>>>>>>>>>>>>>>>>>>>>\n";
 
         $order = OrderModel::getOrderAndOrderGoods($this->orderId);
 
-        $result = OrderService::complete($order,1,[
+        $result = OrderService::complete($order, 1, [
             'auto_receive' => true
         ]);
 

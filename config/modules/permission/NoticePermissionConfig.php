@@ -14,11 +14,11 @@ namespace shopstar\config\modules\permission;
 
 use shopstar\components\permission\BasePermissionConfig;
 
-
 /**
  * 消息通知
  * Class PermissionConfig
- * @package apps\notice\config
+ * @package shopstar\config\modules\permission
+ * @author 青岛开店星信息技术有限公司
  */
 class NoticePermissionConfig extends BasePermissionConfig
 {

@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 开店星新零售管理系统
  * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
@@ -19,6 +18,9 @@ use yii\base\BaseObject;
 use yii\queue\JobInterface;
 use yii\queue\Queue;
 
+/**
+ * @author 青岛开店星信息技术有限公司
+ */
 class AutoStopActivityJob extends BaseObject implements JobInterface
 {
 
@@ -26,11 +28,11 @@ class AutoStopActivityJob extends BaseObject implements JobInterface
      * @var int 活动id
      */
     public $id;
-    
+
     /**
      * 自动停止活动
      * @param Queue $queue
-     * @return mixed|void
+     * @return void
      * @author 青岛开店星信息技术有限公司
      */
     public function execute($queue)
@@ -38,22 +40,22 @@ class AutoStopActivityJob extends BaseObject implements JobInterface
         // 查找活动
         $activity = ShopMarketingModel::findOne(['id' => $this->id]);
         if (empty($activity)) {
-            echo "活动自动停止失败,id:".$this->id.",原因:活动未找到\n";
+            echo "活动自动停止失败,id:" . $this->id . ",原因:活动未找到\n";
             die;
         }
         // 停止时间不为空
         if ($activity->stop_time != 0) {
-            echo "活动自动停止失败,id:".$this->id.",原因:活动已停止\n";
+            echo "活动自动停止失败,id:" . $this->id . ",原因:活动已停止\n";
             die;
         }
         if ($activity->end_time > DateTimeHelper::now()) {
-            echo "活动自动停止失败,id:".$this->id.",原因:未到停止时间\n";
+            echo "活动自动停止失败,id:" . $this->id . ",原因:未到停止时间\n";
             die;
         }
         $activity->stop_time = DateTimeHelper::now();
         $activity->status = -1;
         if (!$activity->save()) {
-            echo "活动自动停止失败,id:".$this->id.",原因:".$activity->getErrorMessage()."\n";
+            echo "活动自动停止失败,id:" . $this->id . ",原因:" . $activity->getErrorMessage() . "\n";
             die;
         }
     }

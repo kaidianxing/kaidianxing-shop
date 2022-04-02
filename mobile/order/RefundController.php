@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 开店星新零售管理系统
  * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
@@ -15,16 +14,13 @@ namespace shopstar\mobile\order;
 
 use shopstar\bases\controller\BaseMobileApiController;
 use shopstar\components\notice\NoticeComponent;
+use shopstar\constants\components\notice\NoticeTypeConstant;
 use shopstar\constants\order\OrderConstant;
-use shopstar\constants\order\OrderSceneConstant;
 use shopstar\constants\order\OrderStatusConstant;
-use shopstar\constants\order\OrderTypeConstant;
 use shopstar\constants\RefundConstant;
-
 use shopstar\exceptions\order\RefundException;
 use shopstar\helpers\DateTimeHelper;
 use shopstar\helpers\OrderNoHelper;
- 
 use shopstar\helpers\QueueHelper;
 use shopstar\helpers\RequestHelper;
 use shopstar\models\core\CoreExpressModel;
@@ -32,7 +28,6 @@ use shopstar\models\order\OrderGoodsModel;
 use shopstar\models\order\OrderModel;
 use shopstar\models\order\refund\OrderRefundModel;
 use shopstar\models\shop\ShopSettings;
-use shopstar\constants\components\notice\NoticeTypeConstant;
 use shopstar\services\order\refund\OrderRefundService;
 use yii\helpers\Json;
 use yii\web\Response;
@@ -41,6 +36,7 @@ use yii\web\Response;
  * 整单维权类
  * Class RefundController
  * @package app\controllers\wap\order
+ * @author 青岛开店星信息技术有限公司
  */
 class RefundController extends BaseMobileApiController
 {
@@ -52,8 +48,8 @@ class RefundController extends BaseMobileApiController
     {
         $select = ['refund.id', 'refund.status', 'refund.price', 'refund.created_at', 'refund.refund_type', 'refund.order_goods_id', 'refund.order_id', 'refund.credit', 'order.activity_type', 'order.order_type'];
         $leftJoin = [];
-    
-        $leftJoin[] = [OrderModel::tableName().' order', 'order.id=refund.order_id'];
+
+        $leftJoin[] = [OrderModel::tableName() . ' order', 'order.id=refund.order_id'];
 
         $params = [
             'select' => $select,
@@ -85,7 +81,7 @@ class RefundController extends BaseMobileApiController
                 }
             }
         ]);
-        
+
         foreach ($list['list'] as $key => $value) {
             foreach ($value['order_goods'] as $index => $item) {
                 $list['list'][$key]['order_goods'][$index]['ext_field'] = Json::decode($item['ext_field']);
@@ -103,7 +99,7 @@ class RefundController extends BaseMobileApiController
      * @throws RefundException
      * @author 青岛开店星信息技术有限公司
      */
-    public function actionIndex()
+    public function actionIndex(): Response
     {
         // 订单id
         $orderId = RequestHelper::getInt('order_id');
@@ -238,7 +234,7 @@ class RefundController extends BaseMobileApiController
      * @throws RefundException
      * @author 青岛开店星信息技术有限公司
      */
-    public function actionSubmit()
+    public function actionSubmit(): Response
     {
         // 获取提交数据
         $post = RequestHelper::post();
@@ -272,7 +268,7 @@ class RefundController extends BaseMobileApiController
             }
         }
         // 检查订单是否可维权
-        $check = OrderRefundService::checkRefund( $order, $orderGoods);
+        $check = OrderRefundService::checkRefund($order, $orderGoods);
         // 不可维权
         if (is_error($check)) {
             throw new RefundException(RefundException::REFUND_SUBMIT_CHECK_ERROR, $check['message']);
@@ -390,7 +386,7 @@ class RefundController extends BaseMobileApiController
                 'apply_time' => DateTimeHelper::now(),
             ];
 
-            $notice = NoticeComponent::getInstance(NoticeTypeConstant::SELLER_ORDER_REFUND, $messageData,'');
+            $notice = NoticeComponent::getInstance(NoticeTypeConstant::SELLER_ORDER_REFUND, $messageData, '');
             if (!is_error($notice)) {
                 $notice->sendMessage();
             }
@@ -471,7 +467,7 @@ class RefundController extends BaseMobileApiController
         }
         //判断是否已经超时维权时间 是则自动取消订单
         $refund = OrderRefundModel::getRefundByOrder($post['order_id']);
-        if(!isset($post['is_edit'])){
+        if (!isset($post['is_edit'])) {
             if ($refund->queue_id != '0') {
                 if (DateTimeHelper::now() > $refund->timeout_cancel) {
                     throw new RefundException(RefundException::REFUND_TIMEOUT_CANCEL_ALREADY);
@@ -503,11 +499,11 @@ class RefundController extends BaseMobileApiController
         $transaction = \Yii::$app->getDb()->beginTransaction();
         try {
             // 更新维权表状态
-            $res = OrderRefundService::cancelRefund( $orderId, $orderGoodsId);
+            $res = OrderRefundService::cancelRefund($orderId, $orderGoodsId);
             if (is_error($res)) {
                 throw new RefundException(RefundException::REFUND_ORDER_CANCEL_FAIL, $res['message']);
             }
-            
+
             $transaction->commit();
         } catch (\Throwable $exception) {
             $transaction->rollBack();

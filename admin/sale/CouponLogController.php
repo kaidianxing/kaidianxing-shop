@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 开店星新零售管理系统
  * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
@@ -13,7 +12,7 @@
 
 namespace shopstar\admin\sale;
 
-use shopstar\constants\coupon\CouponConstant;
+use shopstar\bases\KdxAdminApiController;
 use shopstar\exceptions\member\MemberException;
 use shopstar\exceptions\sale\CouponException;
 use shopstar\helpers\DateTimeHelper;
@@ -21,19 +20,28 @@ use shopstar\helpers\RequestHelper;
 use shopstar\helpers\ValueHelper;
 use shopstar\models\member\MemberModel;
 use shopstar\models\sale\CouponMemberModel;
-use shopstar\bases\KdxAdminApiController;
 
+/**
+ * 优惠券记录
+ * Class CouponLogController
+ * @package shopstar\admin\sale
+ */
 class CouponLogController extends KdxAdminApiController
 {
 
+    /**
+     * @var array
+     */
     public $configActions = [
         'allowPermActions' => [
             'get-member-coupon'
         ]
     ];
+
     /**
      * 获取用户可用优惠券
      * @throws CouponException
+     * @throws MemberException
      * @author 青岛开店星信息技术有限公司
      */
     public function actionGetMemberCoupon()
@@ -48,15 +56,14 @@ class CouponLogController extends KdxAdminApiController
         }
 
         // 优惠券状态 1 可使用 2 已使用 3 已过期
-        $type = RequestHelper::get('type',1);
+        $type = RequestHelper::get('type', 1);
 
         $where = [
             ['member_id' => $memberId],
         ];
 
 
-        switch ($type)
-        {
+        switch ($type) {
             case 1:
                 $where[] = ['order_id' => 0];
                 $where[] = ['status' => 0];
@@ -65,8 +72,8 @@ class CouponLogController extends KdxAdminApiController
             case 2:
                 $where[] = [
                     'or',
-                    ['<>','status',0],
-                    ['<>','order_id',0]
+                    ['<>', 'status', 0],
+                    ['<>', 'order_id', 0]
                 ];
                 break;
             case 3:
@@ -95,4 +102,5 @@ class CouponLogController extends KdxAdminApiController
 
         return $this->result($list);
     }
+
 }

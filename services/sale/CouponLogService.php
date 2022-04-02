@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 开店星新零售管理系统
  * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
@@ -11,23 +10,23 @@
  * @warning 未经许可禁止私自删除版权信息
  */
 
-
 namespace shopstar\services\sale;
 
-use apps\article\constants\ArticleSellDataConstant;
 use shopstar\bases\service\BaseService;
-use shopstar\models\member\MemberModel;
 use shopstar\models\sale\CouponLogModel;
 use shopstar\models\sale\CouponModel;
 use shopstar\structs\order\OrderPaySuccessStruct;
 
+/**
+ * @author 青岛开店星信息技术有限公司
+ */
 class CouponLogService extends BaseService
 {
 
     /**
      * 支付成功
      * @param OrderPaySuccessStruct $orderPaySuccessStruct
-     * @return array|bool|MemberModel
+     * @return array|bool
      * @author 青岛开店星信息技术有限公司
      */
     public static function paySuccess(OrderPaySuccessStruct $orderPaySuccessStruct)

@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 开店星新零售管理系统
  * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
@@ -13,7 +12,6 @@
 
 namespace shopstar\admin\sysset\mall;
 
-
 use shopstar\bases\KdxAdminApiController;
 use shopstar\exceptions\sysset\MallException;
 use shopstar\helpers\RequestHelper;
@@ -21,8 +19,9 @@ use shopstar\models\shop\ShopSettings;
 
 /**
  * 联系我们
- * Class linkController
- * @package shop\manage\sysset\mall
+ * Class ContactController
+ * @package shopstar\admin\sysset\mall
+ * @author 青岛开店星信息技术有限公司
  */
 class ContactController extends KdxAdminApiController
 {
@@ -62,18 +61,8 @@ class ContactController extends KdxAdminApiController
             throw new MallException(MallException::LINK_TEL_INVALID);
         } else {
             $contact['tel1'] = $params['tel1'];
-
-            /* @change likexin 产品又加了400-xxx-xxxx格式，格式太多固去掉格式验证
-             * if (!ValueHelper::isTel($contact['tel1'])) {
-             * throw new MallException(MallException::LINK_TEL_INVALID, '联系电话格式错误');
-             * }*/
         }
         $contact['tel2'] = !empty($params['tel2']) ? $params['tel2'] : '';
-
-        /* @change likexin 产品又加了400-xxx-xxxx格式，格式太多固去掉格式验证
-         * if (!empty($contact['tel2']) && !ValueHelper::isTel($contact['tel2'])) {
-         * throw new MallException(MallException::LINK_TEL_INVALID, '联系电话格式错误');
-         * }*/
 
         if (empty($params['amap_key'])) {
             throw new MallException(MallException::AMAP_KEY_INVALID);
@@ -81,9 +70,9 @@ class ContactController extends KdxAdminApiController
             $contact['amap_key'] = $params['amap_key'];
         }
 
-        if (empty($params['web_key']) && $this->shopType) {
+        if (empty($params['web_key'])) {
             throw new MallException(MallException::WEB_KEY_INVALID);
-        } else if ($params['web_key']) {
+        } else {
             $contact['web_key'] = $params['web_key'];
         }
 
@@ -117,4 +106,5 @@ class ContactController extends KdxAdminApiController
 
         return $this->success();
     }
+
 }

@@ -22,7 +22,7 @@ use shopstar\constants\broadcast\BroadcastRoomStatusConstant;
 use shopstar\models\log\LogModel;
 
 /**
- * This is the model class for table "{{%app_broadcast_room}}".
+ * This is the model class for table "{{%broadcast_room}}".
  *
  * @property int $id
  * @property int $broadcast_room_id 直播间id
@@ -52,7 +52,7 @@ class BroadcastRoomModel extends BaseActiveRecord
      */
     public static function tableName()
     {
-        return '{{%app_broadcast_room}}';
+        return '{{%broadcast_room}}';
     }
 
     /**

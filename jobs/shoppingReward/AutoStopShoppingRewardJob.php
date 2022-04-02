@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 开店星新零售管理系统
  * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
@@ -14,11 +13,14 @@
 namespace shopstar\jobs\shoppingReward;
 
 use shopstar\helpers\DateTimeHelper;
-use apps\shoppingReward\models\ShoppingRewardActivityModel;
+use shopstar\models\shoppingReward\ShoppingRewardActivityModel;
 use yii\base\BaseObject;
 use yii\queue\JobInterface;
 use yii\queue\Queue;
 
+/**
+ * @author 青岛开店星信息技术有限公司
+ */
 class AutoStopShoppingRewardJob extends BaseObject implements JobInterface
 {
     /**
@@ -29,22 +31,22 @@ class AutoStopShoppingRewardJob extends BaseObject implements JobInterface
 
     /**
      * @param Queue $queue
-     * @return mixed|void
+     * @return void
      * @author 青岛开店星信息技术有限公司
      */
     public function execute($queue)
     {
         $detail = ShoppingRewardActivityModel::findOne(['id' => $this->id]);
         if (empty($detail)) {
-            echo '购物奖励奖励活动自动停止失败,id:'.$this->id.",原因:活动未找到\n";
+            echo '购物奖励奖励活动自动停止失败,id:' . $this->id . ",原因:活动未找到\n";
             die;
         }
         $detail->stop_time = DateTimeHelper::now();
         $detail->status = -1;
         if (!$detail->save()) {
-            echo '购物奖励活动自动停止失败,id:'.$this->id.'原因:'.$detail->getErrorMessage()."\n";
+            echo '购物奖励活动自动停止失败,id:' . $this->id . '原因:' . $detail->getErrorMessage() . "\n";
         }
 
-        echo '自动停止购物奖励活动成功,id:'.$this->id."\n";
+        echo '自动停止购物奖励活动成功,id:' . $this->id . "\n";
     }
 }

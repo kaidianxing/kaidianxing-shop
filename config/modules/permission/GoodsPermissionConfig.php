@@ -14,11 +14,11 @@ namespace shopstar\config\modules\permission;
 
 use shopstar\components\permission\BasePermissionConfig;
 
-
 /**
  * 商品权限
  * Class GoodsPermissionConfig
- * @package shop\config\permission
+ * @package shopstar\config\modules\permission
+ * @author 青岛开店星信息技术有限公司
  */
 class GoodsPermissionConfig extends BasePermissionConfig
 {
@@ -26,12 +26,12 @@ class GoodsPermissionConfig extends BasePermissionConfig
      * @var string 权限模块标识
      */
     protected $identity = 'goods';
-    
+
     /**
      * @var string 路由前缀
      */
     protected $prefix = 'manage/';
-    
+
     /**
      * @var string 分组名称
      */
@@ -52,7 +52,7 @@ class GoodsPermissionConfig extends BasePermissionConfig
                 ],
                 'manage' => [
                     'title' => '管理',
-                    'actions' => ['add', 'edit', 'property', 'delete', 'forever-delete','get-virtual-account']
+                    'actions' => ['add', 'edit', 'property', 'delete', 'forever-delete', 'get-virtual-account']
                 ],
             ],
         ],
@@ -120,5 +120,5 @@ class GoodsPermissionConfig extends BasePermissionConfig
         ],
 
     ];
-    
+
 }

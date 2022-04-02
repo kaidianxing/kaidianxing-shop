@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 开店星新零售管理系统
  * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
@@ -13,29 +12,38 @@
 
 namespace shopstar\admin\newGifts;
 
+use shopstar\bases\KdxAdminApiController;
+use shopstar\constants\newGifts\ActivityConstant;
+use shopstar\constants\newGifts\NewGiftsLogConstant;
+use shopstar\exceptions\newGifts\NewGiftsException;
 use shopstar\helpers\ArrayHelper;
 use shopstar\helpers\DateTimeHelper;
 use shopstar\helpers\QueueHelper;
 use shopstar\helpers\RequestHelper;
-use shopstar\models\log\LogModel;
-use shopstar\models\sale\CouponModel;
-use shopstar\constants\newGifts\ActivityConstant;
-use shopstar\constants\newGifts\NewGiftsLogConstant;
-use shopstar\exceptions\newGifts\NewGiftsException;
 use shopstar\jobs\newGifts\AutoStopActivityJob;
+use shopstar\models\log\LogModel;
 use shopstar\models\newGifts\NewGiftsActivityModel;
-use shopstar\bases\KdxAdminApiController;
-use yii\db\StaleObjectException;
+use shopstar\models\sale\CouponModel;
 use yii\helpers\StringHelper;
 
+/**
+ * 礼品卡活动管理
+ * Class IndexController
+ * @package shopstar\admin\newGifts
+ */
 class IndexController extends KdxAdminApiController
 {
+
+    /**
+     * @var array
+     */
     public $configActions = [
         'postActions' => [
             'add',
             'edit',
         ]
     ];
+
     /**
      * 活动列表
      * @author 青岛开店星信息技术有限公司
@@ -56,7 +64,7 @@ class IndexController extends KdxAdminApiController
                     ['<', 'start_time', $endTime],
                     ['>', 'end_time', $startTime],
                     ['>', 'end_time', $endTime],
-                    
+
                 ],
                 [
                     'and',
@@ -81,7 +89,7 @@ class IndexController extends KdxAdminApiController
                 ]
             ];
         }
-        
+
         // 活动状态
         switch ($status) {
             case '1': // 活动中
@@ -108,7 +116,7 @@ class IndexController extends KdxAdminApiController
             default: // 全部
                 break;
         }
-        
+
         $params = [
             'searchs' => [
                 ['title', 'like', 'keyword'],
@@ -146,10 +154,10 @@ class IndexController extends KdxAdminApiController
                 }
             }
         ]);
-        
+
         return $this->result($list);
     }
-    
+
     /**
      * 活动详情
      * @throws NewGiftsException
@@ -181,10 +189,10 @@ class IndexController extends KdxAdminApiController
             $couponIds = explode(',', $detail['coupon_ids']);
             $detail['coupon_info'] = CouponModel::getCouponInfo($couponIds);
         }
-        
+
         return $this->result(['data' => $detail]);
     }
-    
+
     /**
      * 新增活动
      * @throws NewGiftsException
@@ -268,7 +276,7 @@ class IndexController extends KdxAdminApiController
                 $jobId = QueueHelper::push(new AutoStopActivityJob([
                     'id' => $data->id,
                 ]), $delay);
-                
+
                 // 保存任务id
                 $data->job_id = $jobId;
                 $data->save();
@@ -286,7 +294,7 @@ class IndexController extends KdxAdminApiController
                 $clientTypeDefault = ['10' => 'H5', '20' => '微信公众号', '21' => '微信小程序', '30' => '头条/抖音小程序'];
                 $clientType = array_intersect_key($clientTypeDefault, $clientTypeArray);
                 $clientTypeText = implode('、', $clientType);
-                
+
                 $logPrimary = [
                     'id' => $data->id,
                     '活动名称' => $data->title,
@@ -314,7 +322,7 @@ class IndexController extends KdxAdminApiController
                         ]);
                     }
                 }
-                
+
                 LogModel::write(
                     $this->userId,
                     NewGiftsLogConstant::NEW_GIFTS_ADD,
@@ -336,7 +344,7 @@ class IndexController extends KdxAdminApiController
         }
         return $this->success();
     }
-    
+
     /**
      * 修改任务
      * @return array|int[]|\yii\web\Response
@@ -354,7 +362,7 @@ class IndexController extends KdxAdminApiController
         if (empty($detail)) {
             throw new NewGiftsException(NewGiftsException::EDIT_ACTIVITY_NOT_EXISTS);
         }
-        
+
         // 已停止的任务不能修改
         if ($detail->end_time < DateTimeHelper::now() || $detail->status == -2) {
             throw new NewGiftsException(NewGiftsException::EDIT_ACTIVITY_IS_STOP);
@@ -372,7 +380,7 @@ class IndexController extends KdxAdminApiController
         if ($isExists) {
             throw new NewGiftsException(NewGiftsException::EDIT_ACTIVITY_TIME_IS_EXISTS);
         }
-        
+
         // 可以修改
         $detail->end_time = $endTime;
         // 添加新任务
@@ -389,7 +397,7 @@ class IndexController extends KdxAdminApiController
         }
         // 删除旧任务
         QueueHelper::remove($oldJobId);
-        
+
         // 记录日志
         $gifts = array_flip(explode(',', $detail->gifts));
         // 交集取文字
@@ -404,7 +412,7 @@ class IndexController extends KdxAdminApiController
         $clientTypeDefault = ['10' => 'H5', '20' => '微信公众号', '21' => '微信小程序', '30' => '头条/抖音小程序'];
         $clientType = array_intersect_key($clientTypeDefault, $clientTypeArray);
         $clientTypeText = implode('、', $clientType);
-    
+
         $logPrimary = [
             'id' => $detail->id,
             '活动名称' => $detail->title,
@@ -446,10 +454,10 @@ class IndexController extends KdxAdminApiController
                 ]
             ]
         );
-        
+
         return $this->success();
     }
-    
+
     /**
      * 手动停止活动
      * @throws NewGiftsException
@@ -468,13 +476,13 @@ class IndexController extends KdxAdminApiController
         }
         $detail->status = -2;
         $detail->stop_time = DateTimeHelper::now();
-        
+
         if (!$detail->save()) {
             throw new NewGiftsException(NewGiftsException::MANUAL_STOP_ACTIVITY_FAIL);
         }
         // 删除任务
         QueueHelper::remove($detail->job_id);
-    
+
         // 记录日志
         LogModel::write(
             $this->userId,
@@ -493,10 +501,10 @@ class IndexController extends KdxAdminApiController
                 ]
             ]
         );
-        
+
         return $this->success();
     }
-    
+
     /**
      * 删除活动
      * @throws NewGiftsException
@@ -518,7 +526,7 @@ class IndexController extends KdxAdminApiController
             $detail->save();
             // 删除活动
             QueueHelper::remove($detail->job_id);
-    
+
             // 记录日志
             $gifts = array_flip(explode(',', $detail->gifts));
             // 交集取文字
@@ -575,8 +583,8 @@ class IndexController extends KdxAdminApiController
         } catch (\Throwable $exception) {
             throw new NewGiftsException(NewGiftsException::DELETE_ACTIVITY_FAIL);
         }
-        
+
         return $this->success();
     }
-    
+
 }

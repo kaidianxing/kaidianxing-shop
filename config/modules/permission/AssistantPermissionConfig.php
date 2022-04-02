@@ -9,10 +9,10 @@
  * @warning Unauthorized deletion of copyright information is prohibited.
  * @warning 未经许可禁止私自删除版权信息
  */
+
 namespace shopstar\config\modules\permission;
 
 use shopstar\components\permission\BasePermissionConfig;
-
 
 /**
  * 权限配置
@@ -53,7 +53,7 @@ class AssistantPermissionConfig extends BasePermissionConfig
             'perm' => [
                 'manage' => [
                     'title' => '管理',
-                    'actions' => ['index','get-statistics','get-qrcode']
+                    'actions' => ['index', 'get-statistics', 'get-qrcode']
                 ]
             ]
         ],

@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 开店星新零售管理系统
  * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
@@ -19,7 +18,6 @@ use shopstar\components\dispatch\DispatchComponent;
 use shopstar\components\dispatch\driver\DadaDriver;
 use shopstar\constants\order\OrderPackageCityDistributionTypeConstant;
 use shopstar\constants\order\OrderStatusConstant;
-
 use shopstar\exceptions\sysset\IntracityException;
 use shopstar\helpers\StringHelper;
 use shopstar\models\core\CoreSettings;
@@ -29,6 +27,9 @@ use shopstar\models\order\OrderModel;
 use shopstar\models\shop\ShopSettings;
 use yii\helpers\Json;
 
+/**
+ * @author 青岛开店星信息技术有限公司
+ */
 class ShopSettingIntracityLogic
 {
     /**
@@ -58,7 +59,7 @@ class ShopSettingIntracityLogic
      * @throws IntracityException
      * @author 青岛开店星信息技术有限公司
      */
-    public static function set(array $args)
+    public static function set(array $args): bool
     {
         // 初始化参数
         $args = self::init($args);
@@ -191,12 +192,11 @@ class ShopSettingIntracityLogic
     /**
      * 同城配送配送状态
      * @param $args
-     * @param $shopType
      * @return bool
      * @throws IntracityException
      * @author 青岛开店星信息技术有限公司
      */
-    public static function enable($args, $shopType)
+    public static function enable($args): bool
     {
         // 开启前判断是否设置参数,平台不需要校验
         if ($args['enable'] == 1) {
@@ -216,10 +216,10 @@ class ShopSettingIntracityLogic
             }
         }
 
-        $shopType == ShopSettings::set('dispatch.intracity.enable', $args['enable']);
+        ShopSettings::set('dispatch.intracity.enable', $args['enable']);
 
         // 配送方式排序处理
-        DispatchModel::updateSort($shopType, $args['enable'], 30);
+        DispatchModel::updateSort($args['enable'], 30);
 
         return true;
     }
@@ -229,7 +229,7 @@ class ShopSettingIntracityLogic
      * @return bool
      * @author 青岛开店星信息技术有限公司
      */
-    public static function checkShopAddress()
+    public static function checkShopAddress(): bool
     {
         $shopAddress = ShopSettings::get('contact.address');
         array_map(function ($value) {
@@ -266,10 +266,10 @@ class ShopSettingIntracityLogic
 
     /**
      * 获取配送区域
-     * @return mixed
+     * @return array
      * @author 青岛开店星信息技术有限公司
      */
-    public static function getDispatchArea()
+    public static function getDispatchArea(): array
     {
         $intracity = ShopSettings::get('dispatch.intracity');
 
@@ -294,9 +294,10 @@ class ShopSettingIntracityLogic
      * 获取达达配送城市code
      * @param $config
      * @return bool
+     * @throws \yii\base\InvalidConfigException
      * @author 青岛开店星信息技术有限公司
      */
-    public static function getDadaCity($config)
+    public static function getDadaCity($config): bool
     {
         /** @var DadaDriver $driver */
         $driver = DispatchComponent::getInstance(DispatchDriverConstant::DRIVE_DADA, $config);
@@ -313,7 +314,7 @@ class ShopSettingIntracityLogic
      * @return array
      * @author 青岛开店星信息技术有限公司
      */
-    public static function queryOrderStatus($dispatchType, $orderId)
+    public static function queryOrderStatus($dispatchType, $orderId): array
     {
         // 订单追踪
         $orderTrace = [];
@@ -607,9 +608,10 @@ class ShopSettingIntracityLogic
      * 获取配送组合模式
      * @param $deliveryArea
      * @param $divisionWay
+     * @return int
      * @author 青岛开店星信息技术有限公司
      */
-    private static function getDeliveryModel($deliveryArea, $divisionWay)
+    private static function getDeliveryModel($deliveryArea, $divisionWay): int
     {
         // 配送区域 0: 按不同区域 1: 按不同距离 2: 按行政区域
         // 划分方式 0: 半径 1: 自定义

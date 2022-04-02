@@ -19,7 +19,7 @@ use yii\helpers\Json;
 
 /**
  * 应用-店铺装修-底部导航实体类
- * This is the model class for table "{{%app_diypage_menu}}".
+ * This is the model class for table "{{%diypage_menu}}".
  *
  * @property int $id
  * @property int $type 类型 0:自定义 10:商城 20:分销
@@ -38,7 +38,7 @@ class DiypageMenuModel extends BaseActiveRecord
      */
     public static function tableName()
     {
-        return '{{%app_diypage_menu}}';
+        return '{{%diypage_menu}}';
     }
 
     /**

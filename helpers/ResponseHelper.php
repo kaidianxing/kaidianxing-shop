@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 开店星新零售管理系统
  * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
@@ -11,13 +10,13 @@
  * @warning 未经许可禁止私自删除版权信息
  */
 
-
 namespace shopstar\helpers;
 
 /**
  * 响应助手类
  * Class Response
  * @package shopstar\helpers
+ * @author 青岛开店星信息技术有限公司
  */
 class ResponseHelper
 {
@@ -30,7 +29,7 @@ class ResponseHelper
      * @return array
      * @author likexin
      */
-    public static function error($message, $error = -1, bool $exit = false)
+    public static function error($message, int $error = -1, bool $exit = false): array
     {
         $result = [
             'error' => $error
@@ -79,7 +78,7 @@ class ResponseHelper
      * @param int $options
      * @author likexin
      */
-    public static function result($error = 0, $return = null, $options = JSON_UNESCAPED_UNICODE)
+    public static function result($error = 0, $return = null, int $options = JSON_UNESCAPED_UNICODE)
     {
         header('Content-type: application/json; charset=utf-8');
 

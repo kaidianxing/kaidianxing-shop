@@ -11,15 +11,15 @@
  * @warning 未经许可禁止私自删除版权信息
  */
 
-
-
 namespace shopstar\mobile\utility\attachment;
-
 
 use shopstar\bases\controller\BaseApiController;
 use shopstar\helpers\HttpHelper;
 use shopstar\helpers\RequestHelper;
 
+/**
+ * @author 青岛开店星信息技术有限公司
+ */
 class IndexController extends BaseApiController
 {
     /**

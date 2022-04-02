@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 开店星新零售管理系统
  * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
@@ -13,7 +12,7 @@
 
 namespace shopstar\components\dispatch\driver;
 
-
+use Matrix\Exception;
 use shopstar\components\dispatch\bases\BaseDispatchDriver;
 use shopstar\components\dispatch\bases\DispatchDriverInterface;
 use shopstar\constants\CacheTypeConstant;
@@ -21,7 +20,6 @@ use shopstar\helpers\HttpHelper;
 use shopstar\helpers\ShopUrlHelper;
 use shopstar\helpers\StringHelper;
 use shopstar\traits\CacheTrait;
-use Matrix\Exception;
 use yii\helpers\Json;
 
 
@@ -29,6 +27,7 @@ use yii\helpers\Json;
  * 码科跑腿驱动类
  * Class MakeDriver
  * @package shopstar\components\dispatch\driver
+ * @author 青岛开店星信息技术有限公司
  */
 class MakeDriver extends BaseDispatchDriver implements DispatchDriverInterface
 {
@@ -94,7 +93,7 @@ class MakeDriver extends BaseDispatchDriver implements DispatchDriverInterface
     public function orderPlace($data)
     {
         $data['token'] = $this->access_token;
-        $data['notify_url'] = ShopUrlHelper::build('dispatch/notify.php',[],true);
+        $data['notify_url'] = ShopUrlHelper::build('dispatch/notify.php', [], true);
 
         return $this->send($this->API_CREATE_ORDER, $data);
     }
@@ -175,7 +174,7 @@ class MakeDriver extends BaseDispatchDriver implements DispatchDriverInterface
                 }
                 $queryString = substr($queryString, 1);
 
-                $response = HttpHelper::get($urlFormat.$queryString);
+                $response = HttpHelper::get($urlFormat . $queryString);
 
             } else {
                 $response = HttpHelper::post($urlFormat, $data);
@@ -184,7 +183,7 @@ class MakeDriver extends BaseDispatchDriver implements DispatchDriverInterface
 
         } catch (\Throwable $e) {
 
-            return error('码科配送参数错误:'.$e->getMessage());
+            return error('码科配送参数错误:' . $e->getMessage());
         }
 
         $response = Json::decode($response);

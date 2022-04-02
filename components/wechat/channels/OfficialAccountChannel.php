@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 开店星新零售管理系统
  * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
@@ -13,15 +12,16 @@
 
 namespace shopstar\components\wechat\channels;
 
+use EasyWeChat\Factory;
 use shopstar\components\wechat\bases\BaseWechatChannel;
 use shopstar\components\wechat\bases\WechatChannelInterface;
 use shopstar\models\shop\ShopSettings;
-use EasyWeChat\Factory;
 
 /**
  * 微信组件公众号渠道
  * Class OfficialAccountChannel
  * @package shopstar\components\wechat\channels
+ * @author 青岛开店星信息技术有限公司
  */
 class OfficialAccountChannel extends BaseWechatChannel implements WechatChannelInterface
 {
@@ -81,7 +81,7 @@ class OfficialAccountChannel extends BaseWechatChannel implements WechatChannelI
     {
         $account = ShopSettings::get('channel_setting.wechat');
         $this->token = $account['bases']['token'];
-        if($account['bases']['encryption_type'] == 3){
+        if ($account['bases']['encryption_type'] == 3) {
             $this->aes_key = $account['bases']['encoding_aes_key'];
         }
 

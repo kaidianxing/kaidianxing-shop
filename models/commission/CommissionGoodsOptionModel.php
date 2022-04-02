@@ -29,7 +29,7 @@ class CommissionGoodsOptionModel extends BaseActiveRecord
      */
     public static function tableName()
     {
-        return '{{%app_commission_goods_option}}';
+        return '{{%commission_goods_option}}';
     }
 
     /**

@@ -25,7 +25,7 @@ use shopstar\models\wechat\WechatRuleKeywordModel;
 use shopstar\models\wechat\WechatRuleModel;
 
 /**
- * This is the model class for table "{{%app_poster_profile}}".
+ * This is the model class for table "{{%poster_profile}}".
  *
  * @property int $id auto increment id
  * @property int $type 海报类型：0自定义页面，10商品海报，20分销海报，30关注海报
@@ -54,7 +54,7 @@ class PosterModel extends BaseActiveRecord
      */
     public static function tableName()
     {
-        return '{{%app_poster}}';
+        return '{{%poster}}';
     }
 
     /**

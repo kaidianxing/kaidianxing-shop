@@ -52,7 +52,7 @@ class CommissionApplyModel extends BaseActiveRecord
      */
     public static function tableName()
     {
-        return '{{%app_commission_apply}}';
+        return '{{%commission_apply}}';
     }
 
     /**

@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 开店星新零售管理系统
  * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
@@ -13,25 +12,26 @@
 
 namespace shopstar\admin\commission\settings;
 
-use shopstar\helpers\DateTimeHelper;
- 
-use shopstar\helpers\RequestHelper;
-use shopstar\models\goods\GoodsModel;
-use shopstar\models\log\LogModel;
+use shopstar\bases\KdxAdminApiController;
 use shopstar\constants\commission\CommissionLogConstant;
 use shopstar\constants\commission\CommissionSettingsConstant;
 use shopstar\exceptions\commission\CommissionSetException;
+use shopstar\helpers\RequestHelper;
 use shopstar\models\commission\CommissionSettings;
-use shopstar\bases\KdxAdminApiController;
+use shopstar\models\goods\GoodsModel;
+use shopstar\models\log\LogModel;
 
 /**
  * 分销设置
  * Class CommissionController
- * @package apps\commission\manage\settings
+ * @package shopstar\admin\commission\settings
  */
 class CommissionController extends KdxAdminApiController
 {
 
+    /**
+     * @var array
+     */
     public $configActions = [
         'postActions' => [
             'set',
@@ -78,10 +78,11 @@ class CommissionController extends KdxAdminApiController
      */
     public function actionSet()
     {
-        $commission_level = RequestHelper::postInt('commission_level',2);
-        if (!in_array($commission_level,[0,1,2])) {
+        $commission_level = RequestHelper::postInt('commission_level', 2);
+        if (!in_array($commission_level, [0, 1, 2])) {
             throw new CommissionSetException(CommissionSetException::COMMISSION_CENG_LEVEL_ERROR);
         }
+
         // 接收设置参数
         $settings = [
             'commission_type' => RequestHelper::postInt('commission_type', CommissionSettingsConstant::TYPE_NORMAL), // 分销模式 1传统模式 2:竞争分销
@@ -103,6 +104,7 @@ class CommissionController extends KdxAdminApiController
             'show_commission_level_type' => RequestHelper::postInt('show_commission_level_type', 1), // 显示佣金
             'show_commission_level' => RequestHelper::postInt('show_commission_level', 1), // 显示分销商等级
         ];
+
         // 成为分销商条件 和 成为下线条件冲突
         if ($settings['become_condition'] == 0 && $settings['child_condition'] == 2) {
             throw new CommissionSetException(CommissionSetException::COMMISSION_SET_CHILD_AND_BECOME_ERROR);

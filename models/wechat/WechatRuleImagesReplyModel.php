@@ -18,7 +18,7 @@ use shopstar\helpers\DateTimeHelper;
 use shopstar\wechat\constants\WechatMediaTypeConstant;
 
 /**
- * This is the model class for table "{{%app_wechat_rule_images_reply}}".
+ * This is the model class for table "{{%wechat_rule_images_reply}}".
  *
  * @property int $id
  * @property int $rule_id 规则id
@@ -34,7 +34,7 @@ class WechatRuleImagesReplyModel extends BaseActiveRecord
      */
     public static function tableName()
     {
-        return '{{%app_wechat_rule_images_reply}}';
+        return '{{%wechat_rule_images_reply}}';
     }
 
     /**

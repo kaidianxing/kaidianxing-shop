@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 开店星新零售管理系统
  * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
@@ -13,14 +12,19 @@
 
 namespace shopstar\admin\byteDance;
 
+use shopstar\bases\KdxAdminApiController;
 use shopstar\helpers\RequestHelper;
 use shopstar\models\shop\ShopSettings;
-use shopstar\models\byteDance\ByteDanceUploadLogModel;
-use shopstar\bases\KdxAdminApiController;
 
+/**
+ * 字节跳动渠道首页接口
+ * Class IndexController
+ * @author 青岛开店星信息技术有限公司
+ * @package shopstar\admin\channel
+ */
 class IndexController extends KdxAdminApiController
 {
-    
+
     /**
      * 获取设置
      * @author 青岛开店星信息技术有限公司
@@ -28,12 +32,12 @@ class IndexController extends KdxAdminApiController
     public function actionGetSetting()
     {
         $data = ShopSettings::get('channel_setting.byte_dance');
-        
+
         return $this->result(['data' => $data]);
     }
-    
+
     /**
-     * 设置
+     * 提交设置
      * @author 青岛开店星信息技术有限公司
      */
     public function actionSetSetting()
@@ -45,10 +49,11 @@ class IndexController extends KdxAdminApiController
             'maintain_explain' => RequestHelper::post('maintain_explain'),
             'show_commission' => RequestHelper::post('show_commission'),
         ];
+
         ShopSettings::set('channel.byte_dance', 1);
         ShopSettings::set('channel_setting.byte_dance', $data);
-        
+
         return $this->success();
     }
-    
+
 }

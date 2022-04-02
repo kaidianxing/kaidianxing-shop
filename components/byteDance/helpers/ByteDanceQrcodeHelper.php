@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 开店星新零售管理系统
  * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
@@ -17,8 +16,15 @@ use shopstar\components\byteDance\ByteDanceComponent;
 use EasyWeChat\Kernel\Http\StreamResponse;
 use yii\base\InvalidConfigException;
 
+/**
+ * 字节跳动二维码助手类
+ * Class ByteDanceQrcodeHelper
+ * @package shopstar\components\byteDance\helpers
+ * @author 青岛开店星信息技术有限公司
+ */
 class ByteDanceQrcodeHelper
 {
+
     /**
      * @var \Moonpie\Macro\ByteMiniProgram\Application
      */
@@ -27,10 +33,10 @@ class ByteDanceQrcodeHelper
     /**
      * 获取小程序实例
      * @param string $channel
-     * @return \Moonpie\Macro\ByteMiniProgram\Application|null |null |null
+     * @return \Moonpie\Macro\ByteMiniProgram\Application|null
      * @throws InvalidConfigException
      */
-    private static function getInstance(string $channel)
+    private static function getInstance(string $channel): ?\Moonpie\Macro\ByteMiniProgram\Application
     {
         if (self::$wxappInstance == null) {
             self::$wxappInstance = ByteDanceComponent::getInstance($channel)->factory;
@@ -44,7 +50,7 @@ class ByteDanceQrcodeHelper
      * @param string $path
      * @param array $params
      * @param array $options
-     * @return array|\EasyWeChat\Kernel\Http\StreamResponse|\EasyWeChat\Kernel\Support\Collection|object|\Psr\Http\Message\ResponseInterface|string
+     * @return array|bool|string
      * @author 青岛开店星信息技术有限公司
      */
     public static function getCode( string $path, array $params,  array $options = [])
@@ -66,4 +72,5 @@ class ByteDanceQrcodeHelper
         
         return true;
     }
+
 }

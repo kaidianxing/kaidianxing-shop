@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 开店星新零售管理系统
  * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
@@ -13,15 +12,15 @@
 
 namespace shopstar\admin\diypage\page;
 
-use shopstar\helpers\ArrayHelper;
-use shopstar\constants\diypage\DiypageTypeConstant;
-use shopstar\models\diypage\DiypageModel;
 use shopstar\bases\KdxAdminApiController;
+use shopstar\constants\diypage\DiypageTypeConstant;
+use shopstar\helpers\ArrayHelper;
+use shopstar\models\diypage\DiypageModel;
 
 /**
  * 商城页面
  * Class ShopController
- * @package apps\diypage\manage\page
+ * @package shopstar\admin\diypage\page
  */
 class ShopController extends KdxAdminApiController
 {
@@ -29,7 +28,6 @@ class ShopController extends KdxAdminApiController
     /**
      * 列表概览
      * @return array|\yii\web\Response
-     * @throws \yii\db\Exception
      * @author likexin
      */
     public function actionListView()

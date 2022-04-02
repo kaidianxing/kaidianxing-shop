@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 开店星新零售管理系统
  * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
@@ -13,18 +12,17 @@
 
 namespace shopstar\admin\commission;
 
-use shopstar\helpers\ArrayHelper;
-use shopstar\models\member\MemberModel;
+use shopstar\bases\KdxAdminApiController;
 use shopstar\constants\commission\CommissionAgentConstant;
-use shopstar\constants\commission\CommissionApplyStatusConstant;
+use shopstar\helpers\ArrayHelper;
 use shopstar\models\commission\CommissionAgentModel;
 use shopstar\models\commission\CommissionApplyModel;
 use shopstar\models\commission\CommissionLevelModel;
-use shopstar\bases\KdxAdminApiController;
+use shopstar\models\member\MemberModel;
 
 /**
  * Class IndexController
- * @package apps\commission\manage
+ * @package shopstar\admin\commission
  */
 class IndexController extends KdxAdminApiController
 {
@@ -80,7 +78,7 @@ class IndexController extends KdxAdminApiController
 
         // 分销商等级
         $level = CommissionLevelModel::find()
-            ->select('id, name, is_default' )
+            ->select('id, name, is_default')
             ->orderBy(['is_default' => SORT_DESC, 'level' => SORT_ASC])
             ->get();
         $levelCount = count($level);
@@ -94,7 +92,7 @@ class IndexController extends KdxAdminApiController
                 $item['chain'] = 0;
             }
         }
-        
+
         $final['agent_level'] = $level;
 
         // 新增分销商数
@@ -104,7 +102,7 @@ class IndexController extends KdxAdminApiController
             ->select('date(become_time) as date, count(1) as total')
             ->where([
                 'and',
-                ['status'  => 1],
+                ['status' => 1],
                 ['is_deleted' => 0],
                 ['between', 'become_time', $newAgentStartDate, $newAgentEndDate]
             ])
@@ -130,11 +128,11 @@ class IndexController extends KdxAdminApiController
 
         // 分销商排行TOP10 累计佣金 下线会员
         $agentTotalRank = CommissionAgentModel::find()
-            ->leftJoin(MemberModel::tableName().' m', 'm.id = a.member_id')
+            ->leftJoin(MemberModel::tableName() . ' m', 'm.id = a.member_id')
             ->select('member_id, nickname, commission_total')
             ->alias('a')
             ->where([
-                'a.status'  => 1,
+                'a.status' => 1,
                 'a.is_black' => 0,
                 'm.is_black' => 0,
                 'a.is_deleted' => 0,
@@ -145,11 +143,11 @@ class IndexController extends KdxAdminApiController
             ->all();
         $final['total_rank'] = $agentTotalRank;
         $agentChildRank = CommissionAgentModel::find()
-            ->leftJoin(MemberModel::tableName().' m', 'm.id = a.member_id')
+            ->leftJoin(MemberModel::tableName() . ' m', 'm.id = a.member_id')
             ->select('member_id, nickname, commission_child')
             ->alias('a')
             ->where([
-                'a.status'  => 1,
+                'a.status' => 1,
                 'a.is_black' => 0,
                 'm.is_black' => 0,
                 'a.is_deleted' => 0,

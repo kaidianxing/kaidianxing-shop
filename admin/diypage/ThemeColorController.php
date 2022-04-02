@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 开店星新零售管理系统
  * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
@@ -13,15 +12,18 @@
 
 namespace shopstar\admin\diypage;
 
+use shopstar\bases\KdxAdminApiController;
 use shopstar\helpers\RequestHelper;
 use shopstar\models\shop\ShopSettings;
-use shopstar\bases\KdxAdminApiController;
 
 /**
  * 主题色设置
+ * Class ThemeColorController
+ * @package shopstar\admin\diypage
  */
 class ThemeColorController extends KdxAdminApiController
 {
+
     /**
      * 获取
      * @author 青岛开店星信息技术有限公司
@@ -29,9 +31,10 @@ class ThemeColorController extends KdxAdminApiController
     public function actionGet()
     {
         $setting = ShopSettings::get('diypage.theme_color');
+
         return $this->result(['theme_color' => $setting]);
     }
-    
+
     /**
      * 设置
      * @author 青岛开店星信息技术有限公司
@@ -42,9 +45,10 @@ class ThemeColorController extends KdxAdminApiController
         if ($type == '') {
             return $this->error('参数错误');
         }
+
         ShopSettings::set('diypage.theme_color', $type);
-        
+
         return $this->success();
     }
-    
+
 }

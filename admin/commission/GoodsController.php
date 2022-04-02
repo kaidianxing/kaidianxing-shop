@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 开店星新零售管理系统
  * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
@@ -13,29 +12,31 @@
 
 namespace shopstar\admin\commission;
 
-use shopstar\constants\goods\GoodsTypeConstant;
+use shopstar\bases\KdxAdminApiController;
+use shopstar\exceptions\commission\CommissionGoodsException;
 use shopstar\helpers\RequestHelper;
+use shopstar\models\commission\CommissionGoodsModel;
 use shopstar\models\goods\category\GoodsCategoryMapModel;
 use shopstar\models\goods\GoodsModel;
 use shopstar\models\goods\group\GoodsGroupMapModel;
-use shopstar\exceptions\commission\CommissionGoodsException;
-use shopstar\models\commission\CommissionGoodsModel;
-use shopstar\bases\KdxAdminApiController;
 use yii\helpers\Json;
 
 /**
  * 分销商品
  * Class GoodsController
- * @package apps\commission\manage
+ * @package shopstar\admin\commission
  */
 class GoodsController extends KdxAdminApiController
 {
+
+    /**
+     * @var array
+     */
     public $configActions = [
         'postActions' => [
             'cancel',
         ]
     ];
-
 
     /**
      * 分销商品列表
@@ -57,7 +58,7 @@ class GoodsController extends KdxAdminApiController
                 } else if ($row['is_deleted'] == 1) {
                     $row['status'] = 4;
                 }
-                
+
                 // 获取该商品所有佣金
                 $allCommission = CommissionGoodsModel::getGoodsAllCommission($row['id']);
                 if (!is_error($allCommission)) {
@@ -100,7 +101,7 @@ class GoodsController extends KdxAdminApiController
      * @return array
      * @author 青岛开店星信息技术有限公司
      */
-    protected function getParams()
+    protected function getParams(): array
     {
         $status = RequestHelper::getInt('status', -1);
         $get = RequestHelper::get();
@@ -186,10 +187,11 @@ class GoodsController extends KdxAdminApiController
             throw new CommissionGoodsException(CommissionGoodsException::GOODS_CANCEL_PARAMS_ERROR);
         }
         try {
-            GoodsModel::updateAll(['is_commission' => 0], ['id' => $goodsId, ]);
+            GoodsModel::updateAll(['is_commission' => 0], ['id' => $goodsId,]);
         } catch (\Throwable $exception) {
             throw new CommissionGoodsException(CommissionGoodsException::GOODS_CANCEL_FAIL, $exception->getMessage());
         }
         return $this->success();
     }
+
 }

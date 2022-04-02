@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 开店星新零售管理系统
  * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
@@ -13,18 +12,26 @@
 
 namespace shopstar\admin\notice;
 
+use GuzzleHttp\Exception\GuzzleException;
+use shopstar\bases\KdxAdminApiController;
 use shopstar\components\wechat\helpers\OfficialAccountMessageHelper;
+use shopstar\constants\notice\NoticeLogConstant;
 use shopstar\helpers\RequestHelper;
 use shopstar\models\log\LogModel;
-use GuzzleHttp\Exception\GuzzleException;
-use shopstar\constants\notice\NoticeLogConstant;
 use shopstar\models\notice\NoticeWechatTemplateModel;
-use shopstar\bases\KdxAdminApiController;
 use yii\helpers\Json;
 
+/**
+ * 公众号模板
+ * Class WechatTemplateController
+ * @package shopstar\admin\notice
+ */
 class WechatTemplateController extends KdxAdminApiController
 {
 
+    /**
+     * @var array
+     */
     public $configActions = [
         'postActions' => [
             'add-template',
@@ -34,7 +41,7 @@ class WechatTemplateController extends KdxAdminApiController
 
     /**
      * 获取微信模板列表
-     * @return string
+     * @return array|int[]|\yii\web\Response
      * @throws GuzzleException
      * @author 青岛开店星信息技术有限公司
      */
@@ -42,7 +49,7 @@ class WechatTemplateController extends KdxAdminApiController
     {
         // 获取列表
         $list = OfficialAccountMessageHelper::getPrivateTemplates();
-        
+
         $industry = OfficialAccountMessageHelper::getIndustry();
 
         // 定义数组
@@ -50,10 +57,10 @@ class WechatTemplateController extends KdxAdminApiController
 
         foreach ($industry as $item) {
             if (!empty($item['first_class'])) {
-                $list['industry'][] = $item['first_class'].' / '.$item['second_class'];
+                $list['industry'][] = $item['first_class'] . ' / ' . $item['second_class'];
             }
         }
-        
+
         return $this->result($list);
     }
 
@@ -163,7 +170,7 @@ class WechatTemplateController extends KdxAdminApiController
 
         $list = OfficialAccountMessageHelper::getPrivateTemplates();
 
-        if (is_error($list)){
+        if (is_error($list)) {
             return $this->error($list['message']);
         }
 

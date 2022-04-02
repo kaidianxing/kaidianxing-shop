@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 开店星新零售管理系统
  * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
@@ -17,14 +16,15 @@ use shopstar\components\dispatch\bases\DispatchDriverConstant;
 use Yii;
 use yii\base\Component;
 
-
 /**
  * 第三方配送
  * Class DispatchComponent
  * @package shopstar\components\dispatch
+ * @author 青岛开店星信息技术有限公司
  */
 class DispatchComponent extends Component
 {
+
     private static $instance = null;
 
     /**
@@ -34,6 +34,7 @@ class DispatchComponent extends Component
 
     /**
      * 获取实例
+     * @throws \yii\base\InvalidConfigException
      */
     public static function getInstance(string $dispatchType, array $config = [])
     {
@@ -52,4 +53,5 @@ class DispatchComponent extends Component
 
         return self::$instance;
     }
+
 }

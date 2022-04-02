@@ -9,12 +9,12 @@
  * @warning Unauthorized deletion of copyright information is prohibited.
  * @warning 未经许可禁止私自删除版权信息
  */
-   
+
 $mainConfig = require 'main.php';
 
 $config = [
     'id' => 'shopstar-console',
-    'controllerNamespace' => 'console\controllers',
+    'controllerNamespace' => 'shopstar\console\controllers',
     'components' => [],
 
     'controllerMap' => [
@@ -24,7 +24,7 @@ $config = [
 
         'migrate' => [
             'class' => 'yii\console\controllers\MigrateController',
-            'migrationTable' => '{{%ewei_shopv5_migration}}',
+            'migrationTable' => '{{%kdx_migration}}',
 //            'migrationPath' => null, // disable non-namespaced migrations if app\migrations is listed below
 //            'migrationNamespaces' => [
 //                'app\migrations', // shopstar migrations for the whole application

@@ -16,7 +16,7 @@ namespace shopstar\models\notice;
 use shopstar\bases\model\BaseActiveRecord;
 
 /**
- * This is the model class for table "{{%app_notice_wxapp_default_template}}".
+ * This is the model class for table "{{%notice_wxapp_default_template}}".
  *
  * @property int $id
  * @property string $name 名称
@@ -34,7 +34,7 @@ class NoticeWxappDefaultTemplateModel extends BaseActiveRecord
      */
     public static function tableName()
     {
-        return '{{%app_notice_wxapp_default_template}}';
+        return '{{%notice_wxapp_default_template}}';
     }
 
     /**

@@ -16,7 +16,7 @@ namespace shopstar\models\wechat;
 use shopstar\bases\model\BaseActiveRecord;
 
 /**
- * This is the model class for table "{{%app_wechat_material_news}}".
+ * This is the model class for table "{{%wechat_material_news}}".
  *
  * @property int $id
  * @property int $material_id 素材库主id
@@ -41,7 +41,7 @@ class WechatMaterialNewsModel extends BaseActiveRecord
      */
     public static function tableName()
     {
-        return '{{%app_wechat_material_news}}';
+        return '{{%wechat_material_news}}';
     }
 
     /**

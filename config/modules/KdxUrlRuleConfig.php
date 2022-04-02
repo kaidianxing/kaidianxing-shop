@@ -9,6 +9,7 @@
  * @warning Unauthorized deletion of copyright information is prohibited.
  * @warning 未经许可禁止私自删除版权信息
  */
+
 namespace shopstar\config\modules;
 
 use yii\base\BaseObject;
@@ -19,8 +20,8 @@ use yii\web\UrlRuleInterface;
 /**
  * 商城URL规则配置类
  * Class KdxUrlRuleConfig
- * @package shop\config
- * @author likexin
+ * @package shopstar\config\modules
+ * @author 青岛开店星信息技术有限公司
  */
 class KdxUrlRuleConfig extends BaseObject implements UrlRuleInterface
 {
@@ -70,7 +71,7 @@ class KdxUrlRuleConfig extends BaseObject implements UrlRuleInterface
 
     /**
      * 匹配手机端请求
-     * @param $request
+     * @param Request $request
      * @return array|bool
      * @author likexin
      */
@@ -108,7 +109,7 @@ class KdxUrlRuleConfig extends BaseObject implements UrlRuleInterface
 
     /**
      * 匹配手机端请求
-     * @param $request
+     * @param Request $request
      * @return array|bool
      * @author likexin
      */
@@ -171,7 +172,7 @@ class KdxUrlRuleConfig extends BaseObject implements UrlRuleInterface
             return false;
         }
 
-        return [ 'kdx/' . implode('/', $routes) , []];
+        return ['kdx/' . implode('/', $routes), []];
     }
 
 

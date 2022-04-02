@@ -19,7 +19,7 @@ use shopstar\models\sale\CouponModel;
 use yii\helpers\Json;
 
 /**
- * This is the model class for table "{{%app_new_gifts_log}}".
+ * This is the model class for table "{{%new_gifts_log}}".
  *
  * @property int $id
  * @property int $member_id 会员id
@@ -36,7 +36,7 @@ class NewGiftsLogModel extends \shopstar\bases\model\BaseActiveRecord
      */
     public static function tableName()
     {
-        return '{{%app_new_gifts_log}}';
+        return '{{%new_gifts_log}}';
     }
 
     /**

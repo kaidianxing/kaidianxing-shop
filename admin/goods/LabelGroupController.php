@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 开店星新零售管理系统
  * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
@@ -11,9 +10,9 @@
  * @warning 未经许可禁止私自删除版权信息
  */
 
-
 namespace shopstar\admin\goods;
 
+use shopstar\bases\KdxAdminApiController;
 use shopstar\constants\log\goods\GoodsLogConstant;
 use shopstar\exceptions\goods\GoodsException;
 use shopstar\helpers\DateTimeHelper;
@@ -22,10 +21,18 @@ use shopstar\models\goods\label\GoodsLabelGroupModel;
 use shopstar\models\goods\label\GoodsLabelMapModel;
 use shopstar\models\goods\label\GoodsLabelModel;
 use shopstar\models\log\LogModel;
-use shopstar\bases\KdxAdminApiController;
 
+/**
+ * 商品标签组
+ * Class LabelGroupController
+ * @package shopstar\admin\goods
+ */
 class LabelGroupController extends KdxAdminApiController
 {
+
+    /**
+     * @var array
+     */
     public $configActions = [
         'postActions' => [
             'create',
@@ -39,14 +46,13 @@ class LabelGroupController extends KdxAdminApiController
         ]
     ];
 
-
     /**
      * 获取标签分组列表
      * @param bool $pager 是否需要返回page规则
      * @return \yii\web\Response
      * @author 青岛开店星信息技术有限公司
      */
-    public function actionGetList($pager = true)
+    public function actionGetList(bool $pager = true): \yii\web\Response
     {
         $list = GoodsLabelGroupModel::getColl([
             'where' => [],
@@ -70,22 +76,25 @@ class LabelGroupController extends KdxAdminApiController
      * @return \yii\web\Response
      * @author 青岛开店星信息技术有限公司
      */
-    public function actionGetListAndLabel()
+    public function actionGetListAndLabel(): \yii\web\Response
     {
         $list = $this->actionComponent(['is_default' => 0]);
 
-        return $this->success(['data' => $list, 'recommend' => $this->actionComponent(['is_default' => 1])[0]['label']]);
+        return $this->success([
+            'data' => $list,
+            'recommend' => $this->actionComponent(['is_default' => 1])[0]['label'],
+        ]);
     }
 
     /**
      * 分组标签查询组件
      * @param $option
-     * @author 青岛开店星信息技术有限公司
      * @return array|\yii\db\ActiveRecord[]
+     * @author 青岛开店星信息技术有限公司
      */
-    public function actionComponent($option)
+    public function actionComponent($option): array
     {
-        $list = GoodsLabelGroupModel::find()
+        return GoodsLabelGroupModel::find()
             ->where([
                 'status' => '1',
                 'is_default' => $option['is_default']
@@ -97,7 +106,6 @@ class LabelGroupController extends KdxAdminApiController
             ])
             ->asArray()
             ->all();
-        return $list;
     }
 
     /**
@@ -106,7 +114,7 @@ class LabelGroupController extends KdxAdminApiController
      * @throws GoodsException
      * @author 青岛开店星信息技术有限公司
      */
-    public function actionGetOne()
+    public function actionGetOne(): \yii\web\Response
     {
         $id = RequestHelper::getInt('id');
         if (empty($id)) {
@@ -134,7 +142,7 @@ class LabelGroupController extends KdxAdminApiController
      * @throws GoodsException
      * @author 青岛开店星信息技术有限公司
      */
-    public function actionCreate()
+    public function actionCreate(): \yii\web\Response
     {
         return $this->actionUpdate();
     }
@@ -145,7 +153,7 @@ class LabelGroupController extends KdxAdminApiController
      * @throws GoodsException
      * @author 青岛开店星信息技术有限公司
      */
-    public function actionUpdate()
+    public function actionUpdate(): \yii\web\Response
     {
 
         $id = RequestHelper::postInt("id");
@@ -251,12 +259,13 @@ class LabelGroupController extends KdxAdminApiController
 
     /**
      * 永久删除商品标签分组
-     * @param int|array $id
      * @return \yii\web\Response
+     * @throws GoodsException
      * @throws \Throwable
+     * @throws \yii\db\StaleObjectException
      * @author 青岛开店星信息技术有限公司
      */
-    public function actionForeverDelete()
+    public function actionForeverDelete(): \yii\web\Response
     {
         $id = RequestHelper::post('id');
         if (empty($id)) {
@@ -273,7 +282,7 @@ class LabelGroupController extends KdxAdminApiController
 
         foreach ($model as $item) {
             // 筛选出默认标签组，禁止删除
-            if($item->is_default == '1'){
+            if ($item->is_default == '1') {
                 throw new GoodsException(GoodsException::LABEL_GROUP_DEFAULT_GROUP_BAN_DELETE);
             }
             $item->delete();
@@ -304,7 +313,7 @@ class LabelGroupController extends KdxAdminApiController
      * @throws GoodsException
      * @author 青岛开店星信息技术有限公司
      */
-    public function actionSwitch()
+    public function actionSwitch(): \yii\web\Response
     {
         $id = RequestHelper::post('id');
         $status = RequestHelper::postInt('status', 0);

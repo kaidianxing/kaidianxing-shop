@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 开店星新零售管理系统
  * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
@@ -17,6 +16,7 @@ namespace shopstar\helpers;
  * Xml助手类
  * Class XmlHelper
  * @package shopstar\helpers
+ * @author 青岛开店星信息技术有限公司
  */
 class XmlHelper
 {
@@ -31,7 +31,7 @@ class XmlHelper
      * @return bool|\SimpleXMLElement
      * @author likexin
      */
-    public static function fromString($string, $className = 'SimpleXMLElement', $options = 0, $ns = '', $isPrefix = false)
+    public static function fromString($string, string $className = 'SimpleXMLElement', int $options = 0, string $ns = '', bool $isPrefix)
     {
         libxml_disable_entity_loader(true);
         if (preg_match('/(\<\!DOCTYPE|\<\!ENTITY)/i', $string)) {

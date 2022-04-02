@@ -39,7 +39,7 @@ class CommissionRelationModel extends BaseActiveRecord
      */
     public static function tableName()
     {
-        return '{{%app_commission_relation}}';
+        return '{{%commission_relation}}';
     }
 
     /**

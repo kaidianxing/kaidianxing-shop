@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 开店星新零售管理系统
  * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
@@ -10,7 +9,6 @@
  * @warning Unauthorized deletion of copyright information is prohibited.
  * @warning 未经许可禁止私自删除版权信息
  */
-
 
 namespace shopstar\services\member;
 
@@ -34,6 +32,9 @@ use shopstar\models\order\PayOrderModel;
 use shopstar\models\shop\ShopSettings;
 use shopstar\services\tradeOrder\TradeOrderService;
 
+/**
+ * @author 青岛开店星信息技术有限公司
+ */
 class MemberLogService
 {
 
@@ -127,7 +128,6 @@ class MemberLogService
     }
 
 
-
     /**
      * 提现打款
      * @param MemberLogModel $order
@@ -216,7 +216,7 @@ class MemberLogService
 
             $member = MemberModel::findOne(['id' => $order->member_id]);
             //消息通知
-            $result = NoticeComponent::getInstance( NoticeTypeConstant::BUYER_PAY_WITHDRAW, [
+            $result = NoticeComponent::getInstance(NoticeTypeConstant::BUYER_PAY_WITHDRAW, [
                 'member_nickname' => $member->nickname,
                 'withdraw_price' => $order->money,
                 'withdraw_time' => DateTimeHelper::now(),

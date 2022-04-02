@@ -20,7 +20,7 @@ use shopstar\helpers\RequestHelper;
 use shopstar\models\member\MemberModel;
 
 /**
- * This is the model class for table "{{%app_commission_relation_log}}".
+ * This is the model class for table "{{%commission_relation_log}}".
  *
  * @property int $id
  * @property int $member_id 会员id
@@ -40,7 +40,7 @@ class CommissionRelationLogModel extends BaseActiveRecord
      */
     public static function tableName()
     {
-        return '{{%app_commission_relation_log}}';
+        return '{{%commission_relation_log}}';
     }
 
     /**

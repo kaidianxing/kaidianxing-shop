@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 开店星新零售管理系统
  * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
@@ -11,8 +10,6 @@
  * @warning 未经许可禁止私自删除版权信息
  */
 
-
-
 namespace shopstar\mobile\member;
 
 use shopstar\bases\controller\BaseMobileApiController;
@@ -20,37 +17,34 @@ use shopstar\bases\exception\BaseApiException;
 use shopstar\components\notice\NoticeComponent;
 use shopstar\constants\CacheTypeConstant;
 use shopstar\constants\ClientTypeConstant;
+use shopstar\constants\components\notice\NoticeTypeConstant;
 use shopstar\constants\coupon\CouponConstant;
-
 use shopstar\exceptions\member\MemberException;
 use shopstar\helpers\CacheHelper;
 use shopstar\helpers\CaptchaHelper;
 use shopstar\helpers\CryptHelper;
 use shopstar\helpers\DateTimeHelper;
-use shopstar\helpers\LogHelper;
- 
 use shopstar\helpers\RequestHelper;
 use shopstar\helpers\StringHelper;
 use shopstar\helpers\ValueHelper;
-use shopstar\models\member\MemberLoginModel;
 use shopstar\models\member\MemberLevelModel;
+use shopstar\models\member\MemberLoginModel;
 use shopstar\models\member\MemberModel;
 use shopstar\models\member\MemberSession;
 use shopstar\models\member\MemberWechatModel;
+use shopstar\models\notice\NoticeSmsTemplateModel;
 use shopstar\models\order\OrderModel;
 use shopstar\models\role\ManagerModel;
 use shopstar\models\role\ManagerRoleModel;
 use shopstar\models\sale\CouponMemberModel;
 use shopstar\models\shop\ShopSettings;
-use shopstar\constants\form\FormTypeConstant;
-use shopstar\constants\components\notice\NoticeTypeConstant;
-use shopstar\models\notice\NoticeSmsTemplateModel;
 use shopstar\services\member\MemberService;
 use shopstar\services\role\ManagerService;
 
 /**
  * Class IndexController
  * @package shop\client
+ * @author 青岛开店星信息技术有限公司
  */
 class IndexController extends BaseMobileApiController
 {
@@ -100,7 +94,6 @@ class IndexController extends BaseMobileApiController
     /**
      * 登录分发
      * @throws MemberException
-     * @throws BaseApiException
      * @author 青岛开店星信息技术有限公司
      */
     public function actionAuth()
@@ -238,7 +231,7 @@ class IndexController extends BaseMobileApiController
      * @throws MemberException
      * @author 青岛开店星信息技术有限公司
      */
-    public function actionChangePassword()
+    public function actionChangePassword(): \yii\web\Response
     {
         $post = RequestHelper::post();
 
@@ -621,7 +614,7 @@ class IndexController extends BaseMobileApiController
         ];
 
         //加密会员id
-        $result['hash_member_id'] = CryptHelper::encrypt($this->memberId.'-hash_member_id');
+        $result['hash_member_id'] = CryptHelper::encrypt($this->memberId . '-hash_member_id');
 
         return $this->result($result);
     }
@@ -698,7 +691,7 @@ class IndexController extends BaseMobileApiController
      * @throws MemberException
      * @author 青岛开店星信息技术有限公司
      */
-    public function actionLoginAfter()
+    public function actionLoginAfter(): \yii\web\Response
     {
         $memberId = RequestHelper::post('member_id');
         $uid = RequestHelper::post('uid');
@@ -756,11 +749,11 @@ class IndexController extends BaseMobileApiController
      * @throws MemberException
      * @author 青岛开店星信息技术有限公司
      */
-    public function actionInvalid()
+    public function actionInvalid(): \yii\web\Response
     {
         $clientType = RequestHelper::header('Client-Type');
         $time = RequestHelper::postInt('time');
-        $result = CacheHelper::get(CacheTypeConstant::CACHEKEY .  $clientType . $time);
+        $result = CacheHelper::get(CacheTypeConstant::CACHEKEY . $clientType . $time);
         // 二维码或链接已失效
         if (isset($result) && empty($result)) {
             throw new MemberException(MemberException::QRCODE_URL_INVALI_ERROR);
@@ -774,7 +767,7 @@ class IndexController extends BaseMobileApiController
      * @throws MemberException
      * @author 青岛开店星信息技术有限公司
      */
-    public function actionBindVerifier()
+    public function actionBindVerifier(): \yii\web\Response
     {
         $uid = RequestHelper::post('uid');
         $time = RequestHelper::postInt('time');
@@ -793,7 +786,7 @@ class IndexController extends BaseMobileApiController
         $params = $this->process($memberId);
         $clientType = RequestHelper::header('Client-Type');
         // 添加前判断二维码是否已失效
-        $cache = CacheHelper::get(CacheTypeConstant::CACHEKEY .  $clientType . $time);
+        $cache = CacheHelper::get(CacheTypeConstant::CACHEKEY . $clientType . $time);
         if (!isset($cache) || empty($cache)) {
             throw new MemberException(MemberException::QRCODE_URL_INVALI_ERROR);
         }
@@ -805,7 +798,7 @@ class IndexController extends BaseMobileApiController
         }
 
         // 保存成功 清除二维码 保证二维码唯一性
-        CacheHelper::delete(CacheTypeConstant::CACHEKEY .  $clientType . $time);
+        CacheHelper::delete(CacheTypeConstant::CACHEKEY . $clientType . $time);
 
         // 发送短信 通知密码
         $messageData = [
@@ -822,7 +815,7 @@ class IndexController extends BaseMobileApiController
 
         return $this->success();
     }
-    
+
     /**
      * 获取积分设置
      * @author 青岛开店星信息技术有限公司
@@ -831,8 +824,8 @@ class IndexController extends BaseMobileApiController
     {
         $res = ShopSettings::get('sysset.credit');
         // 原抵扣设置
-        $deductSet = ShopSettings::get( 'sale.basic.deduct');
-        
+        $deductSet = ShopSettings::get('sale.basic.deduct');
+
         $data = [
             'credit_text' => $res['credit_text'],
             'credit_limit_type' => $res['credit_limit_type'],
@@ -841,7 +834,7 @@ class IndexController extends BaseMobileApiController
             'credit_num' => $deductSet['credit_num'],
             'basic_credit_num' => $deductSet['basic_credit_num'],
         ];
-        
+
         return $this->result(['data' => $data]);
     }
 

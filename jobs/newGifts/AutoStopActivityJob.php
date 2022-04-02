@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 开店星新零售管理系统
  * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
@@ -13,23 +12,25 @@
 
 namespace shopstar\jobs\newGifts;
 
-use apps\newGifts\models\NewGiftsActivityModel;
 use shopstar\helpers\DateTimeHelper;
+use shopstar\models\newGifts\NewGiftsActivityModel;
 use yii\base\BaseObject;
 use yii\queue\JobInterface;
 use yii\queue\Queue;
 
+/**
+ * @author 青岛开店星信息技术有限公司
+ */
 class AutoStopActivityJob extends BaseObject implements JobInterface
 {
     /**
-     * id
      * @var
      */
     public $id;
 
     /**
      * @param Queue $queue
-     * @return mixed|void
+     * @return void
      * @author 青岛开店星信息技术有限公司
      */
     public function execute($queue)

@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 开店星新零售管理系统
  * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
@@ -20,6 +19,7 @@ use shopstar\bases\exception\BaseException;
  * Class CommissionAgentException
  * @method getMessage($code) static 获取文字
  * @package shopstar\exceptions\commission
+ * @author 青岛开店星信息技术有限公司
  */
 class CommissionRelationLogException extends BaseException
 {
@@ -34,7 +34,6 @@ class CommissionRelationLogException extends BaseException
      */
     const LOG_SAVE_ERROR = 336101;
 
-
     /**
      * @Message("会员不存在")
      */
@@ -44,7 +43,5 @@ class CommissionRelationLogException extends BaseException
      * @Message("参数错误")
      */
     const COMMISSION_INFO_MEMBER_ID_EMPTY = 336103;
-
-
 
 }

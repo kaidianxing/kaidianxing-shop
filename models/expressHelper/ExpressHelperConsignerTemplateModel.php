@@ -15,7 +15,7 @@ namespace shopstar\models\expressHelper;
 use shopstar\bases\model\BaseActiveRecord;
 
 /**
- * This is the model class for table "{{%app_express_helper_consigner_template}}".
+ * This is the model class for table "{{%express_helper_consigner_template}}".
  *
  * @property string $name 模板名称
  * @property string $consigner_company 发件人公司
@@ -37,7 +37,7 @@ class ExpressHelperConsignerTemplateModel extends BaseActiveRecord
      */
     public static function tableName()
     {
-        return '{{%app_express_helper_consigner_template}}';
+        return '{{%express_helper_consigner_template}}';
     }
 
     /**

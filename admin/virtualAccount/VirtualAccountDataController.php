@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 开店星新零售管理系统
  * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
@@ -11,35 +10,32 @@
  * @warning 未经许可禁止私自删除版权信息
  */
 
-
 namespace shopstar\admin\virtualAccount;
 
+use shopstar\bases\KdxAdminApiController;
+use shopstar\constants\virtualAccount\VirtualAccountDataConstant;
+use shopstar\constants\virtualAccount\VirtualAccountLogConstant;
 use shopstar\exceptions\sysset\MallException;
+use shopstar\exceptions\virtualAccount\VirtualAccountException;
 use shopstar\helpers\DateTimeHelper;
 use shopstar\helpers\ExcelHelper;
 use shopstar\helpers\RequestHelper;
-use shopstar\models\goods\GoodsModel;
-use shopstar\models\goods\GoodsOptionModel;
-use shopstar\models\goods\GoodsVirtualAccountMapModel;
 use shopstar\models\log\LogModel;
 use shopstar\models\order\OrderModel;
-use Matrix\Exception;
-use shopstar\constants\virtualAccount\VirtualAccountDataConstant;
-use shopstar\constants\virtualAccount\VirtualAccountLogConstant;
-use shopstar\exceptions\virtualAccount\VirtualAccountException;
-use shopstar\models\virtualAccount\VirtualAccountOrderMapModel;
 use shopstar\models\virtualAccount\VirtualAccountDataModel;
 use shopstar\models\virtualAccount\VirtualAccountModel;
-use shopstar\bases\KdxAdminApiController;
+use shopstar\models\virtualAccount\VirtualAccountOrderMapModel;
 use yii\helpers\Json;
 
 /**
  * 卡密库-数据
  * Class IndexController
- * @package apps\virtualAccount\manage
+ * @package shopstar\admin\virtualAccount
+ * @author 青岛开店星信息技术有限公司
  */
 class VirtualAccountDataController extends KdxAdminApiController
 {
+
     /**
      * @var array 允许GET携带Header参数Actions
      */
@@ -49,7 +45,6 @@ class VirtualAccountDataController extends KdxAdminApiController
             'index'
         ]
     ];
-
 
     /**
      * 下载模板
@@ -61,12 +56,11 @@ class VirtualAccountDataController extends KdxAdminApiController
 
     public static $defaultFilePath = 'tmp/virtualAccount/';
 
-
     /**
      * 查看卡密库数据
+     * @return \yii\web\Response
      * @throws VirtualAccountException
      * @author 青岛开店星信息技术有限公司
-     * @return \yii\web\Response
      */
     public function actionIndex()
     {
@@ -112,6 +106,7 @@ class VirtualAccountDataController extends KdxAdminApiController
                 'virtual.id' => SORT_DESC
             ]
         ];
+
         // 如果是已出售列表 则按订单时间倒序
         if ($status) {
             $params['orderBy'] = ['order.created_at' => SORT_DESC];
@@ -143,8 +138,8 @@ class VirtualAccountDataController extends KdxAdminApiController
                 $row['order_no'] = !is_null($row['order_no']) ? $row['order_no'] : '-';
                 $row['order_created_at'] = !is_null($row['order_created_at']) ? $row['order_created_at'] : '-';
             },
-            'pager' => $export ? false : true,
-            'onlyList' => $export ? true : false,
+            'pager' => !$export,
+            'onlyList' => (bool)$export,
         ]);
 
         // 导出
@@ -167,9 +162,9 @@ class VirtualAccountDataController extends KdxAdminApiController
 
     /**
      * add
+     * @return void
      * @throws MallException
      * @author 青岛开店星信息技术有限公司
-     * @return void
      */
     public function actionAdd()
     {
@@ -179,11 +174,11 @@ class VirtualAccountDataController extends KdxAdminApiController
 
     /**
      * 快速更新接口
+     * @return \yii\web\Response
      * @throws VirtualAccountException
      * @author 青岛开店星信息技术有限公司
-     * @return \yii\web\Response
      */
-    public function actionUpdate()
+    public function actionUpdate(): \yii\web\Response
     {
         $id = RequestHelper::postInt('id');
         $virtualAccountId = RequestHelper::postInt('virtual_account_id');
@@ -211,11 +206,11 @@ class VirtualAccountDataController extends KdxAdminApiController
 
     /**
      * 处理参数
+     * @return array
      * @throws MallException
      * @author 青岛开店星信息技术有限公司
-     * @return array
      */
-    public function getParams()
+    public function getParams(): array
     {
         $params = RequestHelper::post();
         $errorArray = [];
@@ -245,8 +240,10 @@ class VirtualAccountDataController extends KdxAdminApiController
                 ]);
                 $i++;
             }
+
             // 增加库存
             $this->updateCount($params['virtual_account_id'], $i);
+
             // 日志
             LogModel::write(
                 $this->userId,
@@ -262,17 +259,18 @@ class VirtualAccountDataController extends KdxAdminApiController
                 ]
             );
         }
+
         return $errorArray;
     }
 
     /**
      * 下载卡密模板
-     * @throws VirtualAccountException
+     * @return void
      * @throws \PhpOffice\PhpSpreadsheet\Exception
      * @throws \PhpOffice\PhpSpreadsheet\Writer\Exception
      * @throws \yii\base\Exception
+     * @throws VirtualAccountException
      * @author 青岛开店星信息技术有限公司
-     * @return void
      */
     public function actionDownload()
     {
@@ -284,6 +282,7 @@ class VirtualAccountDataController extends KdxAdminApiController
         if (empty($columns)) {
             throw new VirtualAccountException(VirtualAccountException::VIRTUAL_ACCOUNT_NOT_NULL);
         }
+
         // 日志
         LogModel::write(
             $this->userId,
@@ -298,18 +297,19 @@ class VirtualAccountDataController extends KdxAdminApiController
                 ],
             ]
         );
+
         ExcelHelper::export([], array_merge(self::$virtualAccountTemplace, $columns), '卡密库模板');
         die;
     }
 
     /**
      * excel导入
-     * @throws VirtualAccountException
+     * @return array|\yii\web\Response
      * @throws \PhpOffice\PhpSpreadsheet\Exception
      * @throws \PhpOffice\PhpSpreadsheet\Writer\Exception
      * @throws \yii\base\Exception
+     * @throws VirtualAccountException
      * @author 青岛开店星信息技术有限公司
-     * @return array|\yii\web\Response
      */
     public function actionImport()
     {
@@ -319,18 +319,16 @@ class VirtualAccountDataController extends KdxAdminApiController
             throw new VirtualAccountException(VirtualAccountException::PARAMS_ERROR);
         }
         $data = ExcelHelper::import($file, 2, self::$defaultFilePath);
+
         // 导入文件是否解析成功
         if (!$data) {
             throw new VirtualAccountException(VirtualAccountException::VIRTUAL_ACCOUNT_EXCEL_PARSING_ERROR);
         }
+
         // 导入数量限制
         if (count($data) > 1000) {
             throw new VirtualAccountException(VirtualAccountException::VIRTUAL_ACCOUNT_EXCEL_IMPORT_COUNT_MAX);
         }
-        // 去除excel空值 $newData替换$data 暂时屏蔽 因导入插件不完善
-        // foreach ($data as $k => $v) {
-            // $newData[$k] = array_filter($v);
-        // }
 
         $result = $this->splicingData($virtualAccountId, $data);
         if ($result['error_count'] > 0) {
@@ -341,6 +339,7 @@ class VirtualAccountDataController extends KdxAdminApiController
             $result['file_path'] = $file['filepath'];
         }
         unset($result['error_data']);
+
         // 日志
         LogModel::write(
             $this->userId,
@@ -355,6 +354,7 @@ class VirtualAccountDataController extends KdxAdminApiController
                 ],
             ]
         );
+
         return $this->result(['data' => $result]);
     }
 
@@ -362,11 +362,11 @@ class VirtualAccountDataController extends KdxAdminApiController
      * 拼接数据
      * @param int $id
      * @param array $data
+     * @return array
      * @throws MallException
      * @author 青岛开店星信息技术有限公司
-     * @return array
      */
-    public function splicingData(int $id, array $data)
+    public function splicingData(int $id, array $data): array
     {
         $errorArray = [];
         $i = 0;
@@ -394,7 +394,7 @@ class VirtualAccountDataController extends KdxAdminApiController
             VirtualAccountDataModel::easyAdd([
                 'attributes' => [
                     'virtual_account_id' => $id,
-                    'sort' => $sort ? ((int)$sort >= 99999 ? 99999 : (int)$sort ) : 1,
+                    'sort' => $sort ? ((int)$sort >= 99999 ? 99999 : (int)$sort) : 1,
                     'data' => $newData,
                     'data_md5' => md5($newData),
                     'key' => (string)Json::decode($newData)['value1'],
@@ -404,6 +404,7 @@ class VirtualAccountDataController extends KdxAdminApiController
             ]);
             $i++;
         }
+
         // 增加库存
         $this->updateCount($id, $i);
 
@@ -412,9 +413,9 @@ class VirtualAccountDataController extends KdxAdminApiController
 
     /**
      * 查询卡密库结构
+     * @return array|\yii\web\Response
      * @throws VirtualAccountException
      * @author 青岛开店星信息技术有限公司
-     * @return array|\yii\web\Response
      */
     public function actionGetData()
     {
@@ -428,10 +429,10 @@ class VirtualAccountDataController extends KdxAdminApiController
 
     /**
      * 更新卡密数据权重值及删除
-     * @throws MallException
-     * @throws VirtualAccountException
-     * @author 青岛开店星信息技术有限公司
      * @return array|\yii\web\Response
+     * @throws VirtualAccountException
+     * @throws MallException
+     * @author 青岛开店星信息技术有限公司
      */
     public function actionUpdateData()
     {
@@ -475,9 +476,9 @@ class VirtualAccountDataController extends KdxAdminApiController
      * 增加库存
      * @param $virtualAccountId
      * @param $count
+     * @return void
      * @throws MallException
      * @author 青岛开店星信息技术有限公司
-     * @return void
      */
     public function updateCount($virtualAccountId, $count)
     {
@@ -488,8 +489,8 @@ class VirtualAccountDataController extends KdxAdminApiController
     /**
      * 处理导出的拼接字段标识
      * @param $data
-     * @author 青岛开店星信息技术有限公司
      * @return array
+     * @author 青岛开店星信息技术有限公司
      */
     public function processField($data)
     {

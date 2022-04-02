@@ -45,7 +45,7 @@ use shopstar\bases\model\BaseActiveRecord;
  */
 
 /**
- * This is the model class for table "{{%app_express_helper_express_template}}".
+ * This is the model class for table "{{%express_helper_express_template}}".
  *
  * @property int $id
  * @property string $name 电子面单模板名称
@@ -414,7 +414,7 @@ class ExpressHelperExpressTemplateModel extends BaseActiveRecord
      */
     public static function tableName()
     {
-        return '{{%app_express_helper_express_template}}';
+        return '{{%express_helper_express_template}}';
     }
 
     /**

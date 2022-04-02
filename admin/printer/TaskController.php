@@ -62,7 +62,6 @@ class TaskController extends KdxAdminApiController
             'orderBy' => [
                 'task.created_at' => SORT_DESC
             ]
-
         ];
 
         if (!empty(RequestHelper::get('scene'))) {
@@ -323,7 +322,11 @@ class TaskController extends KdxAdminApiController
         return $this->result($result);
     }
 
-    private function checkParams($isAdd = true)
+    /**
+     * @param bool $isAdd
+     * @return array
+     */
+    private function checkParams(bool $isAdd = true): array
     {
         $postData = RequestHelper::post();
 

@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 开店星新零售管理系统
  * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
@@ -24,7 +23,8 @@ use yii\helpers\Json;
 /**
  * 附件管理
  * Class ListController
- * @package modules\utility\manage
+ * @package shopstar\admin\utility\attachment
+ * @author 青岛开店星信息技术有限公司
  */
 class ListController extends KdxAdminUtilityController
 {
@@ -33,7 +33,7 @@ class ListController extends KdxAdminUtilityController
      * @var array 需要POST的Action
      */
     public $configActions = [
-       'postActions' => [
+        'postActions' => [
             'upload',
             'delete',
         ]
@@ -53,7 +53,6 @@ class ListController extends KdxAdminUtilityController
 
     /**
      * 获取列表
-     * @param int $type
      * @return array|\yii\web\Response
      * @author likexin
      */
@@ -167,7 +166,7 @@ class ListController extends KdxAdminUtilityController
      * @return \yii\web\Response
      * @author 青岛开店星信息技术有限公司
      */
-    public function actionGetTencentVideo()
+    public function actionGetTencentVideo(): \yii\web\Response
     {
         $url = RequestHelper::post('url');
         $url = trim($url);

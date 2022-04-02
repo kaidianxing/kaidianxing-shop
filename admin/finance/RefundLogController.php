@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 开店星新零售管理系统
  * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
@@ -13,29 +12,31 @@
 
 namespace shopstar\admin\finance;
 
+use shopstar\bases\KdxAdminApiController;
 use shopstar\constants\finance\RefundLogConstant;
-
 use shopstar\helpers\ExcelHelper;
 use shopstar\helpers\RequestHelper;
 use shopstar\models\finance\RefundLogModel;
 use shopstar\models\member\MemberLevelModel;
 use shopstar\models\member\MemberModel;
-use shopstar\bases\KdxAdminApiController;
 
 /**
  * 退款记录
  * Class RefundLogController
- * @package shop\manage\finance
+ * @package shopstar\admin\finance
  */
 class RefundLogController extends KdxAdminApiController
 {
 
+    /**
+     * @var array
+     */
     public $configActions = [
         'allowHeaderActions' => [
             'list',
         ]
     ];
-    
+
     /**
      * 列表
      * @author 青岛开店星信息技术有限公司
@@ -47,7 +48,7 @@ class RefundLogController extends KdxAdminApiController
         if (!empty($get['start_time']) && !empty($get['end_time'])) {
             $andWhere[] = ['between', 'log.created_at', $get['start_time'], $get['end_time']];
         }
-        
+
         $params = [
             'searchs' => [
                 ['member.level_id', 'int', 'level_id'],
@@ -74,15 +75,15 @@ class RefundLogController extends KdxAdminApiController
             'where' => [],
             'andWhere' => $andWhere,
             'leftJoins' => [
-                [MemberModel::tableName().' member', 'member.id = log.member_id'],
-                [MemberLevelModel::tableName(). ' level', 'level.id = member.level_id'],
+                [MemberModel::tableName() . ' member', 'member.id = log.member_id'],
+                [MemberLevelModel::tableName() . ' level', 'level.id = member.level_id'],
             ],
             'orderBy' => ['id' => SORT_DESC],
         ];
-        
+
         // 获取默认等级
         $defaultLevelId = MemberLevelModel::getDefaultLevelId();
-        
+
         $list = RefundLogModel::getColl($params, [
             'pager' => !$get['export'],
             'onlyList' => $get['export'],
@@ -92,19 +93,19 @@ class RefundLogController extends KdxAdminApiController
                 $row['status_text'] = $row['status'] ? '成功' : '失败';
             }
         ]);
-        
+
         if ($get['export']) {
             try {
                 ExcelHelper::export($list, RefundLogModel::$logFields, '退款记录导出');
             } catch (\Throwable $exception) {
-            
+
             }
             die;
         }
-        
+
         return $this->result($list);
     }
-    
+
     /**
      * 获取退款类型
      * @author 青岛开店星信息技术有限公司
@@ -117,4 +118,5 @@ class RefundLogController extends KdxAdminApiController
         }
         return $this->result(['data' => array_values($list)]);
     }
+
 }

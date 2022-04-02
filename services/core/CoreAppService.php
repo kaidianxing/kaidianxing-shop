@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 开店星新零售管理系统
  * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
@@ -11,27 +10,9 @@
  * @warning 未经许可禁止私自删除版权信息
  */
 
-
 namespace shopstar\services\core;
 
-use shopstar\components\storage\bases\StorageDriverConstant;
-use shopstar\components\storage\bases\StorageDriverInterface;
-use shopstar\components\storage\StorageComponent;
 use shopstar\constants\core\CoreAppCategoryConstant;
-use shopstar\constants\core\CoreAttachmentSceneConstant;
-use shopstar\constants\core\CoreAttachmentTypeConstant;
-use shopstar\helpers\DateTimeHelper;
-use shopstar\helpers\FileHelper;
-use shopstar\helpers\HttpHelper;
-use shopstar\helpers\ImageHelper;
-use shopstar\helpers\MP3Helper;
-use shopstar\helpers\StringHelper;
-use shopstar\models\core\attachment\CoreAttachmentGroupModel;
-use shopstar\models\core\attachment\CoreAttachmentModel;
-use shopstar\models\core\CoreSettings;
-use yii\helpers\Json;
-use yii\helpers\Url;
-use yii\web\UploadedFile;
 
 /**
  * 系统附件服务层
@@ -65,7 +46,10 @@ class CoreAppService
         return static::$_appList[$type];
     }
 
-    public static function getAppListCacheNew($type, $options = [])
+    /**
+     * @throws \ReflectionException
+     */
+    public static function getAppListCacheNew($type, $options = []): array
     {
         $list = self::getAppListNew($type);
         if ($searchName = $options['search_name']) {
@@ -91,10 +75,9 @@ class CoreAppService
      * 根据分类分组
      * @param array $list
      * @return array
-     * @throws \ReflectionException
      * @author 青岛开店星信息技术有限公司
      */
-    public static function listClassIfyByCategory(array $list)
+    public static function listClassIfyByCategory(array $list): array
     {
         $newList = CoreAppCategoryConstant::getAll();
 
@@ -111,7 +94,6 @@ class CoreAppService
 
         return $newList;
     }
-
 
     /**
      * 获取应用名称
@@ -130,22 +112,19 @@ class CoreAppService
      * @return array
      * @author likexin
      */
-    public static function getAppIdentity()
+    public static function getAppIdentity(): array
     {
         $coreAppList = self::getAppListNew();
 
         return array_keys($coreAppList);
     }
 
-
     /**
      * 获取可用的应用列表
-     * @param bool $returnStatus
-     * @param array $options
      * @return array
      * @author 青岛开店星信息技术有限公司
      */
-    public static function getAppEnableList()
+    public static function getAppEnableList(): array
     {
         $coreAppList = self::getAppListNew();
         $hasArray = [];
@@ -161,7 +140,7 @@ class CoreAppService
      * @return array
      * @author 青岛开店星信息技术有限公司
      */
-    public static function getManageShowApps()
+    public static function getManageShowApps(): array
     {
         return self::getAppEnableList();
     }

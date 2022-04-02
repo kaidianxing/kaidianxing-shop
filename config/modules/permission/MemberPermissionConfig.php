@@ -14,11 +14,11 @@ namespace shopstar\config\modules\permission;
 
 use shopstar\components\permission\BasePermissionConfig;
 
-
 /**
  * 会员权限
  * Class MemberPermissionConfig
- * @package shop\config\permission
+ * @package shopstar\config\modules\permission
+ * @author 青岛开店星信息技术有限公司
  */
 class MemberPermissionConfig extends BasePermissionConfig
 {
@@ -26,17 +26,17 @@ class MemberPermissionConfig extends BasePermissionConfig
      * @var string 权限模块标识
      */
     protected $identity = 'member';
-    
+
     /**
      * @var string 路由前缀
      */
     protected $prefix = 'manage/member/';
-    
+
     /**
      * @var string 分组名称
      */
     protected $groupName = '会员';
-    
+
     /**
      * @var array[] 权限配置
      */
@@ -68,7 +68,7 @@ class MemberPermissionConfig extends BasePermissionConfig
                 ],
                 'manage' => [
                     'title' => '管理',
-                    'actions' => ['change-mobile','change-remark', 'change-password', 'delete'],
+                    'actions' => ['change-mobile', 'change-remark', 'change-password', 'delete'],
                     'depends' => [
                         'member.list.manage'
                     ]
@@ -80,7 +80,7 @@ class MemberPermissionConfig extends BasePermissionConfig
                 [
                     'title' => '会员等级',
                     'alias' => 'member.level',
-                    'perm'  => [
+                    'perm' => [
                         'view' => [
                             'title' => '查看',
                             'actions' => ['detail', 'check-level'],
@@ -136,5 +136,5 @@ class MemberPermissionConfig extends BasePermissionConfig
             ],
         ],
     ];
-   
+
 }

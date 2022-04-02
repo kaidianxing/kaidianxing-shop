@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 开店星新零售管理系统
  * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
@@ -11,10 +10,7 @@
  * @warning 未经许可禁止私自删除版权信息
  */
 
-
-
 namespace shopstar\components\notice\sends;
-
 
 use shopstar\components\notice\bases\SendBase;
 use shopstar\components\notice\config\SmsConfig;
@@ -22,7 +18,6 @@ use shopstar\helpers\CacheHelper;
 use shopstar\helpers\QueueHelper;
 use shopstar\jobs\components\noticeComponents\SmsMessageJob;
 use shopstar\models\core\CoreSettings;
-use shopstar\models\shop\ShopSettings;
 use shopstar\models\notice\NoticeSmsTemplateModel;
 use yii\helpers\Json;
 
@@ -123,7 +118,7 @@ class SmsVerifyCodeNotice extends SendBase implements SendNoticeInterface
         //获取配置
         $this->config = SmsConfig::getConfig([
             'type' => $this->sms['type'],
-            'sms_sign' =>  $this->sms['sms_sign'] //适配前端
+            'sms_sign' => $this->sms['sms_sign'] //适配前端
         ]);
 
         //判断配置是否为空
@@ -136,7 +131,7 @@ class SmsVerifyCodeNotice extends SendBase implements SendNoticeInterface
 
     /**
      * 转化
-     * @return mixed|void
+     * @return void
      * @author 青岛开店星信息技术有限公司
      */
     public function makeTemplateField()
@@ -156,10 +151,10 @@ class SmsVerifyCodeNotice extends SendBase implements SendNoticeInterface
 
     /**
      * 消息发送（主要处理发送，最好不要有别的操作）
-     * @return mixed
+     * @return bool
      * @author 青岛开店星信息技术有限公司
      */
-    public function sendMessage()
+    public function sendMessage(): bool
     {
         $key = '_' . $this->sceneCode . '_' . $this->mobile;
         $ret = CacheHelper::get($key);
@@ -184,7 +179,7 @@ class SmsVerifyCodeNotice extends SendBase implements SendNoticeInterface
      * 组成发送会员
      * @param array $toUser
      * @param bool $appointTemplateMember
-     * @return mixed
+     * @return void
      * @author 青岛开店星信息技术有限公司
      */
     public function makeToUser(array $toUser, bool $appointTemplateMember)

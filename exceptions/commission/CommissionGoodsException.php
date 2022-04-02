@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 开店星新零售管理系统
  * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
@@ -20,6 +19,7 @@ use shopstar\bases\exception\BaseException;
  * Class CommissionGoodsException
  * @method getMessage($code) static 获取文字
  * @package shopstar\exceptions\commission
+ * @author 青岛开店星信息技术有限公司
  */
 class CommissionGoodsException extends BaseException
 {
@@ -29,21 +29,20 @@ class CommissionGoodsException extends BaseException
      * 41 分销商品 业务端
      * 01 错误码
      */
-    
+
     /**
      * @Message("参数错误")
      */
     const GOODS_CANCEL_PARAMS_ERROR = 334101;
-    
+
     /**
      * @Message("修改分销状态失败")
      */
     const GOODS_CANCEL_FAIL = 334102;
-    
-    
-    
+
+
     /*************业务端异常结束*************/
-    
+
     /*************客户端异常开始*************/
     /**
      * 33 分销
@@ -51,12 +50,6 @@ class CommissionGoodsException extends BaseException
      * 01 错误码
      */
 
-    
-    
-    
-    
-    
-    
-    
+
     /*************客户端异常结束*************/
 }

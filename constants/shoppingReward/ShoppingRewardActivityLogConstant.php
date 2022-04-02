@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 开店星新零售管理系统
  * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
@@ -18,6 +17,7 @@ use shopstar\bases\constant\BaseConstant;
 /**
  * Class ShoppingRewardActivityLogConstant
  * @package shopstar\constants\shoppingReward
+ * @author 青岛开店星信息技术有限公司
  */
 class ShoppingRewardActivityLogConstant extends BaseConstant
 {
@@ -25,17 +25,17 @@ class ShoppingRewardActivityLogConstant extends BaseConstant
      * @Text("购物奖励-活动-新增")
      */
     public const ACTIVITY_ADD = 400100;
-    
+
     /**
      * @Text("购物奖励-活动-修改")
      */
     public const ACTIVITY_EDIT = 400101;
-    
+
     /**
      * @Text("购物奖励-活动-手动停止")
      */
     public const ACTIVITY_MANUAL_STOP = 400102;
-    
+
     /**
      * @Text("购物奖励-活动-删除")
      */

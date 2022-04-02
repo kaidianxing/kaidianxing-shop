@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 开店星新零售管理系统
  * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
@@ -11,19 +10,23 @@
  * @warning 未经许可禁止私自删除版权信息
  */
 
-
-
 namespace shopstar\admin\user;
 
-
+use shopstar\bases\KdxAdminApiController;
 use shopstar\components\permission\Permission;
 use shopstar\exceptions\UserException;
 use shopstar\helpers\RequestHelper;
 use shopstar\models\role\ManagerRoleModel;
-use shopstar\bases\KdxAdminApiController;
 
+/**
+ * 角色
+ * Class RoleController
+ * @package shopstar\admin\sysset
+ * @author 青岛开店星信息技术有限公司
+ */
 class RoleController extends KdxAdminApiController
 {
+
     /**
      * 角色列表
      * @action index
@@ -37,17 +40,17 @@ class RoleController extends KdxAdminApiController
                 ['status', 'int', 'status'],
                 ['name', 'like', 'keyword']
             ],
-            'where'   => [
+            'where' => [
                 'is_deleted' => 0
             ],
-            'select'  => [
+            'select' => [
                 'id',
                 'name',
                 'status',
                 'perms',
                 'is_default',
             ],
-            'with'    => [
+            'with' => [
                 // 删除未开启和已删除的操作员
                 'manage' => function ($query) {
                     $query->select('role_id, name')->where(['status' => 1, 'is_deleted' => 0]);
@@ -67,7 +70,7 @@ class RoleController extends KdxAdminApiController
                 $row['operator_num'] = count($row['manage']);
                 unset($row['manage']);
                 // 判断此角色是否含有订单核销权限
-                $row['perms'] = explode('|',$row['perms']);
+                $row['perms'] = explode('|', $row['perms']);
                 $perms = [];
                 foreach ($row['perms'] as $permKey => $permValue) {
                     if ($permValue == 'verify.verification.manage') {
@@ -95,7 +98,7 @@ class RoleController extends KdxAdminApiController
         }
         $post['status'] = RequestHelper::post('status', ManagerRoleModel::STATUS_ENABLE);
         $post['perms'] = RequestHelper::post('perms', '');
-        
+
         ManagerRoleModel::createRole($post);
         return $this->result('创建角色成功');
     }
@@ -110,7 +113,7 @@ class RoleController extends KdxAdminApiController
     public function actionEdit()
     {
         $id = RequestHelper::get('id');
-        $info = ManagerRoleModel::getInfo($id, $this->shopType);
+        $info = ManagerRoleModel::getInfo($id);
         return $this->result(['data' => $info]);
     }
 
@@ -156,7 +159,7 @@ class RoleController extends KdxAdminApiController
                 $id = explode(',', $ids);
             }
         }
-        
+
         ManagerRoleModel::deleteById($id);
         return $this->result('操作成功');
     }
@@ -169,7 +172,7 @@ class RoleController extends KdxAdminApiController
      */
     public function actionGetAllPerms()
     {
-        $allPerm = Permission::getPermTreeForRole($this->shopType);;
+        $allPerm = Permission::getPermTreeForRole();
 
         return $this->result(['data' => $allPerm]);
     }
@@ -189,7 +192,7 @@ class RoleController extends KdxAdminApiController
                 $id = explode(',', $ids);
             }
         }
-        
+
         ManagerRoleModel::forbidden($id);
 
         return $this->result('操作成功');
@@ -210,7 +213,7 @@ class RoleController extends KdxAdminApiController
                 $id = explode(',', $ids);
             }
         }
-        
+
         ManagerRoleModel::active($id);
 
         return $this->result('操作成功');
@@ -223,9 +226,9 @@ class RoleController extends KdxAdminApiController
      */
     public function actionAllRole()
     {
-        
-        $allRole =  ManagerRoleModel::allRoles();
+        $allRole = ManagerRoleModel::allRoles();
 
         return $this->result(['data' => $allRole]);
     }
+
 }

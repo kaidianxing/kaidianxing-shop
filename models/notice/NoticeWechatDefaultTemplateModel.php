@@ -15,7 +15,7 @@ namespace shopstar\models\notice;
 use shopstar\bases\model\BaseActiveRecord;
 
 /**
- * This is the model class for table "{{%app_notice_default_template}}".
+ * This is the model class for table "{{%notice_default_template}}".
  *
  * @property int $id
  * @property string $name 名称
@@ -32,7 +32,7 @@ class NoticeWechatDefaultTemplateModel extends BaseActiveRecord
      */
     public static function tableName()
     {
-        return '{{%app_notice_wechat_default_template}}';
+        return '{{%notice_wechat_default_template}}';
     }
 
     /**

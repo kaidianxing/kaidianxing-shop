@@ -27,7 +27,7 @@ use yii\web\Response;
 /**
  * 满额立减
  * Class EnoughController
- * @package app\controllers\manage\sale\basic
+ * @package shopstar\admin\sale\basic
  */
 class EnoughController extends KdxAdminApiController
 {

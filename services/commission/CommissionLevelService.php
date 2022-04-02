@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 开店星新零售管理系统
  * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
@@ -11,16 +10,8 @@
  * @warning 未经许可禁止私自删除版权信息
  */
 
-
 namespace shopstar\services\commission;
 
-use shopstar\models\commission\CommissionAgentModel;
-use shopstar\models\commission\CommissionApplyModel;
-use shopstar\models\commission\CommissionLevelModel;
-use shopstar\models\commission\CommissionOrderDataModel;
-use shopstar\models\commission\CommissionOrderModel;
-use shopstar\models\commission\CommissionRelationModel;
-use shopstar\models\commission\CommissionSettings;
 use shopstar\bases\service\BaseService;
 use shopstar\components\notice\NoticeComponent;
 use shopstar\constants\components\notice\NoticeTypeConstant;
@@ -28,9 +19,18 @@ use shopstar\constants\order\OrderStatusConstant;
 use shopstar\constants\OrderConstant;
 use shopstar\helpers\ArrayHelper;
 use shopstar\helpers\DateTimeHelper;
- 
+use shopstar\models\commission\CommissionAgentModel;
+use shopstar\models\commission\CommissionApplyModel;
+use shopstar\models\commission\CommissionLevelModel;
+use shopstar\models\commission\CommissionOrderDataModel;
+use shopstar\models\commission\CommissionOrderModel;
+use shopstar\models\commission\CommissionRelationModel;
+use shopstar\models\commission\CommissionSettings;
 use shopstar\models\order\OrderGoodsModel;
 
+/**
+ * @author 青岛开店星信息技术有限公司
+ */
 class CommissionLevelService extends BaseService
 {
 
@@ -72,7 +72,6 @@ class CommissionLevelService extends BaseService
         }
         return true;
     }
-
 
     /**
      * 分销商升级
@@ -237,7 +236,6 @@ class CommissionLevelService extends BaseService
 
         return true;
     }
-
 
 
 }

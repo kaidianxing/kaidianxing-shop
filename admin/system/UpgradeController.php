@@ -15,9 +15,10 @@ namespace shopstar\admin\system;
 use shopstar\bases\KdxAdminApiController;
 
 /**
- * 积分余额设置
- * Class CreditController
- * @package app\controllers\manage\sysset
+ * 系统升级
+ * Class UpgradeController
+ * @package shopstar\admin\sysset
+ * @author 青岛开店星信息技术有限公司
  */
 class UpgradeController extends KdxAdminApiController
 {

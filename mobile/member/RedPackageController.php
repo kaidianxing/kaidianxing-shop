@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 开店星新零售管理系统
  * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
@@ -11,16 +10,12 @@
  * @warning 未经许可禁止私自删除版权信息
  */
 
-
-
 namespace shopstar\mobile\member;
-
 
 use shopstar\bases\controller\BaseMobileApiController;
 use shopstar\components\payment\base\PayTypeConstant;
 use shopstar\components\payment\base\WithdrawOrderTypeConstant;
 use shopstar\components\payment\PayComponent;
-use shopstar\constants\ClientTypeConstant;
 use shopstar\helpers\DateTimeHelper;
 use shopstar\helpers\OrderNoHelper;
 use shopstar\helpers\RequestHelper;
@@ -147,7 +142,7 @@ class RedPackageController extends BaseMobileApiController
             $payInstance = PayComponent::getInstance($config);
             $refundResult = $payInstance->transfer();
             if (is_error($refundResult)) {
-                if($refundResult['error'] == 135114){
+                if ($refundResult['error'] == 135114) {
                     throw new \Exception('红包领取异常，请联系管理员');
                 }
                 throw new \Exception($refundResult['message']);

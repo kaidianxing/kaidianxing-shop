@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 开店星新零售管理系统
  * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
@@ -18,7 +17,6 @@ use shopstar\bases\exception\BaseException;
 use shopstar\bases\model\BaseActiveRecord;
 use shopstar\helpers\ArrayHelper;
 use shopstar\helpers\LiYangHelper;
-use shopstar\helpers\LogHelper;
 use shopstar\helpers\RequestHelper;
 use shopstar\helpers\ResponseHelper;
 use shopstar\helpers\StringHelper;
@@ -30,6 +28,7 @@ use yii\filters\Cors;
  * 所有端接口基类(定义接口常用方法)
  * Class BaseApiController
  * @package shopstar\bases\controller
+ * @author 青岛开店星信息技术有限公司
  */
 class BaseApiController extends BaseController
 {
@@ -40,29 +39,9 @@ class BaseApiController extends BaseController
     public $enableCsrfValidation = false;
 
     /**
-     * @var bool 检测请求签名
-     */
-    public $checkRequestSign = true;
-
-    /**
      * @var float|int 请求签名过期时间(2分钟，子类可复写)
      */
     public $requestSignExpireTime = 60 * 2;
-
-    /**
-     * @var array 需要POST的Action
-     */
-    // public $postActions = [];  ==>  $configActions['postActions']
-
-    /**
-     * @var array 允许访问的Action(子类可复写，传入*时当前Controller中全部Action都允许)
-     */
-    // public $allowActions = [];  ==>  $configActions['allowActions']
-
-    /**
-     * @var array 允许不携带Session-Id访问的Action(子类可复写，传入*时当前Controller中全部Action都允许)
-     */
-    // public $allowSessionActions = [];  ==>  $configActions['allowSessionActions']
 
     /**
      * @var string SessionId
@@ -75,18 +54,7 @@ class BaseApiController extends BaseController
     public $clientType = 0;
 
     /**
-     * @var array 允许不携带 Client-Type 访问的Action(子类可复写，传入*时当前Controller中全部Action都允许)
-     */
-    // public $allowClientActions = [];  ==>  $configActions['allowClientActions']
-
-    /**
-     * @var array 允许GET携带Header参数Actions
-     */
-    // public $allowHeaderActions = [];  ==>  $configActions['allowHeaderActions']
-
-    /**
      * @param Action $action
-     * @return bool
      * @throws \yii\web\BadRequestHttpException
      * @throws BaseApiException
      * @author likexin
@@ -114,42 +82,6 @@ class BaseApiController extends BaseController
         }
 
         return parent::beforeAction($action);
-    }
-
-    /**
-     * 检测请求签名
-     * @throws BaseApiException
-     * @author likexin
-     */
-    private function checkRequestSign()
-    {
-        $timestamp = RequestHelper::isPost() ? RequestHelper::post('timestamp') : RequestHelper::get('timestamp');
-        $requestSign = RequestHelper::isPost() ? RequestHelper::post('sign') : RequestHelper::get('sign');
-        if (empty($timestamp) || empty($requestSign)) {
-            throw new BaseApiException('请求签名错误');
-        }
-
-        // 获取所有请求参数
-        $params = RequestHelper::isPost() ? RequestHelper::post() : RequestHelper::get();
-        unset($params['sign']);
-        ksort($params);
-
-        $queryString = '';
-        foreach ($params as $key => $value) {
-            $queryString .= '&' . ($key . '=' . $value);
-        }
-        $queryString = substr($queryString, 1);
-
-        // 计算验证签名
-        $sign = md5($queryString);   // 前后端统一签名计算方式
-        if ($sign != $requestSign) {
-            throw new BaseApiException('请求签名无效');
-        }
-
-        // 验证签名失效时间
-        if ($timestamp + $this->requestSignExpireTime <= time()) {
-            throw new BaseApiException('请求签名失效');
-        }
     }
 
     /**
@@ -257,7 +189,7 @@ class BaseApiController extends BaseController
      * @return \yii\web\Response|array
      * @author likexin
      */
-    public function result($return = null, $error = 0, $response = true)
+    public function result($return = null, int $error = 0, bool $response = true)
     {
         if ($return instanceof \Throwable) {
             $return = [
@@ -300,7 +232,7 @@ class BaseApiController extends BaseController
      * @return \yii\web\Response
      * @author likexin
      */
-    public function error($message = '', $errcode = -1, $response = true)
+    public function error($message = '', int $errcode = -1, bool $response = true)
     {
         return $this->result($message, $errcode, $response);
     }
@@ -312,7 +244,7 @@ class BaseApiController extends BaseController
      * @return \yii\web\Response
      * @author likexin
      */
-    public function success($message = '', $response = true)
+    public function success($message = '', bool $response = true)
     {
         return $this->result($message, 0, $response);
     }
@@ -323,7 +255,7 @@ class BaseApiController extends BaseController
      * @author 青岛开店星信息技术有限公司
      * @func behaviors
      */
-    public function behaviors()
+    public function behaviors(): array
     {
         $behaviors = [];
 

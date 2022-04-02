@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 开店星新零售管理系统
  * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
@@ -11,7 +10,6 @@
  * @warning 未经许可禁止私自删除版权信息
  */
 
-
 namespace shopstar\bases\model;
 
 use shopstar\helpers\RequestHelper;
@@ -20,6 +18,7 @@ use yii\db\ActiveQuery;
 /**
  * Class BaseActiveQuery
  * @package shopstar\bases\model
+ * @author 青岛开店星信息技术有限公司
  */
 class BaseActiveQuery extends ActiveQuery
 {
@@ -32,7 +31,7 @@ class BaseActiveQuery extends ActiveQuery
      * @param string $pageSizeKey
      * @return BaseActiveQuery
      */
-    public function page($page = null, $pageSize = null, $pageKey = 'page', $pageSizeKey = 'pagesize')
+    public function page($page = null, $pageSize = null, string $pageKey = 'page', string $pageSizeKey = 'pagesize')
     {
         if (is_null($page)) {
             $page = RequestHelper::getPage($pageKey);

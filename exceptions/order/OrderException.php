@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 开店星新零售管理系统
  * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
@@ -58,7 +57,7 @@ class OrderException extends BaseException
      * @Message("商品库存修改失败")
      */
     const ORDER_MANAGE_OP_PAY_ORDER_GOODS_STOCK_ERROR = 220205;
-    
+
     /**
      * @Message("修改预售订单状态失败")
      */
@@ -98,22 +97,22 @@ class OrderException extends BaseException
      * @Message("关闭订单错误")
      */
     const ORDER_MANAGE_OP_CLOSE_ORDER_ERROR = 220213;
-    
+
     /**
      * @Message("不在定金支付时间内")
      */
     const ORDER_MANAGE_OP_PAY_PRESELL_ORDER_PAY_FRONT_TIME_ERROR = 220214;
-    
+
     /**
      * @Message("订单商品不存在")
      */
     const ORDER_MANAGE_OP_PAY_ORDER_GOODS_INFO_NOT_EXISTS = 220215;
-    
+
     /**
      * @Message("虚拟商品发货失败")
      */
     const ORDER_MANAGE_OP_PAY_ORDER_VIRTUAL_SEND_FAIL = 220216;
-    
+
     /**
      * @Message("参数错误")
      */
@@ -538,7 +537,6 @@ class OrderException extends BaseException
      * @Message("订单支付类型错误")
      */
     const ORDER_PAY_TYPE_ERROR = 221039;
-
 
 
 }

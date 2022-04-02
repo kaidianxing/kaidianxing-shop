@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 开店星新零售管理系统
  * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
@@ -12,7 +11,6 @@
  */
 
 namespace shopstar\jobs\order;
-
 
 use shopstar\constants\member\MemberCreditRecordStatusConstant;
 use shopstar\constants\order\OrderStatusConstant;
@@ -29,6 +27,7 @@ use yii\queue\Queue;
  * 消费送积分
  * Class GiveCreditJob
  * @package shopstar\jobs\order
+ * @author 青岛开店星信息技术有限公司
  */
 class GiveCreditJob extends BaseObject implements JobInterface
 {
@@ -37,15 +36,15 @@ class GiveCreditJob extends BaseObject implements JobInterface
      * @var int 订单id
      */
     public $orderId = 0;
-    
+
     /**
      * @var int 会员id
      */
     public $memberId = 0;
-    
+
     /**
      * @param Queue $queue
-     * @return mixed|void
+     * @return void
      * @author 青岛开店星信息技术有限公司
      */
     public function execute($queue)
@@ -54,12 +53,12 @@ class GiveCreditJob extends BaseObject implements JobInterface
         $order = OrderModel::findOne(['id' => $this->orderId]);
         if (empty($order)) {
             echo "订单不存在";
-            return ;
+            return;
         }
         // 判断订单状态
         if ($order->status < OrderStatusConstant::ORDER_STATUS_SUCCESS) {
             echo "订单状态错误";
-            return ;
+            return;
         }
         // 查找设置
         $tradeSet = ShopSettings::get('sysset.credit');
@@ -75,7 +74,7 @@ class GiveCreditJob extends BaseObject implements JobInterface
                 $goods = GoodsModel::find()
                     ->select(['give_credit_status', 'give_credit_num'])
                     ->alias('goods')
-                    ->leftJoin(OrderGoodsModel::tableName().' order_goods', 'order_goods.goods_id=goods.id')
+                    ->leftJoin(OrderGoodsModel::tableName() . ' order_goods', 'order_goods.goods_id=goods.id')
                     ->where(['order_goods.order_id' => $this->orderId])
                     ->get();
                 foreach ($goods as $item) {
@@ -91,9 +90,9 @@ class GiveCreditJob extends BaseObject implements JobInterface
             // 发放积分
             $res = MemberModel::updateCredit($this->memberId, $num, 0, 'credit', 1, '消费得积分', MemberCreditRecordStatusConstant::ORDER_GIVE_CREDIT);
             if (is_error($res)) {
-                echo $res['message']."\n";
+                echo $res['message'] . "\n";
             }
         }
-        
+
     }
 }

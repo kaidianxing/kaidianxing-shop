@@ -55,7 +55,7 @@ class NoticeSmsTemplateModel extends BaseActiveRecord
      */
     public static function tableName()
     {
-        return '{{%app_notice_sms_template}}';
+        return '{{%notice_sms_template}}';
     }
 
     /**

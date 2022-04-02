@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 开店星新零售管理系统
  * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
@@ -11,7 +10,6 @@
  * @warning 未经许可禁止私自删除版权信息
  */
 
-
 namespace shopstar\helpers;
 
 use Yii;
@@ -20,6 +18,7 @@ use Yii;
  * 验证码助手类
  * Class CaptchaHelper
  * @package shopstar\helpers
+ * @author 青岛开店星信息技术有限公司
  */
 class CaptchaHelper
 {
@@ -77,9 +76,9 @@ class CaptchaHelper
      * 生成验证码
      * @param array $params
      * @param int $type
-     * @param string $sessionId
+     * @author 青岛开店星信息技术有限公司
      */
-    public static function create($params = [], $type = 1)
+    public static function create(array $params = [], int $type = 1)
     {
         $chars = '';
         if ($type == 1) {
@@ -113,11 +112,12 @@ class CaptchaHelper
 
     /**
      * 检测验证码
-     * @param $verifyCode
-     * @param string $identity
+     * @param string $captchaCode
+     * @param string $sessionId
      * @return bool
+     * @author 青岛开店星信息技术有限公司
      */
-    public static function check($captchaCode, $sessionId = '')
+    public static function check(string $captchaCode, string $sessionId = ''): bool
     {
         $cacheCode = \Yii::$app->redis->get('captcha_code_' . $sessionId);
         if (empty($cacheCode) || empty($captchaCode)) {
@@ -132,7 +132,7 @@ class CaptchaHelper
      * @return bool
      * @author blue
      */
-    public static function remove($type = '')
+    public static function remove(string $type = ''): bool
     {
 //        LocalSession::remove('captcha_code_' . $type);
         return true;

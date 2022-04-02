@@ -17,7 +17,7 @@ use shopstar\helpers\DateTimeHelper;
 use yii\helpers\Json;
 
 /**
- * This is the model class for table "{{%app_express_helper_success_record}}".
+ * This is the model class for table "{{%express_helper_success_record}}".
  *
  * @property int $id
  * @property int $order_id 订单id
@@ -33,7 +33,7 @@ class ExpressHelperSuccessRecordModel extends BaseActiveRecord
      */
     public static function tableName()
     {
-        return '{{%app_express_helper_success_record}}';
+        return '{{%express_helper_success_record}}';
     }
 
     /**

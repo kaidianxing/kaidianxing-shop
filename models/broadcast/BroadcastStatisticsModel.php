@@ -20,7 +20,7 @@ use shopstar\constants\order\OrderStatusConstant;
 use shopstar\models\order\OrderModel;
 
 /**
- * This is the model class for table "{{%app_broadcast_statistics}}".
+ * This is the model class for table "{{%broadcast_statistics}}".
  *
  * @property int $id
  * @property string $date 日期
@@ -37,7 +37,7 @@ class BroadcastStatisticsModel extends BaseActiveRecord
      */
     public static function tableName()
     {
-        return '{{%app_broadcast_statistics}}';
+        return '{{%broadcast_statistics}}';
     }
 
     /**

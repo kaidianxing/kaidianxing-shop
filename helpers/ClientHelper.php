@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 开店星新零售管理系统
  * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
@@ -17,16 +16,17 @@ namespace shopstar\helpers;
  * 客户端辅助类
  * Class ClientHelper
  * @package shopstar\helpers
+ * @author 青岛开店星信息技术有限公司
  */
 class ClientHelper
 {
 
     /**
      * 获取客户端 IP
-     * @return mixed
+     * @return string
      * @author likexin
      */
-    public static function getIp()
+    public static function getIp(): string
     {
         static $ip = '';
         $ip = $_SERVER['REMOTE_ADDR'];
@@ -51,7 +51,7 @@ class ClientHelper
      * @return bool
      * @author likexin
      */
-    public static function isMobile()
+    public static function isMobile(): bool
     {
         if (isset($_SERVER['HTTP_VIA']) && stristr($_SERVER['HTTP_VIA'], "wap")) {
             return true;

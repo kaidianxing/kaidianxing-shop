@@ -45,7 +45,7 @@ class CommissionOrderDataModel extends BaseActiveRecord
      */
     public static function tableName()
     {
-        return '{{%app_commission_order_data}}';
+        return '{{%commission_order_data}}';
     }
 
     /**

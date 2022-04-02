@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 开店星新零售管理系统
  * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
@@ -18,18 +17,23 @@ use shopstar\helpers\RequestHelper;
 use shopstar\models\core\CoreSettings;
 
 /**
- * 积分余额设置
- * Class CreditController
- * @package app\controllers\manage\sysset
+ * 附件设置
+ * Class AttachmentController
+ * @package shopstar\admin\sysset
+ * @author 青岛开店星信息技术有限公司
  */
 class AttachmentController extends KdxAdminApiController
 {
 
+    /**
+     * @var array
+     */
     public $configActions = [
         'postActions' => [
             'set',
         ]
     ];
+
     /**
      * @var array 可用的类型
      */
@@ -87,13 +91,13 @@ class AttachmentController extends KdxAdminApiController
 
         // 判断设置的大小是否超出了php.ini中设置的上限
         $typeArray = [
-            'video'=>RequestHelper::post('video.max_size'),
-            'image'=>RequestHelper::post('image.max_size'),
-            'audio'=>RequestHelper::post('audio.max_size'),
+            'video' => RequestHelper::post('video.max_size'),
+            'image' => RequestHelper::post('image.max_size'),
+            'audio' => RequestHelper::post('audio.max_size'),
         ];
         $ini = ini_get('upload_max_filesize');
-        foreach ($typeArray as $value){
-            if($value > ($ini * 1024)){
+        foreach ($typeArray as $value) {
+            if ($value > ($ini * 1024)) {
                 return $this->error('上传限制超出了php配置中的上限');
             }
         }
@@ -125,7 +129,7 @@ class AttachmentController extends KdxAdminApiController
      * @return array
      * @author likexin
      */
-    private function getUsableExtensions(string $type)
+    private function getUsableExtensions(string $type): array
     {
         $postField = $type . '.extensions';
         $postType = RequestHelper::postArray($postField);

@@ -12,7 +12,6 @@
 
 namespace shopstar\config\apps\notice\noticeMakes;
 
-
 use shopstar\components\notice\bases\BaseMake;
 
 class BaseMemberAccountMake extends BaseMake

@@ -23,7 +23,7 @@ use shopstar\bases\KdxAdminApiController;
 /**
  * 公告
  * Class NoticeController
- * @package shop\manage\sysset\mall
+ * @package shopstar\admin\sysset\mall
  */
 class NoticeController extends KdxAdminApiController
 {

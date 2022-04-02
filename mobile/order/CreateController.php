@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 开店星新零售管理系统
  * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
@@ -11,19 +10,23 @@
  * @warning 未经许可禁止私自删除版权信息
  */
 
-
 namespace shopstar\mobile\order;
 
+use GuzzleHttp\Exception\GuzzleException;
 use shopstar\bases\controller\BaseMobileApiController;
- 
+use shopstar\constants\form\FormTypeConstant;
 use shopstar\helpers\RequestHelper;
 use shopstar\models\form\FormModel;
 use shopstar\models\order\create\OrderCreator;
-use shopstar\constants\form\FormTypeConstant;
-use yii\helpers\Json;
 
+/**
+ * @author 青岛开店星信息技术有限公司
+ */
 class CreateController extends BaseMobileApiController
 {
+    /**
+     * @var \string[][]
+     */
     public $configActions = [
         'needBindMobileActions' => [
             'index' => 'buy',
@@ -34,11 +37,11 @@ class CreateController extends BaseMobileApiController
     /**
      * 创建订单
      * @return array
-     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @throws GuzzleException
      * @throws \shopstar\exceptions\order\OrderCreatorException
      * @author 青岛开店星信息技术有限公司
      */
-    public function actionIndex()
+    public function actionIndex(): array
     {
         return $this->create($this->getArgs(), false);
     }
@@ -46,11 +49,11 @@ class CreateController extends BaseMobileApiController
     /**
      * 确认订单
      * @return array
-     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @throws GuzzleException
      * @throws \shopstar\exceptions\order\OrderCreatorException
      * @author 青岛开店星信息技术有限公司
      */
-    public function actionConfirm()
+    public function actionConfirm(): array
     {
         return $this->create($this->getArgs(), true);
     }
@@ -60,7 +63,7 @@ class CreateController extends BaseMobileApiController
      * @param array $args
      * @param bool $isConfirm
      * @return array
-     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @throws GuzzleException
      * @throws \shopstar\exceptions\order\OrderCreatorException
      * @author 青岛开店星信息技术有限公司
      */
@@ -94,7 +97,7 @@ class CreateController extends BaseMobileApiController
      * @return array
      * @author 青岛开店星信息技术有限公司
      */
-    private function getArgs()
+    private function getArgs(): array
     {
         // 接收前端传入订单信息
         return [
@@ -189,7 +192,7 @@ class CreateController extends BaseMobileApiController
             'virtual_email' => RequestHelper::post('virtual_email'),
 
             // 店铺笔记-文章id
-            'article_id'=>RequestHelper::postInt('article_id'),
+            'article_id' => RequestHelper::postInt('article_id'),
         ];
     }
 }

@@ -14,11 +14,11 @@ namespace shopstar\config\modules\permission;
 
 use shopstar\components\permission\BasePermissionConfig;
 
-
 /**
  * 分销权限
  * Class PermissionConfig
- * @package apps\commission\config
+ * @package shopstar\config\modules\permission
+ * @author 青岛开店星信息技术有限公司
  */
 class CommissionPermissionConfig extends BasePermissionConfig
 {
@@ -26,22 +26,22 @@ class CommissionPermissionConfig extends BasePermissionConfig
      * @var string 权限模块标识
      */
     protected $identity = 'commission';
-    
+
     /**
      * @var string 路由前缀
      */
     protected $prefix = 'manage/commission/';
-    
+
     /**
      * @var string 分组名称
      */
     protected $groupName = '分销';
-    
+
     /**
      * @var bool 是否插件
      */
     protected $isPlugin = true;
-    
+
     /**
      * @var array[] 权限配置
      */
@@ -87,7 +87,7 @@ class CommissionPermissionConfig extends BasePermissionConfig
                     ]
                 ]
             ],
-    
+
         ],
         'level' => [
             'title' => '分销等级',

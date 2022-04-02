@@ -28,7 +28,7 @@ class CommissionSettings extends BaseSettings
      */
     public static function tableName()
     {
-        return '{{%app_commission_settings}}';
+        return '{{%commission_settings}}';
     }
 
     /**

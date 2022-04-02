@@ -20,7 +20,7 @@ use shopstar\models\poster\PosterModel;
 use shopstar\wechat\constants\WechatRuleKeywordConstant;
 
 /**
- * This is the model class for table "{{%app_wechat_rule_keyword}}".
+ * This is the model class for table "{{%wechat_rule_keyword}}".
  *
  * @property int $id
  * @property int $rule_id 规则id
@@ -38,7 +38,7 @@ class WechatRuleKeywordModel extends BaseActiveRecord
      */
     public static function tableName()
     {
-        return '{{%app_wechat_rule_keyword}}';
+        return '{{%wechat_rule_keyword}}';
     }
 
     /**

@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 开店星新零售管理系统
  * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
@@ -15,7 +14,6 @@ namespace shopstar\jobs\order;
 
 use shopstar\helpers\HttpHelper;
 use shopstar\helpers\LogHelper;
-use shopstar\models\order\PayOrderModel;
 use shopstar\models\shop\ShopSettings;
 use yii\base\BaseObject;
 use yii\helpers\Json;
@@ -27,6 +25,7 @@ use yii\queue\JobInterface;
  * T + 7 天结算
  * Class BytedanceSettleJob
  * @package shopstar\jobs\order
+ * @author 青岛开店星信息技术有限公司
  */
 class BytedanceSettleJob extends BaseObject implements JobInterface
 {
@@ -39,7 +38,7 @@ class BytedanceSettleJob extends BaseObject implements JobInterface
      * @var string 外部交易单号
      */
     public $outTradeNo = '';
-    
+
     /**
      * @param \yii\queue\Queue $queue
      * @return mixed|void
@@ -51,12 +50,12 @@ class BytedanceSettleJob extends BaseObject implements JobInterface
         $appid = ShopSettings::get('channel_setting.byte_dance.appid');
         // salt
         $salt = ShopSettings::get('sysset.payment.typeset.byte_dance.byte_dance.salt');
-        
+
         // 参数
         $params = [
             'out_order_no' => $this->outTradeNo,
             'settle_desc' => '结算',
-            'out_settle_no' => time().mt_rand(1000, 9999)
+            'out_settle_no' => time() . mt_rand(1000, 9999)
         ];
         // 计算签名
         $paramArray = [];
@@ -67,7 +66,7 @@ class BytedanceSettleJob extends BaseObject implements JobInterface
         sort($paramArray, 2);
         $signStr = trim(implode('&', $paramArray));
         $params['sign'] = md5($signStr);
-        
+
         $params['app_id'] = $appid;
         $params = Json::encode($params);
         $res = HttpHelper::post($this->settleApi, $params);
@@ -75,7 +74,7 @@ class BytedanceSettleJob extends BaseObject implements JobInterface
         if ($res['err_no'] != 0) {
             LogHelper::error('[BYTEDANCE SETTLE ERROR ERROR]:' . $res['err_tips'], Json::decode($params));
             echo "字节跳动结算失败";
-            return ;
+            return;
         }
         echo "字节跳动结算成功";
     }

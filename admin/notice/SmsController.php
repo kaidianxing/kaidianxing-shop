@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 开店星新零售管理系统
  * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
@@ -13,23 +12,21 @@
 
 namespace shopstar\admin\notice;
 
+use Overtrue\EasySms\EasySms;
+use Overtrue\EasySms\Exceptions\NoGatewayAvailableException;
+use shopstar\bases\KdxAdminApiController;
 use shopstar\components\notice\config\SmsConfig;
 use shopstar\components\notice\NoticeComponent;
-use shopstar\constants\core\CoreAppTypeConstant;
-use shopstar\constants\SyssetTypeConstant;
+use shopstar\constants\components\notice\NoticeTypeConstant;
+use shopstar\constants\notice\NoticeLogConstant;
+use shopstar\exceptions\notice\NoticeSmsException;
 use shopstar\helpers\RequestHelper;
 use shopstar\helpers\StringHelper;
 use shopstar\helpers\ValueHelper;
 use shopstar\models\core\CoreSettings;
 use shopstar\models\log\LogModel;
-use shopstar\models\shop\ShopSettings;
-use Overtrue\EasySms\EasySms;
-use Overtrue\EasySms\Exceptions\NoGatewayAvailableException;
-use shopstar\constants\notice\NoticeLogConstant;
-use shopstar\constants\components\notice\NoticeTypeConstant;
-use shopstar\exceptions\notice\NoticeSmsException;
 use shopstar\models\notice\NoticeSmsTemplateModel;
-use shopstar\bases\KdxAdminApiController;
+use shopstar\models\shop\ShopSettings;
 use yii\db\Exception;
 use yii\helpers\Json;
 use yii\web\Response;
@@ -37,10 +34,14 @@ use yii\web\Response;
 /**
  * 短信设置
  * Class SmsController
- * @package shop\manage\sysset\sms
+ * @package shopstar\admin\notice
  */
 class SmsController extends KdxAdminApiController
 {
+
+    /**
+     * @var array
+     */
     public $configActions = [
         'postActions' => [
             'add',
@@ -61,7 +62,8 @@ class SmsController extends KdxAdminApiController
 
     /**
      * 自定义短信库列表
-     * @return string
+     * @return array|int[]|Response
+     * @throws \ReflectionException
      * @author 青岛开店星信息技术有限公司
      */
     public function actionIndex()
@@ -86,10 +88,10 @@ class SmsController extends KdxAdminApiController
             'orderBy' => ['sms.created_at' => SORT_DESC]
         ], [
             'pager' => true,
-            'callable' => function (&$row) use ($shop_name){
+            'callable' => function (&$row) use ($shop_name) {
                 // 如果有扩展字段解码
                 //if (is_null($row['shop_name'])) {
-                    $row['shop_name'] = $shop_name;
+                $row['shop_name'] = $shop_name;
                 //}
             }
         ]);
@@ -111,6 +113,7 @@ class SmsController extends KdxAdminApiController
     /**
      * 获取短信场景列表
      * @return array|int[]|\yii\web\Response
+     * @throws \ReflectionException
      * @author 青岛开店星信息技术有限公司
      */
     public function actionGetScene()
@@ -122,8 +125,7 @@ class SmsController extends KdxAdminApiController
 
     /**
      * 详情
-     * @return string
-     * @throws NoticeSmsException
+     * @return array|int[]|Response
      * @author 青岛开店星信息技术有限公司
      */
     public function actionDetail()
@@ -146,8 +148,7 @@ class SmsController extends KdxAdminApiController
 
     /**
      * 编辑
-     * @return string
-     * @throws NoticeSmsException
+     * @return array|int[]|Response
      * @author 青岛开店星信息技术有限公司
      */
     public function actionEdit()
@@ -194,7 +195,6 @@ class SmsController extends KdxAdminApiController
     /**
      * 新增
      * @return Response
-     * @throws NoticeSmsException
      * @author 青岛开店星信息技术有限公司
      */
     public function actionAdd()
@@ -272,13 +272,16 @@ class SmsController extends KdxAdminApiController
         } catch (\Throwable $exception) {
 
         }
+
         return $this->success();
     }
 
 
     /**
      * 获取测试发送短信数据
+     * @return array|int[]|Response
      * @throws NoticeSmsException
+     * @throws \Overtrue\EasySms\Exceptions\InvalidArgumentException
      * @author 青岛开店星信息技术有限公司
      */
     public function actionSendData()
@@ -310,11 +313,11 @@ class SmsController extends KdxAdminApiController
             ]);
         } catch (NoGatewayAvailableException $exception) {
 
-            if ($exception->getExceptions()[$post['type']]->raw['Code'] == 'isv.INVALID_PARAMETERS'){
+            if ($exception->getExceptions()[$post['type']]->raw['Code'] == 'isv.INVALID_PARAMETERS') {
 
                 throw new NoticeSmsException(NoticeSmsException::SMS_THE_SEND_IS_ERROR);
 
-            }else{
+            } else {
                 $exp = $exception->getExceptions()[$post['type']];
                 if ($exp->getCode() == 404) {
                     return $this->error("请设置正确的短信Access Key 和 Secret");
@@ -383,14 +386,13 @@ class SmsController extends KdxAdminApiController
     }
 
 
-
     /**
      * 修改配置
      * @return Response
      * @throws NoticeSmsException
      * @author 青岛开店星信息技术有限公司
      */
-    public function actionEditSet()
+    public function actionEditSet(): Response
     {
         $data = [
             'aliyun' => RequestHelper::post('aliyun', '0'), // 阿里云设置
@@ -422,7 +424,7 @@ class SmsController extends KdxAdminApiController
 
     /**
      * 验证码设置
-     * @return string
+     * @return array|int[]|Response
      * @author 青岛开店星信息技术有限公司
      */
     public function actionCode()
@@ -443,7 +445,7 @@ class SmsController extends KdxAdminApiController
      * @throws NoticeSmsException
      * @author 青岛开店星信息技术有限公司
      */
-    public function actionEditCode()
+    public function actionEditCode(): Response
     {
         $data = [
             'sms_code' => RequestHelper::post('sms_code', '0'), // 短信验证码
@@ -458,13 +460,14 @@ class SmsController extends KdxAdminApiController
         } catch (Exception $exception) {
             throw new NoticeSmsException(NoticeSmsException::CODE_SAVE_FAIL);
         }
+
         return $this->success();
     }
 
 
     /**
      * 获取配置
-     * @return string
+     * @return array|int[]|Response
      * @author 青岛开店星信息技术有限公司
      */
     public function actionSet()

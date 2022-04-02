@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 开店星新零售管理系统
  * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
@@ -11,39 +10,39 @@
  * @warning 未经许可禁止私自删除版权信息
  */
 
-
 namespace shopstar\admin\expressHelper;
 
+use shopstar\bases\KdxAdminApiController;
 use shopstar\components\electronicSheet\bases\ElectronicSheetApiConstant;
 use shopstar\components\electronicSheet\ElectronicSheetComponents;
+use shopstar\constants\expressHelper\ExpressHelperLogConstant;
+use shopstar\constants\expressHelper\ExpressTemplateTypeConstant;
+use shopstar\exceptions\expressHelper\ExpressHelperException;
 use shopstar\helpers\DateTimeHelper;
 use shopstar\helpers\RequestHelper;
 use shopstar\helpers\StringHelper;
 use shopstar\models\core\CoreExpressModel;
-use shopstar\models\log\LogModel;
-use shopstar\constants\expressHelper\ExpressHelperLogConstant;
-use shopstar\constants\expressHelper\ExpressTemplateTypeConstant;
-use shopstar\exceptions\expressHelper\ExpressHelperException;
 use shopstar\models\expressHelper\ExpressHelperExpressTemplateModel;
+use shopstar\models\log\LogModel;
 use shopstar\services\expressHelper\PrintHandler;
-use shopstar\bases\KdxAdminApiController;
 
 /**
  * 面单模板
  * Class ExpressTemplateController
  * @author 青岛开店星信息技术有限公司
- * @package apps\expressHelper\manage
+ * @package shopstar\admin\expressHelper
  */
 class ExpressTemplateController extends KdxAdminApiController
 {
 
+    /**
+     * @var array
+     */
     public $configActions = [
         'allowPermActions' => [
             'simple-list'
         ]
     ];
-
-
 
     /**
      * @return array|int[]|\yii\web\Response
@@ -287,7 +286,6 @@ class ExpressTemplateController extends KdxAdminApiController
      * 设置默认
      * @return array|int[]|\yii\web\Response
      * @throws \Throwable
-     * @throws \yii\db\StaleObjectException
      */
     public function actionSwitch()
     {
@@ -319,6 +317,8 @@ class ExpressTemplateController extends KdxAdminApiController
 
     /**
      * 测试打印
+     * @throws ExpressHelperException
+     * @throws \yii\base\InvalidConfigException
      * @author 青岛开店星信息技术有限公司
      */
     public function actionTestPrint()

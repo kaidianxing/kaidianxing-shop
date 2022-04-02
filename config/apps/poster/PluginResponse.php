@@ -12,7 +12,6 @@
 
 namespace shopstar\config\apps\poster;
 
-use shopstar\bases\module\BasePluginProcessor;
 use shopstar\components\payment\PayComponent;
 use shopstar\components\wechat\helpers\OfficialAccountUserInfo;
 use shopstar\constants\ClientTypeConstant;
@@ -44,8 +43,9 @@ use shopstar\services\sale\CouponService;
  * 插件处理器
  * Class PluginProcessor
  * @package apps\poster\config
+ * @author 青岛开店星信息技术有限公司
  */
-class PluginResponse extends BasePluginProcessor implements PluginProcessorInterface
+class PluginResponse implements PluginProcessorInterface
 {
 
     /**

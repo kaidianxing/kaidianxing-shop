@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 开店星新零售管理系统
  * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
@@ -13,16 +12,17 @@
 
 namespace shopstar\components\wechat\helpers;
 
+use EasyWeChat\Kernel\Exceptions\HttpException;
 use shopstar\components\platform\Wechat;
 use shopstar\components\wechat\bases\WechatChannelConstant;
 use shopstar\components\wechat\channels\OfficialAccountChannel;
 use shopstar\components\wechat\WechatComponent;
-use EasyWeChat\Kernel\Exceptions\HttpException;
 
 /**
  * 公众号JsSdk助手
  * Class OfficialAccountJsSdkHelper
  * @package shopstar\components\wechat\helpers
+ * @author 青岛开店星信息技术有限公司
  */
 class OfficialAccountJsSdkHelper
 {
@@ -32,7 +32,7 @@ class OfficialAccountJsSdkHelper
      * @param string $url 分享URL
      * @return array|string
      * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
-     * @throws \EasyWeChat\Kernel\Exceptions\RuntimeExceptionOrderModel
+     * @throws \EasyWeChat\Kernel\Exceptions\RuntimeException
      * @throws \Psr\SimpleCache\InvalidArgumentException
      * @throws \yii\base\InvalidConfigException
      * @author likexin
@@ -56,7 +56,7 @@ class OfficialAccountJsSdkHelper
                 'onMenuShareWeibo',
                 'hideMenuItems',
             ], false, false, false);
-        }catch (HttpException $exception){
+        } catch (HttpException $exception) {
             $result = $exception->formattedResponse;
         }
 

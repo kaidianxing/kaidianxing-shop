@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 开店星新零售管理系统
  * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
@@ -13,31 +12,32 @@
 
 namespace shopstar\admin\consumeReward;
 
+use shopstar\bases\KdxAdminApiController;
+use shopstar\constants\consumeReward\ConsumeRewardConstant;
+use shopstar\constants\consumeReward\ConsumeRewardLogConstant;
+use shopstar\exceptions\consumeReward\ConsumeRewardException;
 use shopstar\helpers\ArrayHelper;
 use shopstar\helpers\DateTimeHelper;
 use shopstar\helpers\QueueHelper;
 use shopstar\helpers\RequestHelper;
 use shopstar\helpers\StringHelper;
+use shopstar\jobs\consumeReward\AutoStopConsumeRewardJob;
+use shopstar\models\consumeReward\ConsumeRewardActivityModel;
 use shopstar\models\goods\GoodsModel;
 use shopstar\models\log\LogModel;
 use shopstar\models\member\group\MemberGroupModel;
 use shopstar\models\member\MemberLevelModel;
 use shopstar\models\sale\CouponModel;
-use shopstar\constants\consumeReward\ConsumeRewardConstant;
-use shopstar\constants\consumeReward\ConsumeRewardLogConstant;
-use shopstar\exceptions\consumeReward\ConsumeRewardException;
-use shopstar\jobs\consumeReward\AutoStopConsumeRewardJob;
-use shopstar\models\consumeReward\ConsumeRewardActivityModel;
-use shopstar\bases\KdxAdminApiController;
 use yii\helpers\Json;
 
 /**
  * 消费奖励
  * Class IndexController
- * @package apps\consumeReward\manage
+ * @package shopstar\admin\consumeReward
  */
 class IndexController extends KdxAdminApiController
 {
+
     /**
      * 活动列表
      * @return array|int[]|\yii\web\Response

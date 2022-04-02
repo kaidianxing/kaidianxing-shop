@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 开店星新零售管理系统
  * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
@@ -11,10 +10,7 @@
  * @warning 未经许可禁止私自删除版权信息
  */
 
-
-
 namespace shopstar\exceptions\notice;
-
 
 use shopstar\bases\exception\BaseException;
 
@@ -65,7 +61,6 @@ class NoticeException extends BaseException
      */
     public const MANAGE_INDEX_WECHAT_NOTICE_DELETE_ERROR = 340108;
 
-
     /**
      * @Message("参数错误")
      */
@@ -105,7 +100,6 @@ class NoticeException extends BaseException
      * @Message("参数错误")
      */
     public const MANAGE_INDEX_SMS_NOTICE_PARAMS_ERROR = 340001;
-
 
     //签名
     /**

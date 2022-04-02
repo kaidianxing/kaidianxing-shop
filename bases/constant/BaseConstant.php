@@ -19,10 +19,10 @@ use shopstar\bases\traits\ConstantTrait;
  * Class BaseConstant
  * @package shopstar\bases\constant
  * @method getText($code) static string
+ * @author 青岛开店星信息技术有限公司
  */
 class BaseConstant
 {
 
     use ConstantTrait;
-
 }

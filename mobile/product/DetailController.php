@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 开店星新零售管理系统
  * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
@@ -11,7 +10,6 @@
  * @warning 未经许可禁止私自删除版权信息
  */
 
-
 namespace shopstar\mobile\product;
 
 use shopstar\bases\controller\BaseMobileApiController;
@@ -22,7 +20,6 @@ use shopstar\constants\goods\GoodsDeleteConstant;
 use shopstar\constants\goods\GoodsDispatchTypeConstant;
 use shopstar\constants\goods\GoodsLabelGroupStatusConstant;
 use shopstar\constants\goods\GoodsStatusConstant;
-
 use shopstar\exceptions\goods\GoodsException;
 use shopstar\helpers\RequestHelper;
 use shopstar\helpers\ShopUrlHelper;
@@ -73,10 +70,10 @@ class DetailController extends BaseMobileApiController
 
     /**
      * @return \yii\web\Response
-     * @throws GoodsException
+     * @throws GoodsException|\yii\base\InvalidConfigException
      * @author 青岛开店星信息技术有限公司
      */
-    public function actionGetDetail()
+    public function actionGetDetail(): \yii\web\Response
     {
         $id = RequestHelper::getInt('id');
         if (empty($id)) {
@@ -116,7 +113,7 @@ class DetailController extends BaseMobileApiController
         }
 
         //商品活动构建器
-        $goodsDetailsActivityHandler = GoodsDetailsActivityHandler::init($goods, $this->memberId ?: 0, $this->clientType, $this->shopType, [
+        $goodsDetailsActivityHandler = GoodsDetailsActivityHandler::init($goods, $this->memberId ?: 0, $this->clientType, [
             'team_id' => RequestHelper::getInt('team_id') ?? 0,
             'activity_type' => RequestHelper::get('activity_type'),
         ]);
@@ -135,7 +132,7 @@ class DetailController extends BaseMobileApiController
         // 自定义购买按钮status, 影响加购按钮及价格文字显示
         $goods['buy_button_status'] = GoodsService::getBuyButtonStatus($goods['ext_field']['buy_button_type'], $goods['ext_field']['buy_button_settings']);
         // 处理自定义按钮电话
-        $tel = GoodsService::getBuyButtonTelephone($goods['ext_field']['buy_button_type'], $goods['ext_field']['buy_button_settings'], $this->shopType);
+        $tel = GoodsService::getBuyButtonTelephone($goods['ext_field']['buy_button_type'], $goods['ext_field']['buy_button_settings']);
         if ($tel) {
             $goods['ext_field']['buy_button_settings']['click_telephone'] = $tel;
         }
@@ -316,7 +313,7 @@ class DetailController extends BaseMobileApiController
      * @throws GoodsException
      * @author 青岛开店星信息技术有限公司
      */
-    public function actionGetOption()
+    public function actionGetOption(): \yii\web\Response
     {
         $goodsId = RequestHelper::getInt('goods_id');
         $isOriginalBuy = RequestHelper::getInt('is_original_buy');
@@ -335,7 +332,7 @@ class DetailController extends BaseMobileApiController
         }
 
         //商品活动构建器
-        $goodsDetailsActivityHandler = GoodsDetailsActivityHandler::init($goodsId, $this->memberId ?: 0, $this->clientType, $this->shopType, [
+        $goodsDetailsActivityHandler = GoodsDetailsActivityHandler::init($goodsId, $this->memberId ?: 0, $this->clientType, [
             'team_id' => RequestHelper::getInt('team_id') ?? 0,
             'activity_type' => RequestHelper::get('activity_type'),
         ]);
@@ -390,7 +387,6 @@ class DetailController extends BaseMobileApiController
             }
 
         }
-
 
         $data = [
             'spec' => empty($spec) ? [] : $spec,

@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 开店星新零售管理系统
  * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
@@ -13,17 +12,17 @@
 
 namespace shopstar\admin\diypage;
 
+use shopstar\bases\KdxAdminApiController;
+use shopstar\constants\diypage\DiypageTypeConstant;
 use shopstar\helpers\DateTimeHelper;
 use shopstar\helpers\ImageHelper;
 use shopstar\helpers\RequestHelper;
-use shopstar\constants\diypage\DiypageTypeConstant;
 use shopstar\models\diypage\DiypageTemplateModel;
-use shopstar\bases\KdxAdminApiController;
 
 /**
  * 模板管理
  * Class TemplateController
- * @package apps\diypage\manage
+ * @package shopstar\admin\diypage
  */
 class TemplateController extends KdxAdminApiController
 {
@@ -120,7 +119,7 @@ class TemplateController extends KdxAdminApiController
      * @throws \yii\base\Exception
      * @author likexin
      */
-    private function saveThumb(string $base64)
+    private function saveThumb(string $base64): string
     {
         if (empty($base64)) {
             return '';

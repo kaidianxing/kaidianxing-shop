@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 开店星新零售管理系统
  * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
@@ -13,6 +12,7 @@
 
 namespace shopstar\admin\notice;
 
+use GuzzleHttp\Exception\GuzzleException;
 use shopstar\bases\KdxAdminApiController;
 use shopstar\components\wechat\helpers\MiniProgramSubscriptionNoticeHelper;
 use shopstar\components\wechat\helpers\OfficialAccountMessageHelper;
@@ -35,10 +35,14 @@ use yii\helpers\Json;
  * 消息通知
  * Class IndexController
  * @author 青岛开店星信息技术有限公司
- * @package apps\notice\manage
+ * @package shopstar\admin\notice
  */
 class IndexController extends KdxAdminApiController
 {
+
+    /**
+     * @var array
+     */
     public $configActions = [
         'postActions' => [
             'edit',
@@ -163,8 +167,12 @@ class IndexController extends KdxAdminApiController
 
     /**
      * 公众号消息
-     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @return array|int[]|\yii\web\Response
      * @throws NoticeException
+     * @throws GuzzleException
+     * @throws \Throwable
+     * @throws \yii\db\Exception
+     * @throws \yii\db\StaleObjectException
      * @author 青岛开店星信息技术有限公司
      */
     public function actionWechatNotice()
@@ -313,9 +321,11 @@ class IndexController extends KdxAdminApiController
     /**
      * 小程序消息通知
      * @return array|int[]|\yii\web\Response
-     * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
-     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @throws GuzzleException
      * @throws NoticeException
+     * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
+     * @throws \Throwable
+     * @throws \yii\db\StaleObjectException
      * @author 青岛开店星信息技术有限公司
      */
     public function actionWxappNotice()
@@ -421,6 +431,7 @@ class IndexController extends KdxAdminApiController
     /**
      * 设置短信
      * @throws NoticeException
+     * @throws \yii\db\Exception
      * @author 青岛开店星信息技术有限公司
      */
     public function actionSmsNotice()
@@ -457,16 +468,14 @@ class IndexController extends KdxAdminApiController
     /**
      * 获取拼接好的消息通知配置
      * @param array $get
+     * @param string $flag
      * @return array|mixed|string
      * @author 青岛开店星信息技术有限公司
      */
     public function getAllSetting(array $get, string $flag)
     {
         // 单店铺与平台端
-        $setting = ShopSettings::get('plugin_notice.send.' . $get['type_code'])[$flag] ?: [];
-
-
-        return $setting;
+        return ShopSettings::get('plugin_notice.send.' . $get['type_code'])[$flag] ?: [];
     }
 
     /**
@@ -475,7 +484,6 @@ class IndexController extends KdxAdminApiController
      * @param array $setting
      * @param string $flag
      * @return void
-     * @throws \yii\db\Exception
      * @author 青岛开店星信息技术有限公司
      */
     public function setAllSetting(array $post, array $setting, string $flag)
@@ -523,4 +531,5 @@ class IndexController extends KdxAdminApiController
             }
         ]);
     }
+
 }

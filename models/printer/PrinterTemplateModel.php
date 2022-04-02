@@ -23,7 +23,7 @@ use yii\helpers\Json;
 
 
 /**
- * This is the model class for table "{{%app_printer_template}}".
+ * This is the model class for table "{{%printer_template}}".
  *
  * @property int $id auto increment
  * @property string $name 模板名称
@@ -97,7 +97,7 @@ class PrinterTemplateModel extends BaseActiveRecord
      */
     public static function tableName()
     {
-        return '{{%app_printer_template}}';
+        return '{{%printer_template}}';
     }
 
     /**

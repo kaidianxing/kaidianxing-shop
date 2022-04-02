@@ -13,7 +13,6 @@
 namespace shopstar\models\order;
 
 use shopstar\bases\model\BaseActiveRecord;
-
 use shopstar\helpers\ArrayHelper;
 use shopstar\helpers\RequestHelper;
 use shopstar\models\shop\ShopSettings;
@@ -339,12 +338,11 @@ class DispatchModel extends BaseActiveRecord
 
     /**
      * 更新配送方式排序
-     * @param int $shopType
      * @param int $enable
      * @param int $type
      * @author 青岛开店星信息技术有限公司
      */
-    public static function updateSort(int $shopType, int $enable, int $type)
+    public static function updateSort(int $enable, int $type)
     {
         $sort = ShopSettings::get('dispatch.sort');
 

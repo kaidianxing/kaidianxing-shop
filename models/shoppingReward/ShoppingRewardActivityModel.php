@@ -27,7 +27,7 @@ use shopstar\jobs\shoppingReward\AutoStopShoppingRewardJob;
 use yii\helpers\Json;
 
 /**
- * This is the model class for table "{{%app_shopping_reward_activity}}".
+ * This is the model class for table "{{%shopping_reward_activity}}".
  *
  * @property string $id
  * @property string $title  标题
@@ -109,7 +109,7 @@ class ShoppingRewardActivityModel extends \shopstar\bases\model\BaseActiveRecord
      */
     public static function tableName()
     {
-        return '{{%app_shopping_reward_activity}}';
+        return '{{%shopping_reward_activity}}';
     }
 
     /**

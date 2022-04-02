@@ -16,7 +16,7 @@ use shopstar\bases\model\BaseActiveRecord;
 use yii\db\Expression;
 
 /**
- * This is the model class for table "{{%app_broadcast_goods_map}}".
+ * This is the model class for table "{{%broadcast_goods_map}}".
  *
  * @property int $id
  * @property int $broadcast_goods_id 小程序商品库商品id
@@ -32,7 +32,7 @@ class BroadcastRoomGoodsMapModel extends BaseActiveRecord
      */
     public static function tableName()
     {
-        return '{{%app_broadcast_goods_map}}';
+        return '{{%broadcast_goods_map}}';
     }
 
     /**

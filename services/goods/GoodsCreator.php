@@ -1,8 +1,17 @@
 <?php
+/**
+ * 开店星新零售管理系统
+ * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
+ * @author 青岛开店星信息技术有限公司
+ * @link https://www.kaidianxing.com
+ * @copyright Copyright (c) 2020-2022 Qingdao ShopStar Information Technology Co., Ltd.
+ * @copyright 版权归青岛开店星信息技术有限公司所有
+ * @warning Unauthorized deletion of copyright information is prohibited.
+ * @warning 未经许可禁止私自删除版权信息
+ */
 
 namespace shopstar\services\goods;
 
-use apps\verify\models\VerifyPointGoodsMapModel;
 use shopstar\constants\goods\GoodsBuyButtonConstant;
 use shopstar\constants\goods\GoodsConstant;
 use shopstar\constants\goods\GoodsMemberLevelDiscountConstant;
@@ -38,6 +47,9 @@ use shopstar\services\core\attachment\CoreAttachmentService;
 use shopstar\services\order\OrderService;
 use yii\helpers\Json;
 
+/**
+ * @author 青岛开店星信息技术有限公司
+ */
 class GoodsCreator
 {
     /**
@@ -65,13 +77,6 @@ class GoodsCreator
      * @var
      */
     private $specItemId = [];
-
-    /**
-     * 店铺类型
-     * @var int
-     * @author 青岛开店星信息技术有限公司
-     */
-    private $shopType = 0;
 
     /**
      * uid
@@ -177,11 +182,15 @@ class GoodsCreator
         GoodsTypeConstant::GOODS_TYPE_VIRTUAL
     ];
 
-    public function __construct(int $uid, int $shopType, array $data, bool $isEdit)
+    /**
+     * @param int $uid
+     * @param array $data
+     * @param bool $isEdit
+     */
+    public function __construct(int $uid, array $data, bool $isEdit)
     {
         $this->isEdit = $isEdit;
         $this->uid = $uid;
-        $this->shopType = $shopType;
         foreach ($data as $dataIndex => $dataItem) {
             $this->goodsInfo[$dataIndex] = is_string($dataItem) ? Json::decode($dataItem) : $dataItem;
         }
@@ -238,6 +247,10 @@ class GoodsCreator
         }
     }
 
+    /**
+     * @throws GoodsException
+     * @author 青岛开店星信息技术有限公司
+     */
     private function saveCommission()
     {
         // TODO 青岛开店星信息技术有限公司 多规格先不考虑
@@ -275,7 +288,7 @@ class GoodsCreator
      * @throws \yii\base\InvalidConfigException
      * @author 青岛开店星信息技术有限公司
      */
-    private function saveGoods()
+    private function saveGoods(): GoodsCreator
     {
         $goods = $this->getParams('goods');
         //如果没有id 是新增 有id 是修改
@@ -333,15 +346,6 @@ class GoodsCreator
         $this->logData['goods'] = $this->logPrimary['goods'] = $goodsModel->attributes;
         //设置商品id
         $this->saveGoodsId = $goodsModel->id;
-        // 增加核销点和商品的绑定
-        if ($goods['dispatch_verify']) {
-            if ($goods['is_all_verify'] != 1) {
-                $newList = $goods['dispatch_verify_point_id'];
-            } else {
-                $newList = [];
-            }
-            !$this->isEdit ? VerifyPointGoodsMapModel::addVerifyPointGoods($goodsModel->id, $newList) : VerifyPointGoodsMapModel::editVerifyPointGoods($goodsModel->id, $newList);
-        }
 
         return $this;
     }
@@ -352,11 +356,14 @@ class GoodsCreator
      * @return array
      * @author 青岛开店星信息技术有限公司
      */
-    public function getParams($params = 'goods'): array
+    public function getParams(string $params = 'goods'): array
     {
         return $this->goodsInfo[$params];
     }
 
+    /**
+     * @throws GoodsException
+     */
     private static function exception(int $code)
     {
         throw new GoodsException($code);
@@ -366,7 +373,7 @@ class GoodsCreator
      * 保存前
      * @author 青岛开店星信息技术有限公司
      */
-    private function beforeSave()
+    private function beforeSave(): GoodsCreator
     {
         //是否是多规格
         $this->hasOption = $this->goodsInfo['goods']['has_option'] == 1;
@@ -378,7 +385,7 @@ class GoodsCreator
      * 格式化
      * @author 青岛开店星信息技术有限公司
      */
-    private function format()
+    private function format(): GoodsCreator
     {
         //格式化图片
         $this->goodsInfo['goods']['thumb_all'] = Json::encode($this->goodsInfo['goods']['thumb_all'] ?: []);
@@ -406,10 +413,10 @@ class GoodsCreator
 
     /**
      * 验证参数
-     * @throws GoodsException
+     * @throws GoodsException|VirtualAccountException
      * @author 青岛开店星信息技术有限公司
      */
-    private function verifier()
+    private function verifier(): GoodsCreator
     {
         //商品是否为空
         empty($this->goodsInfo['goods']) && self::exception(GoodsException::GOODS_SAVE_GOODS_EMPTY_PARAMS_ERROR);
@@ -607,7 +614,7 @@ class GoodsCreator
                     }
                     // 电话走读取商城电话配置, 尝试获取电话
                     if ($buyButtonSettings['click_telephone_type'] == GoodsBuyButtonConstant::GOODS_BUY_BUTTON_CLICK_TELEPHONE_TYPE_DEFAULT) {
-                        GoodsService::getShopDefaultTel($this->shopType, true);
+                        GoodsService::getShopDefaultTel(true);
                     }
                 }
             }
@@ -665,7 +672,7 @@ class GoodsCreator
      * @throws GoodsException
      * @author 青岛开店星信息技术有限公司
      */
-    private function saveOptions()
+    private function saveOptions(): GoodsCreator
     {
         //获取参数值
         $options = $this->getparams('options');
@@ -721,7 +728,7 @@ class GoodsCreator
      * @throws GoodsException
      * @author 青岛开店星信息技术有限公司
      */
-    private function saveSpec()
+    private function saveSpec(): GoodsCreator
     {
         //获取参数
         $specs = self::getParams('spec');
@@ -1111,7 +1118,7 @@ class GoodsCreator
      * @return array
      * @author 青岛开店星信息技术有限公司
      */
-    private static function batchInsertHandle(int $goodsId, array $typeId)
+    private static function batchInsertHandle(int $goodsId, array $typeId): array
     {
         $data = [];
         foreach ((array)$typeId as $typeIdIndex => $typeIdItem) {
@@ -1123,12 +1130,12 @@ class GoodsCreator
 
     /**
      * 设置参数
-     * @param $params
-     * @param $value
+     * @param string $params
+     * @param array $value
      * @return bool
      * @author 青岛开店星信息技术有限公司.
      */
-    public function setParams(string $params, $value = [])
+    public function setParams(string $params, array $value = []): bool
     {
         $this->goodsInfo[$params] = $value;
         return true;

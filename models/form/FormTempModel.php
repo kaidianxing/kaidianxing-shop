@@ -28,7 +28,7 @@ class FormTempModel extends BaseActiveRecord
      */
     public static function tableName()
     {
-        return '{{%app_form_temp}}';
+        return '{{%form_temp}}';
     }
 
     /**

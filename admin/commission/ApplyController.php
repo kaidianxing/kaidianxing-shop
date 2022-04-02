@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 开店星新零售管理系统
  * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
@@ -13,41 +12,41 @@
 
 namespace shopstar\admin\commission;
 
+use Exception;
+use shopstar\bases\KdxAdminApiController;
 use shopstar\components\notice\NoticeComponent;
 use shopstar\components\payment\base\PayTypeConstant;
 use shopstar\components\payment\base\WithdrawOrderTypeConstant;
 use shopstar\components\payment\PayComponent;
 use shopstar\constants\ClientTypeConstant;
+use shopstar\constants\commission\CommissionApplyStatusConstant;
+use shopstar\constants\commission\CommissionApplyTypeConstant;
+use shopstar\constants\commission\CommissionLogConstant;
+use shopstar\constants\components\notice\NoticeTypeConstant;
 use shopstar\constants\member\MemberCreditRecordStatusConstant;
 use shopstar\constants\MemberTypeConstant;
+use shopstar\exceptions\commission\CommissionApplyException;
 use shopstar\helpers\DateTimeHelper;
 use shopstar\helpers\ExcelHelper;
 use shopstar\helpers\RequestHelper;
+use shopstar\models\commission\CommissionAgentModel;
+use shopstar\models\commission\CommissionAgentTotalModel;
+use shopstar\models\commission\CommissionApplyModel;
+use shopstar\models\commission\CommissionLevelModel;
+use shopstar\models\commission\CommissionOrderGoodsModel;
 use shopstar\models\log\LogModel;
 use shopstar\models\member\MemberModel;
 use shopstar\models\member\MemberWechatModel;
 use shopstar\models\member\MemberWxappModel;
 use shopstar\models\order\OrderGoodsModel;
 use shopstar\models\shop\ShopSettings;
-use Exception;
-use shopstar\constants\commission\CommissionApplyStatusConstant;
-use shopstar\constants\commission\CommissionApplyTypeConstant;
-use shopstar\constants\commission\CommissionLogConstant;
-use shopstar\exceptions\commission\CommissionApplyException;
-use shopstar\models\commission\CommissionAgentModel;
-use shopstar\models\commission\CommissionAgentTotalModel;
-use shopstar\models\commission\CommissionApplyModel;
-use shopstar\models\commission\CommissionLevelModel;
-use shopstar\models\commission\CommissionOrderGoodsModel;
-use shopstar\constants\components\notice\NoticeTypeConstant;
-use shopstar\bases\KdxAdminApiController;
 use yii\db\Expression;
 use yii\helpers\Json;
 
 /**
  * 佣金提现管理
  * Class ApplyController
- * @package apps\commission\manage
+ * @package shopstar\admin\commission
  */
 class ApplyController extends KdxAdminApiController
 {
@@ -71,6 +70,9 @@ class ApplyController extends KdxAdminApiController
         ]
     ];
 
+    /**
+     * @var array[]
+     */
     public $columns = [
         ['title' => '提现单号', 'field' => 'apply_no', 'width' => 12],
         ['title' => '会员ID', 'field' => 'member_id', 'width' => 12],
@@ -86,7 +88,6 @@ class ApplyController extends KdxAdminApiController
         ['title' => '提现姓名', 'field' => 'realname', 'width' => 24],
         ['title' => '支付宝账号', 'field' => 'alipay', 'width' => 24],
     ];
-
 
     /**
      * 获取初始化数据
@@ -105,6 +106,7 @@ class ApplyController extends KdxAdminApiController
     /**
      * 获取待审核列表
      * @return array|\yii\web\Response
+     * @throws CommissionApplyException
      * @author likexin
      */
     public function actionGetWaitCheckList()
@@ -117,6 +119,7 @@ class ApplyController extends KdxAdminApiController
     /**
      * 获取待打款列表
      * @return array|\yii\web\Response
+     * @throws CommissionApplyException
      * @author likexin
      */
     public function actionGetWaitRemitList()
@@ -129,6 +132,7 @@ class ApplyController extends KdxAdminApiController
     /**
      * 获取打款成功列表
      * @return array|\yii\web\Response
+     * @throws CommissionApplyException
      * @author likexin
      */
     public function actionGetSuccessList()
@@ -144,6 +148,7 @@ class ApplyController extends KdxAdminApiController
     /**
      * 获取无效列表
      * @return array|\yii\web\Response
+     * @throws CommissionApplyException
      * @author likexin
      */
     public function actionGetInvalidList()
@@ -160,11 +165,11 @@ class ApplyController extends KdxAdminApiController
      * 公用获取列表
      * @param array $andWhere
      * @return array|\yii\web\Response
+     * @throws CommissionApplyException
      * @author likexin
      */
     private function list(array $andWhere = [])
     {
-
         $export = RequestHelper::get('export', 0);
 
         $params = [
@@ -174,7 +179,7 @@ class ApplyController extends KdxAdminApiController
                 [CommissionAgentModel::tableName() . 'as agent', 'agent.member_id = apply.member_id'],
                 [CommissionLevelModel::tableName() . 'as level', 'level.id = agent.level_id'],
             ],
-            'where' => [ ],
+            'where' => [],
             'andWhere' => [
                 $andWhere,
             ],
@@ -208,12 +213,12 @@ class ApplyController extends KdxAdminApiController
         $options = [
             'callable' => function (&$row) use ($export) {
                 $row['client_type_text'] = ClientTypeConstant::getText($row['client_type']);
-                if ($export){
+                if ($export) {
                     $row['type'] = CommissionApplyTypeConstant::getMessage($row['type']);
                 }
             },
-            'pager' => $export ? false : true,
-            'onlyList' => $export ? true : false,
+            'pager' => !$export,
+            'onlyList' => (bool)$export,
 
         ];
 
@@ -277,6 +282,7 @@ class ApplyController extends KdxAdminApiController
             if ($item->save()) {
                 $successCount++;
             }
+
             // 日志
             LogModel::write(
                 $this->userId,
@@ -566,8 +572,8 @@ class ApplyController extends KdxAdminApiController
             ['commission_pay' => $apply->final_commission,],
             ['member_id' => $apply->member_id]
         );
-    
-    
+
+
         // 发送通知 拒绝申请
         $result = NoticeComponent::getInstance(NoticeTypeConstant::COMMISSION_BUYER_COMMISSION_PAY, [
             'withdraw_money' => $apply->apply_commission,
@@ -576,7 +582,7 @@ class ApplyController extends KdxAdminApiController
         if (!is_error($result)) {
             $result->sendMessage($apply->member_id);
         }
-        
+
         // 日志
         LogModel::write(
             $this->userId,
@@ -725,7 +731,7 @@ class ApplyController extends KdxAdminApiController
         if (empty($commissionOrderGoodsId)) {
             return $this->error('分销订单商品数据错误');
         }
-        
+
 
         // 根据提现申请时订单商品ID查询出订单商品信息
         $params = [
@@ -752,7 +758,7 @@ class ApplyController extends KdxAdminApiController
                 'm.nickname',
             ],
         ];
-        
+
         $orderGoodsList = CommissionOrderGoodsModel::getColl($params, [
             'pager' => false,
             'onlyList' => true,
@@ -762,7 +768,7 @@ class ApplyController extends KdxAdminApiController
                     if ($item['id'] == $row['id']) {
                         $row['real_commission'] = $item['commission'];
                     }
-                   
+
                 }
             }
         ]);

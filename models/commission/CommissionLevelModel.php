@@ -69,7 +69,7 @@ class CommissionLevelModel extends BaseActiveRecord
      */
     public static function tableName()
     {
-        return '{{%app_commission_level}}';
+        return '{{%commission_level}}';
     }
 
     /**

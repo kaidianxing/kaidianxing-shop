@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 开店星新零售管理系统
  * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
@@ -13,10 +12,8 @@
 
 namespace shopstar\jobs\printer;
 
-
 use shopstar\helpers\DateTimeHelper;
 use shopstar\helpers\LogHelper;
-
 use shopstar\models\printer\PrinterTaskModel;
 use yii\base\BaseObject;
 
@@ -24,6 +21,7 @@ use yii\base\BaseObject;
  * 自动打印订单
  * Class AutoPrinterOrder
  * @package apps\printer\jobs
+ * @author 青岛开店星信息技术有限公司
  */
 class AutoPrinterOrder extends BaseObject implements \yii\queue\JobInterface
 {
@@ -35,8 +33,13 @@ class AutoPrinterOrder extends BaseObject implements \yii\queue\JobInterface
      */
     public $job;
 
-
-    public function execute($queue)
+    /**
+     * @param \yii\queue\Queue $queue
+     * @return bool
+     * @throws \yii\base\Exception
+     * @author 青岛开店星信息技术有限公司
+     */
+    public function execute($queue): bool
     {
         echo '自动打印订单执行时间：' . DateTimeHelper::now() . "\n";;
 

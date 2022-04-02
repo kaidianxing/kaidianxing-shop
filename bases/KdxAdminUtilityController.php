@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 开店星新零售管理系统
  * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
@@ -13,7 +12,6 @@
 
 namespace shopstar\bases;
 
-use modules\utility\config\UtilityModule;
 use shopstar\bases\controller\BaseApiController;
 use shopstar\constants\core\CoreAttachmentSceneConstant;
 use shopstar\traits\UserTrait;
@@ -21,15 +19,11 @@ use shopstar\traits\UserTrait;
 /**
  * 工具模块业务端基类
  * Class KdxAdminUtilityController
- * @package modules\utility\bases
+ * @package shopstar\bases
+ * @author 青岛开店星信息技术有限公司
  */
 class KdxAdminUtilityController extends BaseApiController
 {
-    /**
-     * @var int 店铺类型
-     * @author 青岛开店星信息技术有限公司
-     */
-    public $shopType = 0;
 
     /**
      * @var array|null 当前店铺的基础信息

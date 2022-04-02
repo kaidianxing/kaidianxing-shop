@@ -13,7 +13,7 @@
 namespace shopstar\models\shoppingReward;
 
 /**
- * This is the model class for table "{{%app_shopping_reward_activity_member_rule}}".
+ * This is the model class for table "{{%shopping_reward_activity_member_rule}}".
  *
  * @property int $id
  * @property int $activity_id 活动id
@@ -26,7 +26,7 @@ class ShoppingRewardActivityMemberRuleModel extends \shopstar\bases\model\BaseAc
      */
     public static function tableName()
     {
-        return '{{%app_shopping_reward_activity_member_rule}}';
+        return '{{%shopping_reward_activity_member_rule}}';
     }
 
     /**

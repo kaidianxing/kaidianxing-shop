@@ -18,7 +18,7 @@ use shopstar\models\order\refund\OrderRefundModel;
 use yii\helpers\Json;
 
 /**
- * This is the model class for table "{{%app_consume_reward_log}}".
+ * This is the model class for table "{{%consume_reward_log}}".
  *
  * @property int $id
  * @property int $member_id 会员id
@@ -39,7 +39,7 @@ class ConsumeRewardLogModel extends \shopstar\bases\model\BaseActiveRecord
      */
     public static function tableName()
     {
-        return '{{%app_consume_reward_log}}';
+        return '{{%consume_reward_log}}';
     }
 
     /**

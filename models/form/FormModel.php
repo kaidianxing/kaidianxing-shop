@@ -16,7 +16,7 @@ use shopstar\constants\form\FormTypeConstant;
 use shopstar\bases\model\BaseActiveRecord;
 
 /**
- * This is the model class for table "{{%app_form}}".
+ * This is the model class for table "{{%form}}".
  *
  * @property int $id auto increment id
  * @property string $name 名称
@@ -35,7 +35,7 @@ class FormModel extends BaseActiveRecord
      */
     public static function tableName()
     {
-        return '{{%app_form}}';
+        return '{{%form}}';
     }
 
     /**

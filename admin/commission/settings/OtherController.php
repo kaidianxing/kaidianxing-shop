@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 开店星新零售管理系统
  * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
@@ -13,17 +12,17 @@
 
 namespace shopstar\admin\commission\settings;
 
-use shopstar\helpers\RequestHelper;
-use shopstar\models\log\LogModel;
+use shopstar\bases\KdxAdminApiController;
 use shopstar\constants\commission\CommissionLogConstant;
 use shopstar\exceptions\commission\CommissionSetException;
+use shopstar\helpers\RequestHelper;
 use shopstar\models\commission\CommissionSettings;
-use shopstar\bases\KdxAdminApiController;
+use shopstar\models\log\LogModel;
 
 /**
  * 其他设置
  * Class OtherController
- * @package apps\commission\manage\settings
+ * @package shopstar\admin\commission\settings
  */
 class OtherController extends KdxAdminApiController
 {
@@ -36,7 +35,6 @@ class OtherController extends KdxAdminApiController
             'set',
         ]
     ];
-
 
     /**
      * 获取设置
@@ -51,7 +49,7 @@ class OtherController extends KdxAdminApiController
             'settings' => $settings,
         ]);
     }
-    
+
     /**
      * 保存设置
      * @return array|int[]|\yii\web\Response
@@ -107,7 +105,7 @@ class OtherController extends KdxAdminApiController
                     ]
                 ]
             );
-            
+
         } catch (\Throwable $exception) {
             throw new CommissionSetException(CommissionSetException::SET_SAVE_FAIL);
         }

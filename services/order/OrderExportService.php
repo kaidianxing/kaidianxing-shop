@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 开店星新零售管理系统
  * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
@@ -11,9 +10,7 @@
  * @warning 未经许可禁止私自删除版权信息
  */
 
-
 namespace shopstar\services\order;
-
 
 use shopstar\bases\service\BaseService;
 use shopstar\constants\order\OrderActivityTypeConstant;
@@ -31,6 +28,9 @@ use shopstar\models\order\OrderPackageModel;
 use shopstar\models\order\refund\OrderRefundModel;
 use yii\helpers\Json;
 
+/**
+ * @author 青岛开店星信息技术有限公司
+ */
 class OrderExportService extends BaseService
 {
 
@@ -209,7 +209,6 @@ class OrderExportService extends BaseService
             'title' => '核销点选择',
         ],
     ];
-
 
     /**
      * 导出
@@ -435,13 +434,7 @@ class OrderExportService extends BaseService
      * 拼接导出页面的表单参数
      * @param $listItem
      * @param $form
-     * @return void
-     * @author 青岛开店星信息技术有限公司
-     */
-    /**
-     * 拼接导出页面的表单参数
-     * @param $listItem
-     * @param $form
+     * @param $flag
      * @return void
      * @author 青岛开店星信息技术有限公司
      */

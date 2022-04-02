@@ -14,11 +14,10 @@ namespace shopstar\config\modules\permission;
 
 use shopstar\components\permission\BasePermissionConfig;
 
-
 /**
- *
  * Class ChannelPermissionConfig
  * @package shop\config\permission
+ * @author 青岛开店星信息技术有限公司
  */
 class ChannelPermissionConfig extends BasePermissionConfig
 {

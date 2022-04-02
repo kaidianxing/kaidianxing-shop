@@ -17,7 +17,7 @@ use shopstar\helpers\DateTimeHelper;
 use shopstar\models\member\MemberWechatModel;
 
 /**
- * This is the model class for table "{{%app_poster_qr}}".
+ * This is the model class for table "{{%poster_qr}}".
  *
  * @property int $id auto increment id
  * @property string $openid openid
@@ -36,7 +36,7 @@ class PosterQrModel extends BaseActiveRecord
      */
     public static function tableName()
     {
-        return '{{%app_poster_qr}}';
+        return '{{%poster_qr}}';
     }
 
     /**

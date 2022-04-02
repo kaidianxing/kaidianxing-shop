@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 开店星新零售管理系统
  * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
@@ -13,27 +12,28 @@
 
 namespace shopstar\admin\printer;
 
+use shopstar\bases\KdxAdminApiController;
 use shopstar\components\printer\PrinterComponent;
 use shopstar\constants\CacheTypeConstant;
-use shopstar\helpers\RequestHelper;
-use shopstar\helpers\StringHelper;
-use shopstar\models\log\LogModel;
-use shopstar\models\printer\PrinterTaskModel;
-use shopstar\traits\CacheTrait;
 use shopstar\constants\printer\PrinterLogConstant;
 use shopstar\constants\printer\PrinterTypeConstant;
 use shopstar\exceptions\printer\PrinterException;
+use shopstar\helpers\RequestHelper;
+use shopstar\helpers\StringHelper;
+use shopstar\models\log\LogModel;
 use shopstar\models\printer\PrinterModel;
-use shopstar\bases\KdxAdminApiController;
+use shopstar\models\printer\PrinterTaskModel;
+use shopstar\traits\CacheTrait;
 use yii\helpers\Json;
 
 /**
  * 小票打印管理列表
- * Class ListController
- * @package apps\printer\manage
+ * Class IndexController
+ * @package shopstar\admin\printer
  */
 class IndexController extends KdxAdminApiController
 {
+
     use CacheTrait;
 
     /**
@@ -99,6 +99,7 @@ class IndexController extends KdxAdminApiController
             '品牌' => $result->brand,
             '配置' => $result->config,
         ];
+
         LogModel::write(
             $this->userId,
             PrinterLogConstant::PRINTER_ADD,
@@ -138,7 +139,6 @@ class IndexController extends KdxAdminApiController
 
         return $this->result($result);
     }
-
 
     /**
      * 启用
@@ -307,6 +307,7 @@ class IndexController extends KdxAdminApiController
             '品牌' => $printer->brand,
             '配置' => $printer->config,
         ];
+
         LogModel::write(
             $this->userId,
             PrinterLogConstant::PRINTER_DELETE,
@@ -370,6 +371,7 @@ class IndexController extends KdxAdminApiController
             '品牌' => $result->brand,
             '配置' => $result->config,
         ];
+
         LogModel::write(
             $this->userId,
             PrinterLogConstant::PRINTER_SAVE,
@@ -429,6 +431,7 @@ class IndexController extends KdxAdminApiController
             '品牌' => $printer->brand,
             '配置' => $printer->config,
         ];
+
         LogModel::write(
             $this->userId,
             PrinterLogConstant::PRINTER_CANCEL,
@@ -443,11 +446,15 @@ class IndexController extends KdxAdminApiController
         return $this->result();
     }
 
-    private function checkParams($isAdd = true)
+    /**
+     * @param bool $isAdd
+     * @return array
+     */
+    private function checkParams(bool $isAdd = true): array
     {
         $postData = RequestHelper::post();
-        array_walk($postData,function (&$v){
-           $v = is_string($v) ? trim($v) : $v;
+        array_walk($postData, function (&$v) {
+            $v = is_string($v) ? trim($v) : $v;
         });
 
         $params = [];
@@ -511,10 +518,13 @@ class IndexController extends KdxAdminApiController
         return $params;
     }
 
-    private function checkConfig()
+    /**
+     * @return array
+     */
+    private function checkConfig(): array
     {
         $postData = RequestHelper::post();
-        array_walk($postData,function (&$v){
+        array_walk($postData, function (&$v) {
             $v = is_string($v) ? trim($v) : $v;
         });
 
@@ -581,4 +591,5 @@ class IndexController extends KdxAdminApiController
 
         return $params;
     }
+
 }

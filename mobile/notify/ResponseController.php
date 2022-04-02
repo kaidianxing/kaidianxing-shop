@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 开店星新零售管理系统
  * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
@@ -13,7 +12,6 @@
 
 namespace shopstar\mobile\notify;
 
-
 use shopstar\bases\controller\BaseMobileApiController;
 use shopstar\components\response\bases\ResponseChannelConstant;
 use shopstar\components\response\ResponseComponent;
@@ -21,16 +19,19 @@ use shopstar\components\wechat\bases\WechatChannelConstant;
 use shopstar\components\wechat\WechatComponent;
 use shopstar\exceptions\ResponseException;
 use shopstar\helpers\LogHelper;
- 
 use shopstar\helpers\RequestHelper;
 
 /**
  * 消息回复
  * Class ResponseController
  * @package shop\client\notify
+ * @author 青岛开店星信息技术有限公司
  */
 class ResponseController extends BaseMobileApiController
 {
+    /**
+     * @var array
+     */
     public $configActions = [
         'allowSessionActions' => [
             'index',
@@ -54,7 +55,10 @@ class ResponseController extends BaseMobileApiController
      */
     public $message;
 
-
+    /**
+     * @return array|int[]|\yii\web\Response
+     * @throws \yii\base\Exception
+     */
     public function actionIndex()
     {
         // 接受消息体
@@ -102,7 +106,7 @@ class ResponseController extends BaseMobileApiController
     /**
      * 独立版
      * @return array|\yii\web\Response
-     * @throws \yii\base\InvalidConfigException
+     * @throws \yii\base\InvalidConfigException|\yii\base\Exception
      * @author 青岛开店星信息技术有限公司
      */
     public function actionIndependent()

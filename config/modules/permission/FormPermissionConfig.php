@@ -9,15 +9,16 @@
  * @warning Unauthorized deletion of copyright information is prohibited.
  * @warning 未经许可禁止私自删除版权信息
  */
+
 namespace shopstar\config\modules\permission;
 
 use shopstar\components\permission\BasePermissionConfig;
 
-
 /**
  * 系统表单
  * Class PermissionConfig
- * @package apps\form\config
+ * @package shopstar\config\modules\permission
+ * @author 青岛开店星信息技术有限公司
  */
 class FormPermissionConfig extends BasePermissionConfig
 {
@@ -25,22 +26,22 @@ class FormPermissionConfig extends BasePermissionConfig
      * @var string 权限模块标识
      */
     protected $identity = 'form';
-    
+
     /**
      * @var string 路由前缀
      */
     protected $prefix = 'manage/form/';
-    
+
     /**
      * @var string 分组名称
      */
     protected $groupName = '系统表单';
-    
+
     /**
      * @var bool 是否插件
      */
     protected $isPlugin = true;
-    
+
     /**
      * @var array[] 权限配置
      */
@@ -55,10 +56,10 @@ class FormPermissionConfig extends BasePermissionConfig
                 ],
                 'manage' => [
                     'title' => '管理',
-                    'actions' => ['add', 'edit', 'forbidden', 'active', 'delete', 'download', 'update', 'delete-log','get-form-log'],
+                    'actions' => ['add', 'edit', 'forbidden', 'active', 'delete', 'download', 'update', 'delete-log', 'get-form-log'],
                 ],
             ],
         ],
     ];
-    
+
 }

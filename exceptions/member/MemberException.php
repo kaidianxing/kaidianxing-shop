@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 开店星新零售管理系统
  * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
@@ -19,6 +18,7 @@ use shopstar\bases\exception\BaseException;
  * 用户异常类
  * Class MemberException
  * @package shopstar\exceptions\member
+ * @author 青岛开店星信息技术有限公司
  */
 class MemberException extends BaseException
 {
@@ -128,7 +128,7 @@ class MemberException extends BaseException
      * @Message("删除会员失败")
      */
     const DETAIL_DELETE_MEMBER_ERROR = 211119;
-    
+
     /**
      * @Message("导出失败")
      */
@@ -163,17 +163,17 @@ class MemberException extends BaseException
      * 12 列表客户端端
      * 01 错误码
      */
-    
+
     /**
      * @Message("地址保存失败")
      */
     const MEMBER_ADDRESS_CREATE_FAIL = 211204;
-    
+
     /**
      * @Message("地址保存失败")
      */
     const MEMBER_ADDRESS_SAVE_FAIL = 211205;
-    
+
     /**
      * @Message("参数错误")
      */
@@ -193,7 +193,7 @@ class MemberException extends BaseException
      * @Message("参数错误")
      */
     const MEMBER_ADDRESS_SET_DEFAULT_PARAM_ERROR = 211209;
-    
+
     /**
      * @Message("默认地址设置失败")
      */
@@ -219,358 +219,358 @@ class MemberException extends BaseException
      */
     const FAVORITE_DELETE_PARAM_ERROR = 211214;
 
-    
+
     /**
      * @Message("您暂时没有访问权限，请联系管理员")
      */
     const MEMBER_WAP_LOGIN_IS_BLACK_ERROR = 211216;
-    
+
     /**
      * @Message("您暂时没有访问权限，请联系管理员")
      */
     const MEMBER_WECHAT_LOGIN_IS_BLACK_ERROR = 211217;
-    
+
     /**
      * @Message("您暂时没有访问权限，请联系管理员")
      */
     const MEMBER_WXAPP_LOGIN_IS_BLACK_ERROR = 211218;
-    
+
     /**
      * @Message("原始密码错误")
      */
     const MEMBER_CHANGE_PASSWORD_OLD_PASSWORD_ERROR = 211219;
-    
+
     /**
      * @Message("授权组件不存在")
      */
     const AUTHORIZATION_AUTH_COMPONENTS_NOT_FOUND = 211220;
-    
+
     /**
      * @Message("登录组件不存在")
      */
     const AUTHORIZATION_LOGIN_COMPONENTS_NOT_FOUND = 211221;
-    
+
     /**
      * @Message("请绑定手机号")
      */
     const MEMBER_MOBILE_NOT_EXIST = 211222;
-    
+
     /**
      * @Message("请登录")
      */
     const MEMBER_NOT_LOGIN = 211223;
-    
+
     /**
      * @Message("参数错误")
      */
     const MEMBER_CHANGE_PASSWORD_PARAMS_ERROR = 211224;
-    
+
     /**
      * @Message("修改密码失败")
      */
     const MEMBER_CHANGE_PASSWORD_ERROR = 211225;
-    
+
     /**
      * @Message("验证码错误")
      */
     const MEMBER_CHECK_SMS_CODE_ERROR = 211226;
-    
+
     /**
      * @Message("参数错误")
      */
     const MEMBER_MERGE_PARAMS_ERROR = 211227;
-    
+
     /**
      * @Message("废弃会员保存失败")
      */
     const MEMBER_MERGE_DISCARD_SAVE_ERROR = 211228;
-    
+
     /**
      * @Message("迁移废弃会员的账号附属信息失败")
      */
     const MEMBER_MERGE_CHANGE_SUBJECT_ERROR = 211229;
-    
-    
+
+
     /**
      * @Message("微信小程序主体账号创建失败")
      */
     const MEMBER_WXAPP_SUBJECT_ACCOUNT_CREATE_ERROR = 211230;
-    
+
     /**
      * @Message("微信小程序附属账号创建失败")
      */
     const MEMBER_WXAPP_ACCOUNT_CREATE_ERROR = 211231;
-    
+
     /**
      * @Message("用户不存在")
      */
     const MEMBER_INDEX_CHANGE_USER_INFO_USER_NOT_EXIST_ERROR = 211232;
-    
+
     /**
      * @Message("修改资料失败")
      */
     const MEMBER_INDEX_CHANGE_USER_INFO_ERROR = 211233;
-    
+
     /**
      * @Message("手机号已存在")
      */
     const MEMBER_INDEX_CHECK_SMS_CODE_MOBILE_EXIST_ERROR = 211234;
-    
+
     /**
      * @Message("手机号不存在")
      */
     const MEMBER_INDEX_FORGET_PASSWORD_MOBILE_EXIST_ERROR = 211235;
-    
+
     /**
      * @Message("会员错误")
      */
     const MEMBER_BIND_MOBILE_MEMBER_ERROR = 211236;
-    
+
     /**
      * @Message("用户不存在")
      */
     const MEMBER_DELETED = 211237;
-    
+
     /**
      * @Message("店铺已打烊")
      */
     const MEMBER_BLACK = 211238;
-    
+
     /**
      * @Message("店铺已打烊")
      */
     const WXAPP_MAINTAIN_OPEN = 211239;
-    
+
     /**
      * @Message("用户已被删除，无法操作")
      */
     const MEMBER_DELETED_NO_GET_MEMBER_COUPON = 211240;
-    
+
     /**
      * @Message("用户已被删除，无法操作")
      */
     const MEMBER_DELETED_NO_RECHARGE = 211241;
-    
+
     /**
      * @Message("用户已被删除，无法操作")
      */
     const MEMBER_DELETED_NO_CHANGE_LEVEL = 211242;
-    
+
     /**
      * @Message("用户已被删除，无法操作")
      */
     const MEMBER_DELETED_NO_CHANGE_PASSWORD = 211243;
-    
+
     /**
      * @Message("用户已被删除，无法操作")
      */
     const MEMBER_DELETED_NO_CHANGE_GROUP = 211244;
-    
+
     /**
      * @Message("用户不存在")
      */
     const WAP_LOGIN_MEMBER_NOT_EXISTS = 211245;
-    
+
     /**
      * @Message("用户不存在")
      */
     const LOGIN_BY_CODE_MEMBER_NOT_EXISTS = 211246;
-    
+
     /**
      * @Message("用户不存在")
      */
     const USER_INFO_MEMBER_NOT_EXISTS = 211247;
-    
+
     /**
      * @Message("手机号格式不正确")
      */
     const SEND_SMS_MOBILE_ERROR = 211250;
-    
+
     /**
      * @Message("手机号格式不正确")
      */
     const LOGIN_BY_CODE_MOBILE_ERROR = 211251;
-    
+
     /**
      * @Message("修改密码失败")
      */
     const FORGET_PASSWORD_FAIL = 211252;
-    
+
     /**
      * @Message("注册失败")
      */
     const CHANGE_REGISTER_FAIL = 211253;
-    
+
     /**
      * @Message("用户日志写入失败")
      */
     const MEMBER_LOG_WRITE_FAIL = 211254;
-    
+
     /**
      * @Message("余额扣除失败")
      */
     const MEMBER_DEDUCTION_FAILED = 211255;
-    
+
     /**
      * @Message("修改订单状态失败")
      */
     const CHANGE_ORDER_STATUS_FAILED = 211256;
-    
+
     /**
      * @Message("积分排行关闭")
      */
     const CREDIT_RANK_CLOSED = 211257;
-    
+
     /**
      * @Message("用户余额不足")
      */
     const MEMBER_BALANCE_IS_NOT_ENOUGH = 211258;
-    
+
     /**
      * @Message("消费排行关闭")
      */
     const MONEY_RANK_CLOSED = 211259;
-    
+
     /**
      * @Message("合并会员失败")
      */
     const MERGE_MEMBER_ERROR = 211260;
-    
+
     /**
      * @Message("绑定失败")
      */
     const BIND_MOBILE_ERROR = 211261;
-    
+
     /**
      * @Message("两次密码不一致")
      */
     const PASSWORD_CHECK_ERROR = 211262;
-    
+
     /**
      * @Message("用户密码不正确")
      */
     const PASSWORD_ERROR = 211263;
-    
+
     /**
      * @Message("修改手机失败")
      */
     const CHANGE_MOBILE_FAIL = 211264;
-    
+
     /**
      * @Message("手机号已存在")
      */
     const BIND_MOBILE_MOBILE_EXISTS_ERROR = 211265;
-    
+
     /**
      * @Message("手机号已存在")
      */
     const CHANGE_BIND_MOBILE_MOBILE_EXISTS_ERROR = 211266;
-    
+
     /**
      * @Message("手机号已存在")
      */
     const REGISTER_MOBILE_EXISTS_ERROR = 211267;
-    
+
     /**
      * @Message("用户不存在")
      */
     const MERGE_MEMBER_NOT_EXISTS = 211268;
-    
+
     /**
      * @Message("用户不存在")
      */
     const MERGE_MEMBER_SELECT_NOT_EXISTS = 211269;
-    
+
     /**
      * @Message("用户不存在")
      */
     const BIND_MOBILE_MEMBER_NOT_EXISTS = 211270;
-    
+
     /**
      * @Message("用户不存在")
      */
     const CHANGE_BIND_MOBILE_MEMBER_NOT_EXISTS = 211271;
-    
+
     /**
      * @Message("创建会员失败")
      */
     const MEMBER_WECHAT_CREATE_MEMBER_ERROR = 211272;
-    
+
     /**
      * @Message("创建会员失败")
      */
     const MEMBER_WECHAT_CREATE_WECHAT_MEMBER_ERROR = 211273;
-    
+
     /**
      * @Message("短信验证码无效")
      */
     const LOGIN_BY_CODE_SMSCODE_ERROR = 211274;
-    
+
     /**
      * @Message("短信验证码无效")
      */
     const FORGET_PASSWORD_SMSCODE_ERROR = 211275;
-    
+
     /**
      * @Message("短信验证码无效")
      */
     const BIND_MOBILE_SMSCODE_ERROR = 211276;
-    
+
     /**
      * @Message("短信验证码无效")
      */
     const CHANGE_BIND_MOBILE_SMSCODE_ERROR = 211277;
-    
+
     /**
      * @Message("短信验证码无效")
      */
     const CHANGE_BIND_MOBILE_NOW_SMSCODE_ERROR = 211278;
-    
+
     /**
      * @Message("短信验证码无效")
      */
     const REGISTER_SMSCODE_ERROR = 211279;
-    
+
     /**
      * @Message("图形验证码无效")
      */
     const LOGIN_BY_CODE_VERIFY_CODE_ERROR = 211280;
-    
+
     /**
      * @Message("图形验证码无效")
      */
     const FORGET_PASSWORD_VERIFY_CODE_ERROR = 211281;
-    
+
     /**
      * @Message("图形验证码无效")
      */
     const BIND_MOBILE_VERIFY_CODE_ERROR = 211282;
-    
+
     /**
      * @Message("图形验证码无效")
      */
     const CHANGE_BIND_MOBILE_VERIFY_CODE_ERROR = 211283;
-    
+
     /**
      * @Message("图形验证码无效")
      */
     const REGISTER_VERIFY_CODE_ERROR = 211284;
-    
+
     /**
      * @Message("图形验证码无效")
      */
     const SEND_SMS_VERIFY_CODE_ERROR = 211285;
-    
+
     /**
      * @Message("您暂时没有访问权限，请联系管理员")
      */
     const MEMBER_BYTE_DANCE_LOGIN_IS_BLACK_ERROR = 211286;
-    
+
     /**
      * @Message("字节跳动小程序主体账号创建失败")
      */
     const MEMBER_BYTE_DANCE_SUBJECT_ACCOUNT_CREATE_ERROR = 211287;
-    
+
     /**
      * @Message("字节跳动小程序附属账号创建失败")
      */
@@ -595,7 +595,7 @@ class MemberException extends BaseException
      * @Message("已绑定手机号，不是核销员")
      */
     const BIND_MOBILE_NOT_INVALI_ERROR = 211292;
-    
+
     /**
      * @Message("帐号错误")
      */
@@ -621,8 +621,8 @@ class MemberException extends BaseException
      * @Message("open_id不存在")
      */
     const WXAPP_AUTH_OPEN_ID_EMPTY = 211297;
-    
-    
+
+
     /*************客户端异常结束*************/
 
     // 会员PC微信授权登录

@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 开店星新零售管理系统
  * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
@@ -11,12 +10,8 @@
  * @warning 未经许可禁止私自删除版权信息
  */
 
-
-
 namespace shopstar\helpers;
 
-use models\Uploader;
-use models\UploaderPrivate;
 use yii\base\InvalidArgumentException;
 use yii\helpers\StringHelper as BaseStringHelper;
 
@@ -24,6 +19,7 @@ use yii\helpers\StringHelper as BaseStringHelper;
  * 字符串助手类
  * Class StringHelper
  * @package shopstar\helpers
+ * @author 青岛开店星信息技术有限公司
  */
 class StringHelper extends BaseStringHelper
 {
@@ -41,7 +37,7 @@ class StringHelper extends BaseStringHelper
      * @throws null
      * @author 青岛开店星信息技术有限公司
      */
-    static function random($length = 0, $numeric = false, $string = false)
+    static function random(int $length = 0, bool $numeric = false, bool $string = false): string
     {
         if (PHP_VERSION_ID < 70000) {
             return \random($length, $numeric);
@@ -76,7 +72,7 @@ class StringHelper extends BaseStringHelper
      * @param bool $isFirst 是否从头查找
      * @return bool
      */
-    static function exists($string = '', $find = '', $operator = self::SEL_AND, $isFirst = false)
+    static function exists(string $string = '', $find = '', string $operator = self::SEL_AND, bool $isFirst = false): bool
     {
         if (is_array($find)) {
             if ($operator == self::SEL_AND) {
@@ -121,8 +117,9 @@ class StringHelper extends BaseStringHelper
      * @param $string
      * @param string $charset
      * @return int
+     * @author 青岛开店星信息技术有限公司
      */
-    static function length($string, $charset = 'utf8')
+    static function length($string, string $charset = 'utf8'): int
     {
 
         if (strtolower($charset) == 'gbk') {
@@ -184,8 +181,9 @@ class StringHelper extends BaseStringHelper
      * 字节转换
      * @param $bytes
      * @return string
+     * @author 青岛开店星信息技术有限公司
      */
-    static function toSize($bytes)
+    static function toSize($bytes): string
     {
         if ($bytes >= pow(2, 40)) { // 如果提供的字节数大于等于2的40次方，则条件成立
             $return = round($bytes / pow(1024, 4), 2); // 将字节大小转换为同等的T大小
@@ -209,8 +207,9 @@ class StringHelper extends BaseStringHelper
     /**
      * 获取guid
      * @return string
+     * @author 青岛开店星信息技术有限公司
      */
-    static function guid()
+    static function guid(): string
     {
         $newguid = '';
         if (function_exists('com_create_guid')) {
@@ -240,9 +239,10 @@ class StringHelper extends BaseStringHelper
      * @param string $str
      * @param int $length
      * @param bool $tail
-     * @return mixed|string
+     * @return array|string|string[]|null
+     * @author 青岛开店星信息技术有限公司
      */
-    static function limit($str = '', $length = 0, $tail = true)
+    static function limit(string $str = '', int $length = 0, bool $tail = true)
     {
 
         $str = trim($str);
@@ -263,7 +263,8 @@ class StringHelper extends BaseStringHelper
     /**
      * 清除Html & Script
      * @param $document
-     * @return mixed|string
+     * @return array|string|string[]|null
+     * @author 青岛开店星信息技术有限公司
      */
     static function replaceHtmlAndJs($document)
     {
@@ -299,8 +300,9 @@ class StringHelper extends BaseStringHelper
      * @param string $splitter 连接符
      * @param bool $filter_empty 是否过滤空字符
      * @return string
+     * @author 青岛开店星信息技术有限公司
      */
-    static function trimSplitter($str, $splitter = ',', $filter_empty = false)
+    public static function trimSplitter(string $str, string $splitter = ',', bool $filter_empty): string
     {
 
         $arr = explode($splitter, $str);
@@ -317,9 +319,10 @@ class StringHelper extends BaseStringHelper
     /**
      * 匹配出内容的所有图片
      * @param $content
-     * @return array|bool
+     * @return array
+     * @author 青岛开店星信息技术有限公司
      */
-    static function getImages($content)
+    public static function getImages($content): array
     {
         preg_match_all('/<\s*img\s+[^>]*?src\s*=\s*(\'|\")(.*?)\\1[^>]*?\/?\s*>/i', $content, $matches);
         if (empty($matches[0])) {
@@ -340,8 +343,9 @@ class StringHelper extends BaseStringHelper
      * @param int $end 末尾保留长度
      * @return string
      * @change 倪增超 修改了$start 和 $end 的逻辑, 可以设置任意头尾数, 并且脱敏后字符串长度保持不变
+     * @author 青岛开店星信息技术有限公司
      */
-    static function secret(string $str, bool $is_pwd = true, int $start = 1, int $end = 1)
+    public static function secret(string $str, bool $is_pwd = true, int $start = 1, int $end = 1): string
     {
         if ($start < 1 && $end < 1) {
             return $str;
@@ -368,13 +372,13 @@ class StringHelper extends BaseStringHelper
 
     /**
      * 脱敏字符串与其它字符串一致性对比
-     * @author nizengchao
-     * @date 2021/6/30
      * @param string $secretStr 脱敏过的字符串, 必须带*星号
      * @param string $compareStr 需对比的字符串
      * @return bool
+     * @author nizengchao
+     * @date 2021/6/30
      */
-    static function secretCompare(string $secretStr = '', string $compareStr = '')
+    public static function secretCompare(string $secretStr = '', string $compareStr = ''): bool
     {
         $same = false;
         $secretStrLen = self::length($secretStr);
@@ -417,8 +421,7 @@ class StringHelper extends BaseStringHelper
             return $same;
         }
 
-        $same = true;
-        return $same;
+        return true;
     }
 
     /**
@@ -426,7 +429,7 @@ class StringHelper extends BaseStringHelper
      * @param array $data 需脱敏的数据
      * @param array $keys 需脱敏的数据的key
      * @param int $start 脱敏串开始预留
-     * @param int $end  脱敏串结束预留
+     * @param int $end 脱敏串结束预留
      * @return array
      * @author nizengchao
      */
@@ -447,7 +450,7 @@ class StringHelper extends BaseStringHelper
      * @return array
      * @author nizengchao
      */
-    public static function doSecretArray(array $data = [], array $keys = [], int $start = 5, int $end = 5)
+    public static function doSecretArray(array $data = [], array $keys = [], int $start = 5, int $end = 5): array
     {
         if (empty($data) || empty($keys)) {
             return $data;
@@ -556,7 +559,7 @@ class StringHelper extends BaseStringHelper
      * @param Int $limit 允许替换的次数，默认为-1，不限次数
      * @return Mixed
      */
-    static function replaceAll($search, $replace, $subject, $limit = -1)
+    static function replaceAll($search, $replace, $subject, int $limit = -1)
     {
 
         if (is_array($search)) {
@@ -638,7 +641,8 @@ class StringHelper extends BaseStringHelper
     /**
      * 保存图片处理
      * @param string $detail
-     * @return mixed|string
+     * @param string $attachmentUrl
+     * @return array|string|string[]
      * @author 青岛开店星信息技术有限公司
      */
     public static function htmlImages(string $detail = '', string $attachmentUrl = '')

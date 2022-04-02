@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 开店星新零售管理系统
  * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
@@ -13,31 +12,32 @@
 
 namespace shopstar\admin\form;
 
+use shopstar\bases\KdxAdminApiController;
 use shopstar\constants\ClientTypeConstant;
+use shopstar\constants\form\FormLogConstant;
+use shopstar\constants\form\FormTypeConstant;
+use shopstar\exceptions\form\FormException;
 use shopstar\helpers\ArrayHelper;
 use shopstar\helpers\ExcelHelper;
 use shopstar\helpers\RequestHelper;
 use shopstar\helpers\StringHelper;
+use shopstar\models\form\FormLogModel;
+use shopstar\models\form\FormModel;
 use shopstar\models\goods\GoodsCartModel;
 use shopstar\models\goods\GoodsModel;
 use shopstar\models\log\LogModel;
 use shopstar\models\member\MemberModel;
 use shopstar\models\order\OrderModel;
-use shopstar\constants\form\FormLogConstant;
-use shopstar\constants\form\FormTypeConstant;
-use shopstar\exceptions\form\FormException;
-use shopstar\models\form\FormLogModel;
-use shopstar\models\form\FormModel;
-use shopstar\bases\KdxAdminApiController;
 use yii\helpers\Json;
 
 /**
  * 系统表单
  * Class ListController
- * @package apps\form\manage
+ * @package shopstar\admin\form
  */
 class ListController extends KdxAdminApiController
 {
+
     /**
      * 允许get参数
      * @var string[]
@@ -48,7 +48,6 @@ class ListController extends KdxAdminApiController
             'download'
         ]
     ];
-
 
     /**
      * 列表搜索
@@ -86,12 +85,11 @@ class ListController extends KdxAdminApiController
             ]
         ];
 
-
         $list = FormModel::getColl($params, [
             'callable' => function (&$row) {
                 $row['type_text'] = FormTypeConstant::getText($row['type']);
             },
-            'pager' => $this->clientType == ClientTypeConstant::MANAGE_SHOP_ASSISTANT ? false : true,
+            'pager' => !($this->clientType == ClientTypeConstant::MANAGE_SHOP_ASSISTANT),
         ]);
 
         return $this->result(['data' => $list]);
@@ -146,13 +144,13 @@ class ListController extends KdxAdminApiController
     {
         //脏数据
         $dirtyData = [];
-    
+
         $result = FormModel::easyEdit([
             'andWhere' => [],
             'beforeSave' => function (FormModel $result, &$dirtyData) {
-            
+
                 $dirtyData = $result->getDirtyAttributes2(false, true);
-            
+
                 //验证名称重复
                 $exist = FormModel::checkName($result->type, $result->name, $result->id);
                 if (!$exist) {
@@ -194,9 +192,9 @@ class ListController extends KdxAdminApiController
                 'updated_at' => date('Y-m-d H:i:s', time())
             ]
         ]);
+
         return $this->result($result);
     }
-
 
     /**
      * 统计条数信息更新
@@ -248,6 +246,7 @@ class ListController extends KdxAdminApiController
             'log.created_at',
             'log.source',
         ];
+
         //如果是商品表单，连两个表
         if ($formType == 4) {
             $leftJoins[] = [GoodsModel::tableName() . ' goods', 'goods.id = log.goods_id'];
@@ -263,6 +262,7 @@ class ListController extends KdxAdminApiController
                 'order.order_type'
             ]);
         }
+
         //如果是下单类型，一个表
         if ($formType == 1) {
             $leftJoins[] = [OrderModel::tableName() . ' order', 'order.id = log.order_id'];
@@ -299,7 +299,6 @@ class ListController extends KdxAdminApiController
 
         return $this->result(['data' => $list]);
     }
-
 
     /**
      * 禁用
@@ -426,13 +425,12 @@ class ListController extends KdxAdminApiController
         $goods = GoodsModel::find()->select('id')->where(['form_id' => $id])->get();
         $goodsIds = array_column($goods, 'id');
         GoodsCartModel::updateAll(
-            ['is_selected' => 0, 'is_reelect' => 1],['goods_id' => $goodsIds],
+            ['is_selected' => 0, 'is_reelect' => 1], ['goods_id' => $goodsIds],
             []
         );
 
         // 当前表单的商品状态置为关闭
         GoodsModel::updateAll(['form_id' => 0, 'form_status' => 0], ['id' => $goodsIds]);
-
 
         // 日志
         $logPrimary = [
@@ -458,7 +456,10 @@ class ListController extends KdxAdminApiController
 
     /**
      * 导出
-     * @return bool
+     * @return array|bool|int[]|\yii\web\Response
+     * @throws \PhpOffice\PhpSpreadsheet\Exception
+     * @throws \PhpOffice\PhpSpreadsheet\Writer\Exception
+     * @throws \yii\base\Exception
      * @author 青岛开店星信息技术有限公司
      */
     public function actionDownload()
@@ -546,18 +547,16 @@ class ListController extends KdxAdminApiController
                 //$row['form_id'] = $formData['id'];
                 $row['name'] = $formData['name'];
 
-                $row['nickname'] = trim($row['nickname'],'=');
+                $row['nickname'] = trim($row['nickname'], '=');
             },
             'pager' => false,
             'onlyList' => true
         ]);
 
-
         //临时处理方法
-        //$records = $this->tempDownLodaData($records, $formType);
+        //$records = $this->tempdownLoadData($records, $formType);
 
-
-        $records = $this->downLodaData($records, $formType);
+        $records = $this->downLoadData($records, $formType);
         if (!$records) {
             $records = [
                 'field' => [
@@ -606,7 +605,6 @@ class ListController extends KdxAdminApiController
         return true;
     }
 
-
     /**
      * 临时处理导出数据
      * @param array $content
@@ -614,7 +612,7 @@ class ListController extends KdxAdminApiController
      * @return array|mixed|string|null
      * @author 青岛开店星信息技术有限公司
      */
-    public function tempDownLodaData(array $content, int $type)
+    public function tempDownLoadData(array $content, int $type)
     {
         if (empty($content)) {
             return '';
@@ -695,8 +693,14 @@ class ListController extends KdxAdminApiController
 
     }
 
-
-    private function checkParams(&$params, $isAdd = true)
+    /**
+     * 检测参数
+     * @param $params
+     * @param bool $isAdd
+     * @return bool
+     * @throws FormException
+     */
+    private function checkParams(&$params, bool $isAdd = true): bool
     {
         if (!$isAdd && empty($params['id'])) {
             throw new FormException(FormException::FORM_LIST_ID_NOT_EMPTY);
@@ -728,7 +732,13 @@ class ListController extends KdxAdminApiController
         return true;
     }
 
-    private function formatDownloadContent($content, $isDownload = false)
+    /**
+     * 格式话下载内容
+     * @param $content
+     * @param false $isDownload
+     * @return false|mixed|string
+     */
+    private function formatDownloadContent($content, bool $isDownload = false)
     {
         if (empty($content)) {
             return '';
@@ -783,18 +793,17 @@ class ListController extends KdxAdminApiController
             $returnData .= $tmpStr . ',';
         }
 
-        $returnData = substr($returnData, 0, -1);
-
-        return $returnData;
+        return substr($returnData, 0, -1);
     }
 
     /**
      * 处理导出表头以及内容
      * @param $content
+     * @param $type
      * @return array|mixed|string|null
      * @author 青岛开店星信息技术有限公司
      */
-    private function downLodaData($content, $type)
+    private function downLoadData($content, $type)
     {
         if (empty($content)) {
             return '';
@@ -897,7 +906,6 @@ class ListController extends KdxAdminApiController
         return $data;
     }
 
-
     /**
      * 处理表单不同信息的值
      * @param $contentData
@@ -923,7 +931,7 @@ class ListController extends KdxAdminApiController
                 $tmpStr = ArrayHelper::arrayGet($contentData, 'params.start.value') . '~' . ArrayHelper::arrayGet($contentData, 'params.end.value');
                 break;
             case 'identity': // 身份证号转字符串
-                $tmpStr = '\''.ArrayHelper::arrayGet($contentData, 'params.value');
+                $tmpStr = '\'' . ArrayHelper::arrayGet($contentData, 'params.value');
                 break;
             default:
                 $tmpStr = ArrayHelper::arrayGet($contentData, 'params.value');
@@ -933,9 +941,9 @@ class ListController extends KdxAdminApiController
 
     /**
      * 删除系统表单的提交记录
+     * @return array|\yii\web\Response
      * @throws FormException
      * @author 青岛开店星信息技术有限公司
-     * @return array|\yii\web\Response
      */
     public function actionDeleteLog()
     {
@@ -982,7 +990,7 @@ class ListController extends KdxAdminApiController
         }
 
         $data = FormLogModel::get($type, $memberId, $orderId);
-        if(empty($data)) {
+        if (empty($data)) {
             return $this->error('获取数据失败');
         }
 
@@ -990,4 +998,5 @@ class ListController extends KdxAdminApiController
         !empty($data['content']) && $data['content'] = Json::decode($data['content']);
         return $this->result($data);
     }
+
 }

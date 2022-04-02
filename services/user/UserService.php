@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 开店星新零售管理系统
  * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
@@ -10,7 +9,6 @@
  * @warning Unauthorized deletion of copyright information is prohibited.
  * @warning 未经许可禁止私自删除版权信息
  */
-
 
 namespace shopstar\services\user;
 
@@ -23,6 +21,9 @@ use shopstar\helpers\ValueHelper;
 use shopstar\models\user\UserModel;
 use shopstar\models\user\UserProfileModel;
 
+/**
+ * @author 青岛开店星信息技术有限公司
+ */
 class UserService extends BaseService
 {
     /**
@@ -61,7 +62,6 @@ class UserService extends BaseService
             $usermodel->salt = $salt;
             $usermodel->created_at = $now;
             $usermodel->status = 1;
-            $usermodel->audit_status = $data['audit_status'] ?: 0;
             if ($usermodel->save() === false) {
                 throw new UserException(UserException::MANAGE_USER_INDEX_CREATE_USER_FAILED);
             }
@@ -80,10 +80,9 @@ class UserService extends BaseService
 
     /**
      * 管理端添加用户和注册用户
-     * @param int $source 来源 0:后台添加，1:商家端注册
      * @param array $data
+     * @param int $source 来源 0:后台添加，1:商家端注册
      * @return array|int|mixed|null
-     * @throws UserException
      * @author 青岛开店星信息技术有限公司.
      */
     public static function createAccount(array $data, int $source = 0)
@@ -120,12 +119,10 @@ class UserService extends BaseService
         $userModel->salt = $salt;
         $userModel->created_at = $now;
         $userModel->status = 1;
-        $userModel->audit_status = $data['audit_status'] ?? 0;
 
         if ($data['is_root']) {
             $userModel->is_root = 1;
         }
-        $userModel->audit_status = $data['audit_status'] ?? 0;
 
         if (!$userModel->save()) {
             return error('用户创建失败');

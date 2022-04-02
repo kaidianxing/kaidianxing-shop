@@ -17,7 +17,7 @@ use shopstar\bases\model\BaseActiveRecord;
 use shopstar\components\wechat\helpers\MiniProgramBroadcastGoodsHelper;
 
 /**
- * This is the model class for table "{{%app_broadcast_goods}}".
+ * This is the model class for table "{{%broadcast_goods}}".
  *
  * @property int $id
  * @property int $broadcast_goods_id 直播间商品库id
@@ -35,7 +35,7 @@ class BroadcastGoodsModel extends BaseActiveRecord
      */
     public static function tableName()
     {
-        return '{{%app_broadcast_goods}}';
+        return '{{%broadcast_goods}}';
     }
 
     /**

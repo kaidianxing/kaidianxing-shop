@@ -89,10 +89,10 @@ class MemberAddressModel extends \shopstar\bases\model\BaseActiveRecord
      * 保存地址
      * @param int $memberId
      * @param int $id
-     * @return bool|array
+     * @return array
      * @author 青岛开店星信息技术有限公司
      */
-    public static function saveAddress(int $memberId, int $id = 0, $shopType = 0)
+    public static function saveAddress(int $memberId, int $id = 0): array
     {
         $post = RequestHelper::post();
 
@@ -132,7 +132,7 @@ class MemberAddressModel extends \shopstar\bases\model\BaseActiveRecord
         }
         // 获取坐标
         $addressDetail = $province . $city . $area . $address;
-        $location = AmapClient::getLocationPoint($addressDetail, $shopType);
+        $location = AmapClient::getLocationPoint($addressDetail);
         if (is_error($location)) {
             $location = [
                 'lng' => '',

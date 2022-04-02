@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 开店星新零售管理系统
  * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
@@ -13,30 +12,36 @@
 
 namespace shopstar\admin\order;
 
+use shopstar\bases\KdxAdminApiController;
 use shopstar\constants\log\order\CommentLogConstant;
-use shopstar\constants\log\order\DispatchLogConstant;
-
 use shopstar\exceptions\order\CommentException;
 use shopstar\helpers\DateTimeHelper;
- 
 use shopstar\helpers\RequestHelper;
 use shopstar\models\goods\GoodsModel;
 use shopstar\models\log\LogModel;
 use shopstar\models\order\OrderGoodsCommentModel;
 use shopstar\models\order\OrderModel;
 use shopstar\models\sale\CouponModel;
-use shopstar\bases\KdxAdminApiController;
 use yii\helpers\Json;
 
+/**
+ * 订单评价
+ * Class CommentController
+ * @author 青岛开店星信息技术有限公司
+ * @package shopstar\admin\order
+ */
 class CommentController extends KdxAdminApiController
 {
-    
+
+    /**
+     * @var array
+     */
     public $configActions = [
         'allowPermActions' => [
             'get-type'
         ]
     ];
-    
+
     /**
      * 评价列表
      * @return array|\yii\web\Response
@@ -70,7 +75,7 @@ class CommentController extends KdxAdminApiController
         if ($get['status'] != '') {
             $where[] = ['comment.status' => $get['status']];
         }
-        
+
         if (!empty($get['keyword'])) {
             $where[] = [
                 'or',
@@ -162,7 +167,7 @@ class CommentController extends KdxAdminApiController
             $comment['order_info'] = OrderModel::find()->select('order_no,status')->where(['id' => $comment['order_id']])->asArray()->one();
         }
 
-        if ($comment['reward_content']){
+        if ($comment['reward_content']) {
 
             $comment['reward_content'] = Json::decode($comment['reward_content']);
 
@@ -209,7 +214,7 @@ class CommentController extends KdxAdminApiController
                     'ID' => $get['id'],
                     '状态' => $get['status'] == 1 ? '通过' : '不通过'
                 ],
-                'dirty_identify_code'=> [
+                'dirty_identify_code' => [
                     CommentLogConstant::COMMENT_SUCCESS,
                 ]
             ]
@@ -239,7 +244,7 @@ class CommentController extends KdxAdminApiController
         }
         return $this->success();
     }
-    
+
     /**
      * 获取评论方式
      * @author 青岛开店星信息技术有限公司
@@ -247,18 +252,18 @@ class CommentController extends KdxAdminApiController
     public function actionGetType()
     {
         $type = [
-            ['key' => '0',  'value' => '默认评价'],
-            ['key' => '1',  'value' => '客户评价'],
+            ['key' => '0', 'value' => '默认评价'],
+            ['key' => '1', 'value' => '客户评价'],
         ];
 
         $type[] = [
-            'key' => '2',  'value' => '手动创建'
+            'key' => '2', 'value' => '手动创建'
         ];
         $type[] = [
-            'key' => '3',  'value' => 'API抓取'
+            'key' => '3', 'value' => 'API抓取'
         ];
-        
+
         return $this->result(['data' => $type]);
     }
-    
+
 }

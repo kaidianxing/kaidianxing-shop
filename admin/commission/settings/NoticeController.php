@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 开店星新零售管理系统
  * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
@@ -13,22 +12,22 @@
 
 namespace shopstar\admin\commission\settings;
 
-use shopstar\helpers\RequestHelper;
-use shopstar\models\member\MemberModel;
-use shopstar\exceptions\commission\CommissionSetException;
-use shopstar\models\commission\CommissionSettings;
 use shopstar\bases\KdxAdminApiController;
+use shopstar\exceptions\commission\CommissionSetException;
+use shopstar\helpers\RequestHelper;
+use shopstar\models\commission\CommissionSettings;
+use shopstar\models\member\MemberModel;
 
 /**
  * 通知设置
  * Class NoticeController
- * @package apps\commission\manage\settings
+ * @package shopstar\admin\commission\settings
  */
 class NoticeController extends KdxAdminApiController
 {
 
     /**
-     * @var string[] 需要POST请求的Actions
+     * @var array 需要POST请求的Actions
      */
     public $configActions = [
         'postActions' => [
@@ -66,7 +65,7 @@ class NoticeController extends KdxAdminApiController
             'template_list' => [], // 模板消息
         ]);
     }
-    
+
     /**
      * 保存设置
      * @return array|int[]|\yii\web\Response

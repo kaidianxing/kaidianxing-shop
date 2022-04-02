@@ -25,7 +25,7 @@ use shopstar\models\sale\CouponModel;
 use yii\helpers\Json;
 
 /**
- * This is the model class for table "{{%app_shopping_reward_log}}".
+ * This is the model class for table "{{%shopping_reward_log}}".
  *
  * @property string $id
  * @property int $member_id 会员id
@@ -45,7 +45,7 @@ class ShoppingRewardLogModel extends \shopstar\bases\model\BaseActiveRecord
      */
     public static function tableName()
     {
-        return '{{%app_shopping_reward_log}}';
+        return '{{%shopping_reward_log}}';
     }
 
     /**

@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 开店星新零售管理系统
  * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
@@ -11,10 +10,7 @@
  * @warning 未经许可禁止私自删除版权信息
  */
 
-
-
 namespace shopstar\mobile;
-
 
 use shopstar\bases\controller\BaseMobileApiController;
 use shopstar\helpers\RequestHelper;
@@ -74,7 +70,7 @@ class NoticeController extends BaseMobileApiController
         ]);
         return $this->result($list);
     }
-    
+
     /**
      * 获取公告
      * @return array|int[]|\yii\web\Response
@@ -90,7 +86,7 @@ class NoticeController extends BaseMobileApiController
         if (empty($detail)) {
             return $this->error('公告不存在');
         }
-        
+
         return $this->result($detail);
     }
 }

@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 开店星新零售管理系统
  * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
@@ -13,22 +12,26 @@
 
 namespace shopstar\admin\commission;
 
-use shopstar\helpers\ArrayHelper;
-use shopstar\helpers\RequestHelper;
-use shopstar\models\log\LogModel;
+use shopstar\bases\KdxAdminApiController;
 use shopstar\constants\commission\CommissionLogConstant;
 use shopstar\exceptions\commission\CommissionLevelException;
+use shopstar\helpers\ArrayHelper;
+use shopstar\helpers\RequestHelper;
 use shopstar\models\commission\CommissionAgentModel;
 use shopstar\models\commission\CommissionLevelModel;
-use shopstar\bases\KdxAdminApiController;
+use shopstar\models\log\LogModel;
 
 /**
  * 分销等级
  * Class LevelController
- * @package apps\commission\manage
+ * @package shopstar\admin\commission
  */
 class LevelController extends KdxAdminApiController
 {
+
+    /**
+     * @var array
+     */
     public $configActions = [
         'postActions' => [
             'add',
@@ -40,7 +43,6 @@ class LevelController extends KdxAdminApiController
             'list'
         ]
     ];
-
 
     /**
      * 等级列表
@@ -183,6 +185,7 @@ class LevelController extends KdxAdminApiController
             throw new CommissionLevelException(CommissionLevelException::LEVEL_EDIT_FAIL, $edit['message']);
         }
         $transaction->commit();
+
         return $this->success();
     }
 
@@ -226,6 +229,7 @@ class LevelController extends KdxAdminApiController
         if (is_error($res)) {
             throw new CommissionLevelException(CommissionLevelException::LEVEL_CHANGE_STATUS_FAIL, $res['message']);
         }
+
         return $this->success();
     }
 

@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 开店星新零售管理系统
  * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
@@ -13,23 +12,25 @@
 
 namespace shopstar\admin\sysset;
 
+use shopstar\bases\KdxAdminApiController;
 use shopstar\constants\log\sysset\PaymentLogConstant;
 use shopstar\exceptions\sysset\PaymentException;
 use shopstar\helpers\RequestHelper;
 use shopstar\models\log\LogModel;
 use shopstar\models\shop\ShopSettings;
 use shopstar\models\sysset\PaymentModel;
-use shopstar\bases\KdxAdminApiController;
 use yii\db\Exception;
 use yii\helpers\Url;
 
 /**
  * 支付方式设置
- * Class PaySetController
- * @package app\controllers\manage\sysset
+ * Class PayTypeSetController
+ * @package shopstar\admin\sysset
+ * @author 青岛开店星信息技术有限公司
  */
 class PayTypeSetController extends KdxAdminApiController
 {
+
     /**
      * 获取支付设置
      * @author 青岛开店星信息技术有限公司
@@ -55,10 +56,10 @@ class PayTypeSetController extends KdxAdminApiController
             ])->get();
 
         $set['white_host'] = str_replace('web', 'app', Url::base(true) . '/');
-        
+
         return $this->success($set);
     }
-    
+
     /**
      * 修改支付设置
      * @throws PaymentException
@@ -209,7 +210,8 @@ class PayTypeSetController extends KdxAdminApiController
         } catch (Exception $exception) {
             throw new PaymentException(PaymentException::TYPE_SET_SAVE_FAIL);
         }
-        
+
         return $this->success();
     }
+
 }

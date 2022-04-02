@@ -17,8 +17,9 @@ use shopstar\interfaces\NoticeSceneGroupInterface;
 
 class NoticeSceneGroup implements NoticeSceneGroupInterface
 {
+
     /**
-     * @return mixed|void
+     * @return array
      * @author 青岛开店星信息技术有限公司
      */
     public static function getSceneGroupMap()

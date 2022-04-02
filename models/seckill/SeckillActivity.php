@@ -24,6 +24,9 @@ use shopstar\models\order\create\OrderCreatorActivityAssistant;
 use shopstar\models\order\create\OrderCreatorKernel;
 use shopstar\models\shop\ShopSettings;
 
+/**
+ * @author 青岛开店星信息技术有限公司
+ */
 class SeckillActivity implements OrderCreatorActivityProcessorInterface
 {
     /**
@@ -31,7 +34,7 @@ class SeckillActivity implements OrderCreatorActivityProcessorInterface
      * @param OrderCreatorActivityAssistant $assistant
      * @param array $activityInfo
      * @param OrderCreatorKernel $orderCreatorKernel
-     * @return OrderCreatorActivityAssistant|void
+     * @return OrderCreatorActivityAssistant
      * @throws SeckillException
      * @author 青岛开店星信息技术有限公司
      */

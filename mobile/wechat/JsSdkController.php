@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 开店星新零售管理系统
  * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
@@ -13,7 +12,6 @@
 
 namespace shopstar\mobile\wechat;
 
-use apps\wechat\bases\WechatClientApiController;
 use shopstar\bases\controller\BaseMobileApiController;
 use shopstar\components\wechat\helpers\OfficialAccountJsSdkHelper;
 use shopstar\exceptions\base\wechat\WechatException;
@@ -23,23 +21,10 @@ use shopstar\helpers\RequestHelper;
  * 获取jssdk
  * Class JsSdkController
  * @package apps\wechat\client
+ * @author 青岛开店星信息技术有限公司
  */
 class JsSdkController extends BaseMobileApiController
 {
-
-    /**
-     * @var string[] 允许不携带 Session-Id 请求
-     */
-    //public $allowSessionActions = [
-    //    '*',
-    //];
-
-    /**
-     * @var string[] 允许不登录请求
-     */
-    //public $allowActions = [
-    //    '*',
-    //];
 
     public $configActions = [
         'allowSessionActions' => [
@@ -53,6 +38,7 @@ class JsSdkController extends BaseMobileApiController
     /**
      * 获取
      * @return array|int[]|\yii\web\Response
+     * @throws WechatException
      * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
      * @throws \EasyWeChat\Kernel\Exceptions\RuntimeException
      * @throws \Psr\SimpleCache\InvalidArgumentException

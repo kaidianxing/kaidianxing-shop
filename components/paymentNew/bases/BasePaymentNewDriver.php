@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 开店星新零售管理系统
  * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
@@ -10,7 +9,6 @@
  * @warning Unauthorized deletion of copyright information is prohibited.
  * @warning 未经许可禁止私自删除版权信息
  */
-
 
 namespace shopstar\components\paymentNew\bases;
 
@@ -266,8 +264,6 @@ class BasePaymentNewDriver extends Component {
      */
     public function getPaymentId()
     {
-        $paymentId = 0;
-
         $settings = ShopSettings::get('sysset.payment.typeset');
         if (empty($settings)) {
             throw new \Exception('店铺支付设置错误');
@@ -281,10 +277,7 @@ class BasePaymentNewDriver extends Component {
         } elseif (empty($payTypeSettings[$this->payTypeIdentity]['enable'])) {
             throw new \Exception('店铺支付设置未开启当前支付类型');
         }
-        $paymentId = $payTypeSettings[$this->payTypeIdentity]['id'] ?? 0;
-
-        
-        return $paymentId;
+        return $payTypeSettings[$this->payTypeIdentity]['id'] ?? 0;
     }
 
 }

@@ -30,7 +30,7 @@ class ExpressHelperSendBillLogModel extends BaseActiveRecord
      */
     public static function tableName()
     {
-        return '{{%app_express_helper_send_bill_log}}';
+        return '{{%express_helper_send_bill_log}}';
     }
 
     /**

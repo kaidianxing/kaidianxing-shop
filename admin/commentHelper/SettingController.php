@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 开店星新零售管理系统
  * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
@@ -13,24 +12,29 @@
 
 namespace shopstar\admin\commentHelper;
 
+use shopstar\bases\KdxAdminApiController;
+use shopstar\constants\commentHelper\CommentHelperLogConstant;
 use shopstar\helpers\RequestHelper;
 use shopstar\models\log\LogModel;
 use shopstar\models\shop\ShopSettings;
-use shopstar\constants\commentHelper\CommentHelperLogConstant;
-use shopstar\bases\KdxAdminApiController;
 
 /**
  * 评价助手设置
  * Class SettingController
- * @package apps\commentHelper\manage
+ * @package shopstar\admin\commentHelper
  */
 class SettingController extends KdxAdminApiController
 {
+
+    /**
+     * @var array
+     */
     public $configActions = [
         'allowPermActions' => [
             'get'
         ]
     ];
+
     /**
      * 获取设置
      * @author 青岛开店星信息技术有限公司
@@ -41,7 +45,7 @@ class SettingController extends KdxAdminApiController
 
         return $this->result(['data' => $set]);
     }
-    
+
     /**
      * 设置
      * @author 青岛开店星信息技术有限公司
@@ -53,7 +57,7 @@ class SettingController extends KdxAdminApiController
             'comment_reward_status' => RequestHelper::post('comment_reward_status'), // 评价奖励
             'api_key' => RequestHelper::post('api_key'), // 精选
         ];
-        
+
         ShopSettings::set('commentHelper', $set);
 
         // 日志
@@ -71,7 +75,7 @@ class SettingController extends KdxAdminApiController
                 ]
             ]
         );
-        
+
         return $this->success();
     }
 

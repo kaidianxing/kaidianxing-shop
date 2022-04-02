@@ -14,12 +14,14 @@
 
 namespace shopstar\jobs\wechat;
 
-use apps\wechat\constants\WechatSyncTaskTypeConstant;
-use apps\wechat\models\WechatSyncTaskModel;
+use shopstar\models\wechat\WechatSyncTaskModel;
 use yii\base\BaseObject;
 use yii\queue\JobInterface;
 use yii\queue\Queue;
 
+/**
+ * @author 青岛开店星信息技术有限公司
+ */
 class WechatSyncJob extends BaseObject implements JobInterface
 {
     /**
@@ -32,10 +34,9 @@ class WechatSyncJob extends BaseObject implements JobInterface
      * 微信同步任务
      * @param Queue $queue
      * @return bool
-     * @throws \yii\db\Exception
      * @author 青岛开店星信息技术有限公司.
      */
-    public function execute($queue)
+    public function execute($queue): bool
     {
         echo '微信同步任务：类型' . $this->data['type'] . ';任务id:' . $this->data['task_id'] . "\n\r";
 

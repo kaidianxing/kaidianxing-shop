@@ -15,6 +15,9 @@ namespace shopstar\constants\consumeReward;
 
 use shopstar\bases\constant\BaseConstant;
 
+/**
+ * @author 青岛开店星信息技术有限公司
+ */
 class ConsumeRewardConstant extends BaseConstant
 {
     /**

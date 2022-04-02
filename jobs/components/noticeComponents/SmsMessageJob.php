@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 开店星新零售管理系统
  * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
@@ -11,15 +10,17 @@
  * @warning 未经许可禁止私自删除版权信息
  */
 
-
 namespace shopstar\jobs\components\noticeComponents;
 
-use shopstar\helpers\DateTimeHelper;
-use shopstar\helpers\LogHelper;
 use Overtrue\EasySms\EasySms;
 use Overtrue\EasySms\Exceptions\NoGatewayAvailableException;
+use shopstar\helpers\DateTimeHelper;
+use shopstar\helpers\LogHelper;
 use yii\base\BaseObject;
 
+/**
+ * @author 青岛开店星信息技术有限公司
+ */
 class SmsMessageJob extends BaseObject implements \yii\queue\JobInterface
 {
     /**
@@ -32,6 +33,7 @@ class SmsMessageJob extends BaseObject implements \yii\queue\JobInterface
     /**
      * @inheritDoc
      * @throws \Overtrue\EasySms\Exceptions\InvalidArgumentException
+     * @throws \yii\base\Exception
      */
     public function execute($queue)
     {
@@ -47,7 +49,7 @@ class SmsMessageJob extends BaseObject implements \yii\queue\JobInterface
                 'data' => $data['data'],
             ]);
         } catch (NoGatewayAvailableException $exception) {
-            LogHelper::error('[MOBILE CORD ERROR2]',$exception->getExceptions()['aliyun']->getMessage());
+            LogHelper::error('[MOBILE CORD ERROR2]', $exception->getExceptions()['aliyun']->getMessage());
             echo '短信发送失败: ' . $exception->getExceptions()['aliyun']->getMessage();
             return false;
         }

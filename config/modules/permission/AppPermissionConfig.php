@@ -14,11 +14,11 @@ namespace shopstar\config\modules\permission;
 
 use shopstar\components\permission\BasePermissionConfig;
 
-
 /**
  * 应用权限
  * Class AppPermissionConfig
  * @package shop\config\permission
+ * @author 青岛开店星信息技术有限公司
  */
 class AppPermissionConfig extends BasePermissionConfig
 {
@@ -26,17 +26,17 @@ class AppPermissionConfig extends BasePermissionConfig
      * @var string 权限模块标识
      */
     protected $identity = 'apps';
-    
+
     /**
      * @var string 路由前缀
      */
     protected $prefix = 'manage/apps/';
-    
+
     /**
      * @var string 分组名称
      */
     protected $groupName = '应用';
-    
+
     /**
      * @var array[] 权限配置
      */
@@ -53,5 +53,5 @@ class AppPermissionConfig extends BasePermissionConfig
         ],
 
     ];
-    
+
 }

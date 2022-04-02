@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 开店星新零售管理系统
  * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
@@ -11,7 +10,6 @@
  * @warning 未经许可禁止私自删除版权信息
  */
 
-
 namespace shopstar\components\platform;
 
 use yii\base\Component;
@@ -19,15 +17,14 @@ use yii\helpers\Json;
 
 /**
  * Class Wechat
- *
- * @package jianyan\easywechat
- *
+ * @package shopstar\components\platform
  * @property \EasyWeChat\OfficialAccount\Application $app 微信SDK实例
  * @property \EasyWeChat\Payment\Application $payment 微信支付SDK实例
  * @property \EasyWeChat\MiniProgram\Application $miniProgram 微信小程序实例
  * @property \EasyWeChat\OpenPlatform\Application $openPlatform 微信开放平台(第三方平台)实例
  * @property \EasyWeChat\Work\Application $work 企业微信实例
  * @property \EasyWeChat\OpenWork\Application $openWork 企业微信开放平台实例
+ * @author 青岛开店星信息技术有限公司
  */
 class Wechat extends Component
 {
@@ -256,11 +253,11 @@ class Wechat extends Component
     /**
      * 接口异常
      * @param $result
-     * @param $flag
+     * @param string $flag
      * @return array|bool|mixed
      * @author 青岛开店星信息技术有限公司
      */
-    public static function apiError($result, $flag = '')
+    public static function apiError($result, string $flag = '')
     {
         // 异常捕获
         if ($result instanceof \Exception) {

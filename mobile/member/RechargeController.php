@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 开店星新零售管理系统
  * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
@@ -31,6 +30,9 @@ use shopstar\models\member\MemberWxappModel;
 use shopstar\models\shop\ShopSettings;
 use shopstar\services\tradeOrder\TradeOrderService;
 
+/**
+ * @author 青岛开店星信息技术有限公司
+ */
 class RechargeController extends BaseMobileApiController
 {
     /**
@@ -39,7 +41,7 @@ class RechargeController extends BaseMobileApiController
      * @throws FinanceException
      * @author 青岛开店星信息技术有限公司
      */
-    public function actionIndex()
+    public function actionIndex(): \yii\web\Response
     {
         $data = [];
 
@@ -70,7 +72,7 @@ class RechargeController extends BaseMobileApiController
      * @throws FinanceException
      * @author 青岛开店星信息技术有限公司
      */
-    public function actionSubmit()
+    public function actionSubmit(): \yii\web\Response
     {
         $memberId = $this->memberId;
         $rechargeSet = $this->getRechargeSet();
@@ -126,7 +128,7 @@ class RechargeController extends BaseMobileApiController
                 $openid = MemberToutiaoLiteModel::getOpenId($this->memberId);
             }
 
-            /** @change likexin 调用交易订单服务获取支付参数 **/
+            /** @change likexin 调用交易订单服务获取支付参数 * */
             $result = TradeOrderService::pay([
                 'type' => TradeOrderTypeConstant::TYPE_MEMBER_RECHARGE,     // 交易订单类型(交易类型)
                 'payType' => $payTypeCode,      // 支付类型code

@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 开店星新零售管理系统
  * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
@@ -13,14 +12,15 @@
 
 namespace shopstar\components\byteDance\channels;
 
+use Moonpie\Macro\Factory;
 use shopstar\components\byteDance\bases\BaseByteDanceChannel;
 use shopstar\models\shop\ShopSettings;
-use Moonpie\Macro\Factory;
 
 /**
  * 头条渠道
- * Class ToutiaoChannel
+ * Class ToutiaoLiteChannel
  * @package shopstar\components\byteDance\channels
+ * @author 青岛开店星信息技术有限公司
  */
 class ToutiaoLiteChannel extends BaseByteDanceChannel
 {
@@ -28,7 +28,7 @@ class ToutiaoLiteChannel extends BaseByteDanceChannel
      * @var string 字节跳动appid
      */
     public $appid;
-    
+
     /**
      * @var string 抖音app secret
      */
@@ -38,7 +38,7 @@ class ToutiaoLiteChannel extends BaseByteDanceChannel
      * @var \Moonpie\Macro\ByteMiniProgram\Application
      */
     public $factory;
-    
+
     /**
      * @author 青岛开店星信息技术有限公司
      */
@@ -49,7 +49,7 @@ class ToutiaoLiteChannel extends BaseByteDanceChannel
         $this->appid = $settings['appid'];
         $this->app_secret = $settings['app_secret'];
     }
-    
+
     /**
      * @author 青岛开店星信息技术有限公司
      */
@@ -59,6 +59,6 @@ class ToutiaoLiteChannel extends BaseByteDanceChannel
             'app_id' => $this->appid,
             'secret' => $this->app_secret,
         ]);
-        
+
     }
 }

@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 开店星新零售管理系统
  * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
@@ -13,6 +12,7 @@
 
 namespace shopstar\admin\goods;
 
+use shopstar\bases\KdxAdminApiController;
 use shopstar\constants\log\goods\GoodsLogConstant;
 use shopstar\exceptions\goods\GoodsException;
 use shopstar\helpers\DateTimeHelper;
@@ -21,10 +21,18 @@ use shopstar\models\goods\GoodsModel;
 use shopstar\models\goods\group\GoodsGroupMapModel;
 use shopstar\models\goods\group\GoodsGroupModel;
 use shopstar\models\log\LogModel;
-use shopstar\bases\KdxAdminApiController;
 
+/**
+ * 商品分组
+ * Class GroupController
+ * @package shopstar\admin\goods
+ */
 class GroupController extends KdxAdminApiController
 {
+
+    /**
+     * @var array
+     */
     public $configActions = [
         'postActions' => [
             'create',
@@ -38,11 +46,10 @@ class GroupController extends KdxAdminApiController
 
     /**
      * 商品分组列表
-     * @param bool $pager 是否需要返回page规则
      * @return \yii\web\Response
      * @author 青岛开店星信息技术有限公司
      */
-    public function actionGetList()
+    public function actionGetList(): \yii\web\Response
     {
         $get = RequestHelper::get();
 
@@ -65,12 +72,11 @@ class GroupController extends KdxAdminApiController
 
     /**
      * 获取单个商品分组
-     * @param $id
      * @return \yii\web\Response
      * @throws GoodsException
      * @author 青岛开店星信息技术有限公司
      */
-    public function actionGetOne()
+    public function actionGetOne(): \yii\web\Response
     {
         $id = RequestHelper::getInt('id');
         if (empty($id)) {
@@ -97,18 +103,16 @@ class GroupController extends KdxAdminApiController
         return $this->success(['data' => $group]);
     }
 
-
     /**
      * 创建分组 | 权限
      * @return \yii\web\Response
      * @throws GoodsException
      * @author 青岛开店星信息技术有限公司
      */
-    public function actionCreate()
+    public function actionCreate(): \yii\web\Response
     {
         return $this->actionUpdate();
     }
-
 
     /**
      * 更新分组 | 权限
@@ -116,7 +120,7 @@ class GroupController extends KdxAdminApiController
      * @throws GoodsException
      * @author 青岛开店星信息技术有限公司
      */
-    public function actionUpdate()
+    public function actionUpdate(): \yii\web\Response
     {
         $post = RequestHelper::post();
 
@@ -139,7 +143,7 @@ class GroupController extends KdxAdminApiController
             $group->setAttributes($post);
 
             if (!$group->save()) {
-                throw new GoodsException(GoodsException::GROUP_SAVE_ERROR,$group->getErrorMessage());
+                throw new GoodsException(GoodsException::GROUP_SAVE_ERROR, $group->getErrorMessage());
             }
 
             GoodsGroupMapModel::deleteAll(['group_id' => $group->id]);
@@ -191,12 +195,13 @@ class GroupController extends KdxAdminApiController
 
     /**
      * 永久删除商品分组
-     * @param int|array $id
      * @return \yii\web\Response
+     * @throws GoodsException
      * @throws \Throwable
+     * @throws \yii\db\StaleObjectException
      * @author 青岛开店星信息技术有限公司
      */
-    public function actionForeverDelete()
+    public function actionForeverDelete(): \yii\web\Response
     {
         $id = RequestHelper::post('id');
         if (empty($id)) {
@@ -241,7 +246,7 @@ class GroupController extends KdxAdminApiController
      * @throws GoodsException
      * @author 青岛开店星信息技术有限公司
      */
-    public function actionSwitch()
+    public function actionSwitch(): \yii\web\Response
     {
         $id = RequestHelper::post('id');
         $status = RequestHelper::postInt('status', 0);
@@ -275,7 +280,6 @@ class GroupController extends KdxAdminApiController
                 ]
             );
         }
-
 
         return $this->success();
     }

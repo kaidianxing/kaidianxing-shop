@@ -109,12 +109,11 @@ class ManagerRoleModel extends BaseActiveRecord
     /**
      * 获取角色信息
      * @param $id
-     * @param int $shopType
      * @return array|null
      * @throws UserException
      * @author 青岛开店星信息技术有限公司
      */
-    public static function getInfo($id, int $shopType = 0)
+    public static function getInfo($id): ?array
     {
         $info = self::find()
             ->where(compact('id'))
@@ -128,9 +127,8 @@ class ManagerRoleModel extends BaseActiveRecord
         }
 
         $info['has_perm'] = explode('|', $info['perms']);
-        $info['all_perm'] = Permission::getPermTreeForRole($shopType); // TODO 青岛开店星信息技术有限公司
+        $info['all_perm'] = Permission::getPermTreeForRole();
         unset($info['perms']);
-
 
         return $info;
     }
@@ -260,11 +258,11 @@ class ManagerRoleModel extends BaseActiveRecord
     /**
      * 获取角色权限
      * @param $roleId
-     * @param int $shopType
      * @return array
+     * @throws \Exception
      * @author 青岛开店星信息技术有限公司
      */
-    public static function getRolePerms($roleId, int $shopType)
+    public static function getRolePerms($roleId): array
     {
         $perms = self::getStringCache(CacheTypeConstant::ROLE_PERMS, [$roleId]);
 
@@ -286,8 +284,6 @@ class ManagerRoleModel extends BaseActiveRecord
             return [];
         }
 
-        $permArray = explode('|', $perms[0]);
-
-        return $permArray;
+        return explode('|', $perms[0]);
     }
 }

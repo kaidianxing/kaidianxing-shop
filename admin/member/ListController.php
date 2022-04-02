@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 开店星新零售管理系统
  * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
@@ -47,10 +46,14 @@ use yii\web\Response;
 /**
  * 会员列表类
  * Class ListController
- * @package app\controllers\manage\member
+ * @package shopstar\admin\member
  */
 class ListController extends KdxAdminApiController
 {
+
+    /**
+     * @var array
+     */
     public $configActions = [
         'allowHeaderActions' => ['index'],
         'allowPermActions' => [
@@ -232,7 +235,7 @@ class ListController extends KdxAdminApiController
      * @throws MemberException
      * @author 青岛开店星信息技术有限公司
      */
-    public function actionChangeLevel()
+    public function actionChangeLevel(): Response
     {
         $id = RequestHelper::postArray('id');
         // 获取等级名称
@@ -285,7 +288,7 @@ class ListController extends KdxAdminApiController
      * @throws MemberException
      * @author 青岛开店星信息技术有限公司
      */
-    public function actionChangeGroup()
+    public function actionChangeGroup(): Response
     {
         $id = RequestHelper::postArray('id');
 
@@ -314,7 +317,7 @@ class ListController extends KdxAdminApiController
      * @throws MemberException
      * @author 青岛开店星信息技术有限公司
      */
-    public function actionSetBlack()
+    public function actionSetBlack(): Response
     {
         $id = RequestHelper::postArray('id');
 
@@ -367,7 +370,7 @@ class ListController extends KdxAdminApiController
      * @throws MemberException
      * @author 青岛开店星信息技术有限公司
      */
-    public function actionRecharge()
+    public function actionRecharge(): Response
     {
         $post = RequestHelper::post();
         $id = $post['id'];

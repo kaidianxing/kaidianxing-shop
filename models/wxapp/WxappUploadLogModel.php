@@ -41,7 +41,7 @@ class WxappUploadLogModel extends BaseActiveRecord
      */
     public static function tableName()
     {
-        return '{{%app_wxapp_upload_log}}';
+        return '{{%wxapp_upload_log}}';
     }
 
     /**

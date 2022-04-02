@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 开店星新零售管理系统
  * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
@@ -11,11 +10,9 @@
  * @warning 未经许可禁止私自删除版权信息
  */
 
-
 namespace shopstar\services\goods;
 
 use shopstar\bases\service\BaseService;
- 
 use shopstar\models\goods\GoodsCartModel;
 use shopstar\models\goods\GoodsMemberLevelDiscountModel;
 use shopstar\models\goods\GoodsModel;
@@ -25,6 +22,9 @@ use shopstar\models\member\MemberLevelModel;
 use shopstar\models\member\MemberModel;
 use shopstar\models\shop\ShopSettings;
 
+/**
+ * @author 青岛开店星信息技术有限公司
+ */
 class GoodsCartService extends BaseService
 {
     /**
@@ -88,8 +88,6 @@ class GoodsCartService extends BaseService
         'goods_option.price',
         '(goods_option.stock=0) as is_soldout'
     ];
-
-
 
 
     /**
@@ -160,10 +158,11 @@ class GoodsCartService extends BaseService
     /**
      * 获取购物车商品数量
      * @param int $memberId
+     * @param array $options
      * @return int|mixed
      * @author 青岛开店星信息技术有限公司
      */
-    public static function goodsCount(int $memberId, $options = []): int
+    public static function goodsCount(int $memberId, array $options = []): int
     {
         //检测购物车失效
         self::checkFailure($memberId, $options);
@@ -185,7 +184,7 @@ class GoodsCartService extends BaseService
      * @return array|\yii\db\ActiveRecord[]
      * @author 青岛开店星信息技术有限公司.
      */
-    public static function checkFailure(int $memberId, array $options = [])
+    public static function checkFailure(int $memberId, array $options = []): array
     {
         // 购物车列表
         $query = GoodsCartModel::find()
@@ -255,10 +254,7 @@ class GoodsCartService extends BaseService
         $havePermViewGoodsIds = GoodsPermMapModel::getNotHasPermGoodsId($goodsIds, $memberId, GoodsPermMapModel::PERM_VIEW);
 
         // 配送方式设置
-        $dispatchSet = [];
-        if (empty($options['shop_type'])) {
-            $dispatchSet = ShopSettings::get('dispatch');
-        }
+        $dispatchSet = ShopSettings::get('dispatch');
 
         // 清除选中状态的商品
         $cleanSelectIds = [];
@@ -287,7 +283,7 @@ class GoodsCartService extends BaseService
                 $item = array_merge($item, $goodsList[$item['goods_id']]);
             }
             // 检查商品是否有配送方式
-            $dispatchResult = self::checkDispatchSet($options['shop_type'], $item, $dispatchSet);
+            $dispatchResult = self::checkDispatchSet($item, $dispatchSet);
 
             if (!$dispatchResult) {
                 $cleanSelectIds[] = $item['goods_id'];
@@ -312,34 +308,31 @@ class GoodsCartService extends BaseService
         return [$list, $optionList];
     }
 
-
     /**
      * 检查商品有没有配送类型
-     * @param int $shopType
      * @param array $goods
      * @param array $dispatchSet 配送方式设置
      * @return bool true 有配送方式  false 无配送方式
      * @author 青岛开店星信息技术有限公司
      */
-    private static function checkDispatchSet(int $shopType, array &$goods, $dispatchSet = [])
+    private static function checkDispatchSet(array &$goods, array $dispatchSet = []): bool
     {
-        if (empty($shopType)) {
-            // 校验配送方式 如果都没有配送方式 则失效
-            if ($dispatchSet['express']['enable'] == 0) {
-                $goods['dispatch_express'] = 0;
-            }
-            if ($dispatchSet['intracity']['enable'] == 0) {
-                $goods['dispatch_intracity'] = 0;
-            }
-            if (isset($dispatchSet['verify_set']) && $dispatchSet['verify_set']['verify_is_open'] == 0) {
-                $goods['dispatch_verify'] = 0;
-            }
-            $goods['dispatch_verify'] = 0;
-            // 都没有配送方式  删除
-            if ($goods['dispatch_express'] == 0 && $goods['dispatch_intracity'] == 0 && $goods['dispatch_verify'] == 0) {
-                return false;
-            }
+        // 校验配送方式 如果都没有配送方式 则失效
+        if ($dispatchSet['express']['enable'] == 0) {
+            $goods['dispatch_express'] = 0;
         }
+        if ($dispatchSet['intracity']['enable'] == 0) {
+            $goods['dispatch_intracity'] = 0;
+        }
+        if (isset($dispatchSet['verify_set']) && $dispatchSet['verify_set']['verify_is_open'] == 0) {
+            $goods['dispatch_verify'] = 0;
+        }
+        $goods['dispatch_verify'] = 0;
+        // 都没有配送方式  删除
+        if ($goods['dispatch_express'] == 0 && $goods['dispatch_intracity'] == 0 && $goods['dispatch_verify'] == 0) {
+            return false;
+        }
+
         return true;
     }
 }

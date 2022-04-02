@@ -27,7 +27,7 @@ use shopstar\models\order\OrderModel;
 use yii\helpers\Json;
 
 /**
- * This is the model class for table "{{%app_express_helper_send_bill_template}}".
+ * This is the model class for table "{{%express_helper_send_bill_template}}".
  *
  * @property int $id
  * @property string $name 模板名称
@@ -68,7 +68,7 @@ class ExpressHelperSendBillTemplateModel extends BaseActiveRecord
      */
     public static function tableName()
     {
-        return '{{%app_express_helper_send_bill_template}}';
+        return '{{%express_helper_send_bill_template}}';
     }
 
     /**

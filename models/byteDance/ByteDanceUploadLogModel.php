@@ -20,7 +20,7 @@ use shopstar\models\shop\ShopSettings;
 use yii\helpers\Json;
 
 /**
- * This is the model class for table "{{%app_byte_dance_upload_log}}".
+ * This is the model class for table "{{%byte_dance_upload_log}}".
  *
  * @property int $id
  * @property string $version 版本号
@@ -37,7 +37,7 @@ class ByteDanceUploadLogModel extends BaseActiveRecord
      */
     public static function tableName()
     {
-        return '{{%app_byte_dance_upload_log}}';
+        return '{{%byte_dance_upload_log}}';
     }
 
     /**

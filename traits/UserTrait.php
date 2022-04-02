@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 开店星新零售管理系统
  * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
@@ -13,7 +12,6 @@
 
 namespace shopstar\traits;
 
-
 use shopstar\constants\CacheTypeConstant;
 use shopstar\constants\user\UserStatusConstant;
 use shopstar\exceptions\UserException;
@@ -26,6 +24,7 @@ use yii\helpers\Json;
  * 用户
  * Class UserTrait
  * @package shopstar\traits
+ * @author 青岛开店星信息技术有限公司
  */
 trait UserTrait
 {
@@ -34,22 +33,17 @@ trait UserTrait
     /**
      * @var int|null 当前登录的用户ID
      */
-    public $userId = 0;
+    public ?int $userId = 0;
 
     /**
      * @var array|null 当前登录的用户基础信息
      */
-    public $user;
+    public ?array $user;
 
     /**
      * @var array|null 当前登录的操作员基础信息
      */
-    public $manage;
-
-    /**
-     * @var bool 是否是店铺超管
-     */
-    public $isShopRoot = false;
+    public ?array $manage;
 
     /**$allowNotLoginActions
      * 检测用户登录状态(只检测登录)
@@ -65,39 +59,33 @@ trait UserTrait
         }
 
         // 检测用户
-        $this->user = UserModel::find()->where(['id' => $userSession['id'], 'status' => UserStatusConstant::STATUS_ENABLE])->select(['id', 'is_root', 'username', 'audit_status', 'group_id'])->first();
+        $this->user = UserModel::find()->where([
+            'id' => $userSession['id'],
+            'status' => UserStatusConstant::STATUS_ENABLE,
+        ])
+            ->select(['id', 'is_root', 'username', 'group_id'])
+            ->first();
         if (empty($this->user)) {
             throw new UserException(UserException::CHECK_USER_USER_NOT_EXITS);
         }
-        $this->userId = $this->user['id'];
-    }
 
-    /**
-     * 检测用户session
-     * @throws UserException
-     * @author likexin
-     */
-    public function checkUserSession()
-    {
-        // 查询登录缓存
-        $userSession = UserSession::baseGet($this->sessionId, '', null, [
-            'client_type' => $this->clientType,
-        ]);
-        if (!$userSession) {
-            throw new UserException(UserException::CHECK_USER_SESSION_INVALID);
-        }
+        $this->userId = $this->user['id'];
     }
 
     /**
      * 检测用户是不是店铺管理员
      * @throws UserException
+     * @throws \Exception
      * @author 青岛开店星信息技术有限公司
      */
     public function checkShopManage()
     {
-        // 用户不存在提示
         if (empty($this->user)) {
+            // 用户不存在提示
             throw new UserException(UserException::USER_NOT_EXITS);
+        } elseif ($this->user['is_root']) {
+            // 当前登录用户是超管
+            return;
         }
 
         // 操作员
@@ -115,11 +103,8 @@ trait UserTrait
             throw new UserException(UserException::SHOP_MANAGE_NOT_EXITS);
         }
 
-        // 店铺超管
-        $this->isShopRoot = $manager['is_root'] > 0;
-
         // 检测管理员状态
-        if (!$this->isShopRoot && empty($manager['status'])) {
+        if (empty($manager['status'])) {
             throw new UserException(UserException::MANAGE_ACCOUNT_ISNOT_ABNORMAL);
         }
 
@@ -129,18 +114,6 @@ trait UserTrait
             'contact' => $manager['contact'] ?? '',
             'role_id' => $manager['role_id'] ?? '',
         ];
-    }
-
-    /**
-     * 检测用用户是不是管理端管理员
-     * @throws UserException
-     * @author likexin
-     */
-    public function checkAdminManage()
-    {
-        if (empty($this->user['is_root'])) {
-            throw new UserException(UserException::USER_NOT_IS_ADMIN_ROLE);
-        }
     }
 
 }

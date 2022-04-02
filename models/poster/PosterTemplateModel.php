@@ -16,7 +16,7 @@ namespace shopstar\models\poster;
 use shopstar\bases\model\BaseActiveRecord;
 
 /**
- * This is the model class for table "{{%app_poster_template}}".
+ * This is the model class for table "{{%poster_template}}".
  *
  * @property int $id 模板ID
  * @property int $system_id 系统模板ID 0:非系统模板 >0:系统模板
@@ -34,7 +34,7 @@ class PosterTemplateModel extends BaseActiveRecord
      */
     public static function tableName()
     {
-        return '{{%app_poster_template}}';
+        return '{{%poster_template}}';
     }
 
     /**

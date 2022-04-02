@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 开店星新零售管理系统
  * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
@@ -21,6 +20,7 @@ use yii\base\Exception;
  * 常量Trait
  * Class ConstantTrait
  * @package shopstar\bases\traits
+ * @author 青岛开店星信息技术有限公司
  */
 trait ConstantTrait
 {
@@ -63,7 +63,6 @@ trait ConstantTrait
     /**
      * 获取类反射
      * @return array|mixed
-     * @throws \ReflectionException
      * @author likexin
      */
     private static function getReflection()
@@ -97,7 +96,7 @@ trait ConstantTrait
      * @return array
      * @author likexin
      */
-    public static function getAll($class = null)
+    public static function getAll($class = null): array
     {
         $class = $class ?? get_called_class();
         return (array)ConstantHelper::collectClass($class);
@@ -107,10 +106,9 @@ trait ConstantTrait
      * 获取列表
      * @param string $valueField
      * @return array
-     * @throws \ReflectionException
      * @author likexin
      */
-    public static function getList(string $valueField = 'code')
+    public static function getList(string $valueField = 'code'): array
     {
         $all = self::getAll();
         $list = [];
@@ -169,7 +167,7 @@ trait ConstantTrait
      * @return array
      * @author likexin
      */
-    public static function getAllByIndex(string $index)
+    public static function getAllByIndex(string $index): array
     {
         $all = self::getAll();
         if (empty($all)) {
@@ -193,10 +191,9 @@ trait ConstantTrait
      * 获取全部列
      * @param string $field
      * @return array
-     * @throws \ReflectionException
      * @author likexin
      */
-    public static function getAllColumn(string $field)
+    public static function getAllColumn(string $field): array
     {
         if ($field == 'code') {
             return array_keys(self::getAll());
@@ -209,10 +206,9 @@ trait ConstantTrait
      * 获取全部列（固定INDEX）
      * @param string $field
      * @return array
-     * @throws \ReflectionException
      * @author 青岛开店星信息技术有限公司
      */
-    public static function getAllColumnFixedIndex(string $field)
+    public static function getAllColumnFixedIndex(string $field): array
     {
         $all = self::getAll();
 

@@ -14,11 +14,11 @@ namespace shopstar\config\modules\permission;
 
 use shopstar\components\permission\BasePermissionConfig;
 
-
 /**
  * 虚拟卡密
  * Class PermissionConfig
- * @package apps\virtualAccount\config
+ * @package shopstar\config\modules\permission
+ * @author 青岛开店星信息技术有限公司
  */
 class VirtualAccountPermissionConfig extends BasePermissionConfig
 {
@@ -62,18 +62,6 @@ class VirtualAccountPermissionConfig extends BasePermissionConfig
                         ],
                     ],
                 ],
-//                [
-//                    'title' => '卡密库',
-//                    'alias' => 'virtualAccount.get_statistics',
-//                    'perm' => [
-//                        'view' => [
-//                            'title' => '查看',
-//                            'adapt_shop_type' => [
-//                            ],
-//                            'actions' => ['get-statistics']
-//                        ],
-//                    ],
-//                ],
             ]
         ],
         'virtual-account-data' => [

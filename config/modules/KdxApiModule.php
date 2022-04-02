@@ -13,12 +13,12 @@
 namespace shopstar\config\modules;
 
 use shopstar\bases\module\BaseModule;
-use modules\utility\config\UtilityModule;
 
 /**
  * 商城模块配置
  * Class KdxApiModule
- * @package shop\config
+ * @package shopstar\config\modules
+ * @author 青岛开店星信息技术有限公司
  */
 class KdxApiModule extends BaseModule
 {
@@ -36,14 +36,6 @@ class KdxApiModule extends BaseModule
     {
         // 设置控制器命名空间
         $this->setControllerNamespace('shopstar\\' . ($this->isMobile ? 'mobile' : 'admin'), false);
-
-        // 注册模块
-        //$this->setModules([
-        //    // 工具模块
-        //    'utility' => [
-        //        'class' => UtilityModule::class,
-        //    ],
-        //]);
     }
 
 }

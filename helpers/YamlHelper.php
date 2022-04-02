@@ -8,6 +8,7 @@ use Symfony\Component\Yaml\Yaml;
  * yaml操作助手
  * Class HttpHelper
  * @package shopstar\helpers
+ * @author 青岛开店星信息技术有限公司
  */
 class YamlHelper
 {

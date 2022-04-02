@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 开店星新零售管理系统
  * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
@@ -13,7 +12,6 @@
 
 namespace shopstar\components\printer\driver;
 
-
 use shopstar\components\printer\bases\BasePrinterDriver;
 use shopstar\components\printer\bases\PrinterDriverInterface;
 use shopstar\helpers\HttpHelper;
@@ -23,6 +21,7 @@ use yii\helpers\Json;
  * 飞蛾云驱动类
  * Class FeyDriver
  * @package shopstar\components\printer\driver
+ * @author 青岛开店星信息技术有限公司
  */
 class FeyDriver extends BasePrinterDriver implements PrinterDriverInterface
 {
@@ -73,7 +72,7 @@ class FeyDriver extends BasePrinterDriver implements PrinterDriverInterface
         return $this->send(
             self::URL,
             [
-                'user'    => $this->user,
+                'user' => $this->user,
                 'stime' => $this->current_time,
                 'sig' => $this->sign,
                 'apiname' => 'Open_printerAddlist',
@@ -88,7 +87,7 @@ class FeyDriver extends BasePrinterDriver implements PrinterDriverInterface
         return $this->send(
             self::URL,
             [
-                'user'    => $this->user,
+                'user' => $this->user,
                 'stime' => $this->current_time,
                 'sig' => $this->sign,
                 'apiname' => 'Open_printMsg',
@@ -109,7 +108,7 @@ class FeyDriver extends BasePrinterDriver implements PrinterDriverInterface
         return $this->send(
             self::URL,
             [
-                'user'    => $this->user,
+                'user' => $this->user,
                 'stime' => $this->current_time,
                 'sig' => $this->sign,
                 'apiname' => 'Open_delPrinterSqs',
@@ -128,7 +127,7 @@ class FeyDriver extends BasePrinterDriver implements PrinterDriverInterface
         return $this->send(
             self::URL,
             [
-                'user'    => $this->user,
+                'user' => $this->user,
                 'stime' => $this->current_time,
                 'sig' => $this->sign,
                 'apiname' => 'Open_printerDelList',
@@ -151,8 +150,6 @@ class FeyDriver extends BasePrinterDriver implements PrinterDriverInterface
             ]
         );
 
-        // TODO 处理返回code
-
         $response = Json::decode($response);
         if ($response['ret'] != 0 && $response['msg'] != 'ok') {
             if ($response['ret'] == -2) {
@@ -173,15 +170,19 @@ class FeyDriver extends BasePrinterDriver implements PrinterDriverInterface
 
     /**
      * [signature 生成签名]
-     * @param  [string] $time [当前UNIX时间戳，10位，精确到秒]
-     * @return [string]       [接口返回值]
+     * @return string
+     * @author 青岛开店星信息技术有限公司
      */
-    private function signature()
+    private function signature(): string
     {
-        return sha1($this->user.$this->ukey.$this->current_time);//公共参数，请求公钥
+        return sha1($this->user . $this->ukey . $this->current_time);//公共参数，请求公钥
     }
 
-    private function getCurrentTime()
+    /**
+     * @return int
+     * @author 青岛开店星信息技术有限公司
+     */
+    private function getCurrentTime(): int
     {
         return time();
     }

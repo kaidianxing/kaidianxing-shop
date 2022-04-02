@@ -221,6 +221,7 @@ class ManagerModel extends BaseActiveRecord
     /**
      * 删除单个缓存
      * @param int $manageId
+     * @throws \Exception
      * @author 青岛开店星信息技术有限公司
      */
     public static function deleteSingleCache(int $manageId)
@@ -232,11 +233,12 @@ class ManagerModel extends BaseActiveRecord
     /**
      * 获取用户权限列表
      * @param $memberId
-     * @param int $shopType
+     * @param bool $isRoot
      * @return array
+     * @throws \Exception
      * @author 青岛开店星信息技术有限公司
      */
-    public static function getPerms($memberId, int $shopType)
+    public static function getPerms($memberId, bool $isRoot = false): array
     {
         // 超级管理员返回全部权限
         $manage = self::getStringCache(CacheTypeConstant::MANAGE_PROFILE, [$memberId]);
@@ -249,11 +251,10 @@ class ManagerModel extends BaseActiveRecord
         /**
          * is_root 0普通用户 1公众号创建者 2超级管理员
          */
-        if ((int)$manage['is_root'] > ManageRootConstant::GENERAL_OPERATOR) {
-
-            $perms = Permission::getAllPermKey($shopType);
+        if ($isRoot || (int)$manage['is_root'] > ManageRootConstant::GENERAL_OPERATOR) {
+            $perms = Permission::getAllPermKey();
         } else {
-            $perms = ManagerRoleModel::getRolePerms($manage['role_id'], $shopType);
+            $perms = ManagerRoleModel::getRolePerms($manage['role_id']);
 
         }
 
@@ -269,9 +270,10 @@ class ManagerModel extends BaseActiveRecord
      * @param bool $isAll
      * @param string $key
      * @return bool|mixed
+     * @throws \Exception
      * @author 青岛开店星信息技术有限公司
      */
-    public static function clearCache($isAll = true, $key = '')
+    public static function clearCache(bool $isAll = true, string $key = '')
     {
         if ($isAll) {
             // 删除所有manage

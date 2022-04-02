@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 开店星新零售管理系统
  * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
@@ -13,17 +12,18 @@
 
 namespace app\controllers\manage\order;
 
-use shopstar\models\order\OrderModel;
 use shopstar\bases\KdxAdminApiController;
+use shopstar\models\order\OrderModel;
 
 /**
  * 订单数据统计
  * Class IndexController
  * @author 青岛开店星信息技术有限公司
- * @package app\controllers\manage\order
+ * @package shopstar\admin\order
  */
 class IndexController extends KdxAdminApiController
 {
+
     /**
      * 统计数据
      * @author 青岛开店星信息技术有限公司
@@ -31,9 +31,11 @@ class IndexController extends KdxAdminApiController
      */
     private $orderData = [];
 
+    /**
+     * @return array|int[]|\yii\web\Response
+     */
     public function actionIndex()
     {
-
         //今日
         $this->today();
         //昨日
@@ -42,6 +44,7 @@ class IndexController extends KdxAdminApiController
         $this->sevenDay();
         //本月
         $this->month();
+
         return $this->success($this->orderData);
     }
 
@@ -81,9 +84,8 @@ class IndexController extends KdxAdminApiController
         $this->orderData['yesterday']['order_price'] = array_sum(array_column($order, 'pay_price'));
     }
 
-
     /**
-     * 进7天
+     * 近7天
      * @author 青岛开店星信息技术有限公司
      */
     private function sevenDay()
@@ -94,7 +96,6 @@ class IndexController extends KdxAdminApiController
         $order = OrderModel::find()->where(
             ['BETWEEN', 'created_at', $startTime, $endTime]
         )->asArray()->all();
-
 
         $this->orderData['seven_day']['order_num'] = count($order);
         $this->orderData['seven_day']['order_price'] = array_sum(array_column($order, 'pay_price'));
@@ -112,7 +113,6 @@ class IndexController extends KdxAdminApiController
         $order = OrderModel::find()->where(
             ['BETWEEN', 'created_at', $startTime, $endTime]
         )->asArray()->all();
-
 
         $this->orderData['month']['order_num'] = count($order);
         $this->orderData['month']['order_price'] = array_sum(array_column($order, 'pay_price'));

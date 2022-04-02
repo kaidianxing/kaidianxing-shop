@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 开店星新零售管理系统
  * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
@@ -10,7 +9,6 @@
  * @warning Unauthorized deletion of copyright information is prohibited.
  * @warning 未经许可禁止私自删除版权信息
  */
-
 
 namespace shopstar\admin\virtualAccount;
 
@@ -27,16 +25,18 @@ use yii\helpers\Json;
 /**
  * 卡密库
  * Class IndexController
- * @package apps\virtualAccount\manage
+ * @package shopstar\admin\virtualAccount
+ * @author 青岛开店星信息技术有限公司
  */
 class IndexController extends KdxAdminApiController
 {
+
     /**
      * index
      * @return \yii\web\Response
      * @author 青岛开店星信息技术有限公司
      */
-    public function actionIndex()
+    public function actionIndex(): \yii\web\Response
     {
         $params = [
             'where' => [
@@ -67,6 +67,7 @@ class IndexController extends KdxAdminApiController
                 $row['remaining_count'] = (int)$row['stock'] - (int)$row['sell_count'];
             },
         ]);
+
         return $this->success($data);
     }
 
@@ -76,12 +77,13 @@ class IndexController extends KdxAdminApiController
      * @throws VirtualAccountException
      * @author 青岛开店星信息技术有限公司
      */
-    public function actionAdd()
+    public function actionAdd(): \yii\web\Response
     {
         $data = $this->getParams();
         $result = VirtualAccountModel::easyAdd([
             'attributes' => $data
         ]);
+
         // 记录日志
         $result && LogModel::write(
             $this->userId,
@@ -171,10 +173,6 @@ class IndexController extends KdxAdminApiController
             }
         ]);
 
-
-        // 判断邮箱是否开启
-//        $mailer = $this->checkMailer();
-
         return $this->result($result);
     }
 
@@ -199,6 +197,7 @@ class IndexController extends KdxAdminApiController
 
         // 处理关联的订单以及商品状态及库存等
         VirtualAccountModel::deleteVirtualAccount($id);
+
         // 日志
         LogModel::write(
             $this->userId,
@@ -213,8 +212,8 @@ class IndexController extends KdxAdminApiController
                 ],
             ]
         );
-        return $this->result();
 
+        return $this->result();
     }
 
     /**
@@ -223,7 +222,7 @@ class IndexController extends KdxAdminApiController
      * @throws VirtualAccountException
      * @author 青岛开店星信息技术有限公司
      */
-    public function getParams()
+    public function getParams(): array
     {
         $params = RequestHelper::post();
         // 名称不能为空
@@ -247,7 +246,7 @@ class IndexController extends KdxAdminApiController
         if (isset($config) && (count($config) > 10 || count($config) == 0)) {
             throw new VirtualAccountException(VirtualAccountException::VIRTUAL_ACCOUNT_PARAMS_CONFIG_ERROR);
         }
-        $data = [
+        return [
             'name' => $params['name'],
             'use_description' => $params['use_description'],
             'use_description_title' => $params['use_description_title'],
@@ -261,7 +260,6 @@ class IndexController extends KdxAdminApiController
             'config' => $params['config'],
             'created_at' => DateTimeHelper::now(),
         ];
-        return $data;
     }
 
     /**
@@ -282,16 +280,12 @@ class IndexController extends KdxAdminApiController
     /**
      * 检测邮箱是否开启 之后移植到邮箱的model层
      * @return bool
-     * @throws VirtualAccountException
      * @author 青岛开店星信息技术有限公司
      */
-    public function checkMailer()
+    public function checkMailer(): bool
     {
         $setting = ShopSettings::get('mailer');
-        if ($setting['status'] == 1) {
-            return true;
-        }
-        return false;
+        return $setting['status'] == 1;
     }
 
 

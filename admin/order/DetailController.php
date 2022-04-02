@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 开店星新零售管理系统
  * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
@@ -15,7 +14,6 @@ namespace shopstar\admin\order;
 
 use shopstar\bases\KdxAdminApiController;
 use shopstar\constants\form\FormTypeConstant;
-use shopstar\constants\order\OrderActivityTypeConstant;
 use shopstar\constants\order\OrderDispatchExpressConstant;
 use shopstar\constants\order\OrderStatusConstant;
 use shopstar\constants\order\OrderTypeConstant;
@@ -34,13 +32,13 @@ use shopstar\models\virtualAccount\VirtualAccountOrderMapModel;
  * 订单详情
  * Class DetailController
  * @author 青岛开店星信息技术有限公司
- * @package app\controllers\manage\order
+ * @package shopstar\admin\order
  */
 class DetailController extends KdxAdminApiController
 {
+
     /**
      * @throws OrderException
-     * @throws \shopstar\exceptions\order\RefundException
      * @author 青岛开店星信息技术有限公司
      */
     public function actionIndex()
@@ -131,6 +129,5 @@ class DetailController extends KdxAdminApiController
 
         return $this->success($orderInfo);
     }
-
 
 }

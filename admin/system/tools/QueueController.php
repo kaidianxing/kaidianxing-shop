@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 开店星新零售管理系统
  * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
@@ -14,16 +13,16 @@
 namespace shopstar\admin\system\tools;
 
 use shopstar\bases\KdxAdminApiController;
-use shopstar\constants\core\CoreCronTabConstant;
 use shopstar\helpers\CacheHelper;
 use shopstar\helpers\QueueHelper;
 use shopstar\helpers\RequestHelper;
 use shopstar\jobs\core\TestJob;
-use shopstar\models\core\CoreSettings;
 
 /**
  * 数据管理
  * Class CrontabController
+ * @package shopstar\admin\system\tools
+ * @author 青岛开店星信息技术有限公司
  */
 class QueueController extends KdxAdminApiController
 {

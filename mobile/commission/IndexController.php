@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 开店星新零售管理系统
  * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
@@ -13,25 +12,25 @@
 
 namespace shopstar\mobile\commission;
 
-use shopstar\components\wechat\helpers\MiniProgramACodeHelper;
- 
-use shopstar\models\member\MemberModel;
-use shopstar\mobile\commission\CommissionClientApiController;
 use shopstar\models\commission\CommissionAgentModel;
 use shopstar\models\commission\CommissionAgentTotalModel;
 use shopstar\models\commission\CommissionLevelModel;
 use shopstar\models\commission\CommissionOrderDataModel;
 use shopstar\models\commission\CommissionSettings;
-use yii\helpers\Url;
+use shopstar\models\member\MemberModel;
 
 /**
  * 分销中心首页
  * Class IndexController
- * @package apps\commission\client
+ * @package shopstar\mobile\commission
+ * @author 青岛开店星信息技术有限公司
  */
 class IndexController extends CommissionClientApiController
 {
 
+    /**
+     * @var string[]
+     */
     public $allowAgentActions = [
         'get-set',
         'commission-status',
@@ -112,7 +111,7 @@ class IndexController extends CommissionClientApiController
             // 累计提现数量
             'withdraw_count' => CommissionAgentTotalModel::getApplyTotal($this->memberId),
         ];
-        
+
         $data = [
             'agent_info' => $agentInfo,
             'commission_price' => $commissionPrice,
@@ -125,7 +124,7 @@ class IndexController extends CommissionClientApiController
 
         return $this->result($data);
     }
-    
+
     /**
      * 获取分销设置
      * @author 青岛开店星信息技术有限公司

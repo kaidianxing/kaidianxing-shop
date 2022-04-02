@@ -18,7 +18,7 @@ use shopstar\helpers\DateTimeHelper;
 use shopstar\helpers\LogHelper;
 
 /**
- * This is the model class for table "{{%app_wechat_fans}}".
+ * This is the model class for table "{{%wechat_fans}}".
  *
  * @property int $id
  * @property int $is_follow 是否关注 0否 1是
@@ -46,7 +46,7 @@ class WechatFansModel extends BaseActiveRecord
      */
     public static function tableName()
     {
-        return '{{%app_wechat_fans}}';
+        return '{{%wechat_fans}}';
     }
 
     /**

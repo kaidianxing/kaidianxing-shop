@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 开店星新零售管理系统
  * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
@@ -22,7 +21,6 @@ use shopstar\helpers\FileHelper;
 use shopstar\helpers\OrderNoHelper;
 use shopstar\helpers\ShopUrlHelper;
 use shopstar\helpers\StringHelper;
-use shopstar\models\member\MemberCreditRecordModel;
 use shopstar\models\member\MemberModel;
 use shopstar\models\order\OrderChangePriceLogModel;
 use shopstar\models\order\PayOrderModel;
@@ -33,6 +31,12 @@ use Yansongda\Pay\Pay;
 use yii\base\Component;
 use yii\helpers\Json;
 
+/**
+ * 支付基类
+ * Class BasePay
+ * @package shopstar\components\payment\base
+ * @author 青岛开店星信息技术有限公司
+ */
 class BasePay extends Component
 {
     /**
@@ -347,7 +351,7 @@ class BasePay extends Component
      */
     public static function buildPerm(string $name, string $content)
     {
-        $path = SHOP_STAR_TMP_PATH . '/cert/' .  '/';
+        $path = SHOP_STAR_TMP_PATH . '/cert/' . '/';
         if (!is_dir(($path))) {
             FileHelper::createDirectory($path);
         }
@@ -463,7 +467,7 @@ class BasePay extends Component
 
         /** 退款需要证书 */
         if ($needCert === true) {
-            if(!$payConf->wechat_key || !$payConf->wechat_cert) {
+            if (!$payConf->wechat_key || !$payConf->wechat_cert) {
                 throw new PaymentException(PaymentException::PAY_CONFIG_NEED_CERT);
             }
             $this->cert_key = self::buildPerm('wechatcertKey.pem', trim($payConf->wechat_key));

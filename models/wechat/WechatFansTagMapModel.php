@@ -16,7 +16,7 @@ namespace shopstar\models\wechat;
 use shopstar\bases\model\BaseActiveRecord;
 
 /**
- * This is the model class for table "{{%app_wechat_fans_tag_map}}".
+ * This is the model class for table "{{%wechat_fans_tag_map}}".
  *
  * @property int $id
  * @property int $wechat_tag_id 公众号标签id
@@ -30,7 +30,7 @@ class WechatFansTagMapModel extends BaseActiveRecord
      */
     public static function tableName()
     {
-        return '{{%app_wechat_fans_tag_map}}';
+        return '{{%wechat_fans_tag_map}}';
     }
 
     /**

@@ -33,6 +33,7 @@ use yii\helpers\Json;
  */
 class TemplateController extends KdxAdminApiController
 {
+
     /**
      * 列表
      * @return array|\yii\web\Response
@@ -68,9 +69,11 @@ class TemplateController extends KdxAdminApiController
         ];
 
         $returnData = [];
+
         // 打印机
         $printers = PrinterModel::find()->where(['is_deleted' => 0])->select('id, status, name, location, type, brand')->get();
         $printersMap = array_column($printers, NULL, 'id');
+
         PrinterTemplateModel::getColl($params, [
             'callable' => function (&$row) use (&$returnData, $printersMap) {
                 if (isset($returnData[$row['template_id']]) && !empty($row['printer_id'])) {
@@ -145,6 +148,7 @@ class TemplateController extends KdxAdminApiController
             '二维码' => $result->qrcode,
             '底部信息' => $result->footer
         ];
+
         LogModel::write(
             $this->userId,
             PrinterLogConstant::PRINTER_TEMPLATE_ADD,
@@ -289,7 +293,11 @@ class TemplateController extends KdxAdminApiController
         return $this->result();
     }
 
-    private function checkParams($isAdd = true)
+    /**
+     * @param bool $isAdd
+     * @return array
+     */
+    private function checkParams(bool $isAdd = true): array
     {
         $postData = RequestHelper::post();
 
@@ -399,6 +407,5 @@ class TemplateController extends KdxAdminApiController
 
         return $params;
     }
-
 
 }

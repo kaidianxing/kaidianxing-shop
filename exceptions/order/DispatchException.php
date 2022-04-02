@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 开店星新零售管理系统
  * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
@@ -19,6 +18,7 @@ use shopstar\bases\exception\BaseException;
  * 配送方式
  * Class DispatchException
  * @package shopstar\exceptions\order
+ * @author 青岛开店星信息技术有限公司
  */
 class DispatchException extends BaseException
 {
@@ -28,57 +28,57 @@ class DispatchException extends BaseException
      * 60 配送方式
      * 01 错误码
      */
-    
+
     /**
      * @Message("配送方式保存失败")
      */
     const DISPATCH_EDIT_SAVE_FAIL = 226001;
-    
+
     /**
      * @Message("参数错误")
      */
     const DETAIL_PARAMS_ERROR = 226002;
-    
+
     /**
      * @Message("配送方式不存在")
      */
     const DISPATCH_NOT_EXISTS = 226003;
-    
+
     /**
      * @Message("修改配送方式状态失败")
      */
     const CHANGE_DISPATCH_STATE_FAIL = 226004;
-    
+
     /**
      * @Message("删除配送方式失败")
      */
     const DELETE_DISPATCH_FAIL = 226005;
-    
+
     /**
      * @Message("参数错误")
      */
     const EDIT_PARAMS_ERROR = 226006;
-    
+
     /**
      * @Message("参数错误")
      */
     const DELETE_PARAMS_ERROR = 226007;
-    
+
     /**
      * @Message("参数错误")
      */
     const CHANGE_STATE_PARAMS_ERROR = 226008;
-    
+
     /**
      * @Message("参数错误")
      */
     const CHANGE_DEFAULT_PARAMS_ERROR = 226009;
-    
+
     /**
      * @Message("配送方式保存失败")
      */
     const DISPATCH_ADD_SAVE_FAIL = 226010;
-    
+
     /**
      * @Message("修改默认状态失败")
      */
@@ -88,17 +88,16 @@ class DispatchException extends BaseException
      * @Message("至少需要开启一种配送方式才可以正常营业")
      */
     const SHOP_SETTINGS_DISPATCH_EXPRESS_ENABLE_INVALID = 226012;
-    
+
     /**
      * @Message("保存失败")
      */
     const DISPATCH_SORT_SAVE_FAIL = 226013;
-    
-    
-    
+
+
     /*************业务端异常结束*************/
-    
-    
+
+
     /*************客户端异常开始*************/
 
     /**
@@ -117,5 +116,5 @@ class DispatchException extends BaseException
     const DISPATCH_INTRACITY_QUERY_ORDER_STATUS_INVALID = 226503;
 
     /*************客户端异常结束*************/
-    
+
 }

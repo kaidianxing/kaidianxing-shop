@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 开店星新零售管理系统
  * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
@@ -13,12 +12,12 @@
 
 namespace shopstar\components\wechat\helpers;
 
-use shopstar\components\wechat\bases\WechatChannelConstant;
-use shopstar\components\wechat\WechatComponent;
-use shopstar\components\platform\Wechat;
 use EasyWeChat\Kernel\Messages\News;
 use EasyWeChat\Kernel\Messages\NewsItem;
 use EasyWeChat\Kernel\Messages\Text;
+use shopstar\components\platform\Wechat;
+use shopstar\components\wechat\bases\WechatChannelConstant;
+use shopstar\components\wechat\WechatComponent;
 
 /**
  * 文字消息回复   demo https://www.easywechat.com/docs/4.1/official-account/messages

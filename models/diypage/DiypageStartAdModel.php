@@ -16,7 +16,7 @@ use shopstar\bases\model\BaseActiveRecord;
 
 /**
  * 应用-店铺装修-启动广告实体类
- * This is the model class for table "{{%app_diypage_start_ad}}".
+ * This is the model class for table "{{%diypage_start_ad}}".
  *
  * @property int $id
  * @property string $name 广告名称
@@ -32,7 +32,7 @@ class DiypageStartAdModel extends BaseActiveRecord
      */
     public static function tableName()
     {
-        return '{{%app_diypage_start_ad}}';
+        return '{{%diypage_start_ad}}';
     }
 
     /**

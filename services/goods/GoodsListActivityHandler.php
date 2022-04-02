@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 开店星新零售管理系统
  * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
@@ -11,12 +10,8 @@
  * @warning 未经许可禁止私自删除版权信息
  */
 
-
-
 namespace shopstar\services\goods;
 
-
-use apps\groups\models\GroupsGoodsModel;
 use shopstar\helpers\DateTimeHelper;
 use shopstar\models\activity\ShopMarketingModel;
 use shopstar\models\commission\CommissionAgentModel;
@@ -65,6 +60,12 @@ class GoodsListActivityHandler
      */
     private $activityId = 0;
 
+    /**
+     * @param array $goodsInfo
+     * @param int $memberId
+     * @param $clientType
+     * @param int $activityId
+     */
     public function __construct(array $goodsInfo, int $memberId, $clientType, int $activityId = 0)
     {
         $this->goodsInfo = $goodsInfo;
@@ -90,7 +91,7 @@ class GoodsListActivityHandler
      * @return GoodsListActivityHandler
      * @author 青岛开店星信息技术有限公司
      */
-    public static function init(array $goodsInfo, int $memberId, int $clientType, int $activityId = 0)
+    public static function init(array $goodsInfo, int $memberId, int $clientType, int $activityId = 0): GoodsListActivityHandler
     {
         return new self($goodsInfo, $memberId, $clientType, $activityId);
     }
@@ -102,7 +103,7 @@ class GoodsListActivityHandler
      * @return bool
      * @author 青岛开店星信息技术有限公司
      */
-    private function setActivity(array $activities, string $activityType)
+    private function setActivity(array $activities, string $activityType): bool
     {
         foreach ($activities as $goodsId => $activity) {
             if (!empty($activity) || $activity == 0) {
@@ -120,7 +121,7 @@ class GoodsListActivityHandler
      * @return array|mixed
      * @author 青岛开店星信息技术有限公司
      */
-    public function getActivity($goodsId = 'all')
+    public function getActivity(string $goodsId = 'all')
     {
         if ($goodsId == 'all') {
             return $this->activityInfo;
@@ -133,7 +134,7 @@ class GoodsListActivityHandler
      * 自动化执行，活动执行方法可以单独调用也可以执行自动化
      * @author 青岛开店星信息技术有限公司
      */
-    public function automation()
+    public function automation(): bool
     {
 
         $this->seckill();
@@ -149,7 +150,6 @@ class GoodsListActivityHandler
          * 会员价
          */
         $this->memberPrice();
-
 
         /**
          * 佣金
@@ -205,7 +205,6 @@ class GoodsListActivityHandler
     /**
      * 默认会员价格
      * @param array $goodsMemberPriceTypeMap
-     * @param array $memberLevel
      * @param array $goodsDiscountPrice
      * @author 青岛开店星信息技术有限公司
      */
@@ -232,7 +231,6 @@ class GoodsListActivityHandler
     /**
      * 指定会员等级
      * @param array $goodsMemberPriceTypeMap
-     * @param array $memberLevel
      * @param array $goodsDiscountPrice
      * @author 青岛开店星信息技术有限公司
      */
@@ -305,7 +303,7 @@ class GoodsListActivityHandler
      * 秒杀信息
      * @author 青岛开店星信息技术有限公司
      */
-    public function seckill()
+    public function seckill(): bool
     {
         $seckill = [];
         foreach ($this->goodsActivity as $goodsId => $item) {
@@ -321,48 +319,6 @@ class GoodsListActivityHandler
 
         return true;
     }
-
-    /**
-     * 拼团
-     * @return bool
-     * @author 青岛开店星信息技术有限公司.
-     */
-    public function groups()
-    {
-        $groups = [];
-
-        foreach ($this->goodsActivity as $goodsId => $item) {
-            if ($item['activity_type'] == 'groups') {
-
-                // 获取包含商品的活动
-                $activity = ShopMarketingModel::getActivityInfo($goodsId, $this->clientType, 'groups', $this->goodsInfo[$goodsId]['has_option'], ['activity_id' => $this->activityId]);
-                $activity['ladder_info'] = $activity['rules'];
-                if (!is_error($activity)) {
-
-                    $activity['goods_info'] = GroupsGoodsModel::getGoodsOptionInfo($activity['id'], $activity['goods_ids']);
-
-                    //如果是阶梯团，需要再计算一遍最低价最高价
-                    if ($activity['inner_type'] || $this->goodsInfo['has_option']) {
-                        $priceRange = GroupsGoodsModel::calculateLadderPrice($activity['id'], $item['goods_id']);
-
-                        if ($priceRange['has_range']) {
-                            $activity['price_range']['min_price'] = $priceRange['min_price'];
-                            $activity['price_range']['max_price'] = $priceRange['max_price'];
-                        } else {
-                            $activity['activity_price'] = $priceRange['activity_price'];
-                        }
-                    }
-
-                    $groups[$goodsId] = $activity;
-                }
-            }
-        }
-
-        $this->setActivity($groups, 'groups');
-
-        return true;
-    }
-
     /**
      * 预热活动
      * @return bool

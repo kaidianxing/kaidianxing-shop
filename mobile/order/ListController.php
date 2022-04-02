@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 开店星新零售管理系统
  * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
@@ -24,6 +23,9 @@ use shopstar\models\shop\ShopSettings;
 use yii\helpers\Json;
 use yii\web\Response;
 
+/**
+ * @author 青岛开店星信息技术有限公司
+ */
 class ListController extends BaseMobileApiController
 {
     /**
@@ -31,7 +33,7 @@ class ListController extends BaseMobileApiController
      * @return Response
      * @author 青岛开店星信息技术有限公司
      */
-    public function actionAll()
+    public function actionAll(): Response
     {
         return $this->getList();
     }
@@ -74,7 +76,7 @@ class ListController extends BaseMobileApiController
      * @return Response
      * @author 青岛开店星信息技术有限公司
      */
-    private function getList($status = 'ALL')
+    private function getList(string $status = 'ALL'): Response
     {
         $where = [
             ['member_id' => $this->memberId],
@@ -230,7 +232,7 @@ class ListController extends BaseMobileApiController
      * @return Response
      * @author 青岛开店星信息技术有限公司
      */
-    public function actionPay()
+    public function actionPay(): Response
     {
         return $this->getList('WAIT_PAY');
     }
@@ -240,7 +242,7 @@ class ListController extends BaseMobileApiController
      * @return Response
      * @author 青岛开店星信息技术有限公司
      */
-    public function actionSend()
+    public function actionSend(): Response
     {
         return $this->getList('WAIT_SEND');
     }
@@ -250,7 +252,7 @@ class ListController extends BaseMobileApiController
      * @return Response
      * @author 青岛开店星信息技术有限公司
      */
-    public function actionPick()
+    public function actionPick(): Response
     {
         return $this->getList('WAIT_PICK');
     }
@@ -260,7 +262,7 @@ class ListController extends BaseMobileApiController
      * @return Response
      * @author 青岛开店星信息技术有限公司
      */
-    public function actionFinish()
+    public function actionFinish(): Response
     {
         return $this->getList('FINISH');
     }
@@ -270,7 +272,7 @@ class ListController extends BaseMobileApiController
      * @return Response
      * @author 青岛开店星信息技术有限公司
      */
-    public function actionDelete()
+    public function actionDelete(): Response
     {
         return $this->getList('DELETE');
     }
@@ -280,7 +282,7 @@ class ListController extends BaseMobileApiController
      * @return Response
      * @author 青岛开店星信息技术有限公司
      */
-    public function actionClose()
+    public function actionClose(): Response
     {
         return $this->getList('CLOSE');
     }

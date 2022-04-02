@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 开店星新零售管理系统
  * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
@@ -22,8 +21,9 @@ use yii\helpers\Url;
 
 /**
  * 店铺WAP端入口
- * Class WapController
- * @package shop\controllers
+ * Class H5Controller
+ * @package shopstar\controllers
+ * @author 青岛开店星信息技术有限公司
  */
 class H5Controller extends BaseViewController
 {
@@ -34,7 +34,7 @@ class H5Controller extends BaseViewController
      * @throws \yii\base\InvalidConfigException
      * @author likexin
      */
-    public function actionIndex()
+    public function actionIndex(): string
     {
         $baseUrl = Url::base(true);
 
@@ -56,7 +56,7 @@ class H5Controller extends BaseViewController
      * 中转跳转页
      * @return \yii\web\Response
      */
-    public function actionRedirect()
+    public function actionRedirect(): \yii\web\Response
     {
         $redirectUrl = RequestHelper::get('redirect_url');
         if (empty($redirectUrl)) {

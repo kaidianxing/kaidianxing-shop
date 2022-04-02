@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 开店星新零售管理系统
  * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
@@ -11,10 +10,7 @@
  * @warning 未经许可禁止私自删除版权信息
  */
 
-
-
 namespace shopstar\components\payment\client;
-
 
 use shopstar\components\payment\base\BasePay;
 use shopstar\components\payment\base\PayClientConstant;
@@ -24,6 +20,12 @@ use shopstar\exceptions\sysset\PaymentException;
 use shopstar\helpers\LogHelper;
 use yii\helpers\Json;
 
+/**
+ * 商家端PC支付
+ * Class ManagePc
+ * @package shopstar\components\payment\client
+ * @author 青岛开店星信息技术有限公司
+ */
 class ManagePc extends BasePay implements PayClientInterface
 {
     const CLIENT_TYPE = 'pc';
@@ -32,6 +34,7 @@ class ManagePc extends BasePay implements PayClientInterface
      * 支付
      * @return mixed
      * @throws PaymentException
+     * @throws \shopstar\exceptions\order\OrderException
      * @author 青岛开店星信息技术有限公司
      */
     public function pay()
@@ -53,7 +56,7 @@ class ManagePc extends BasePay implements PayClientInterface
      * @throws \Exception
      * @author 青岛开店星信息技术有限公司
      */
-    public function wechat()
+    public function wechat(): array
     {
         $config = $this->setWechatConfig(
             $this->getConfig(
@@ -95,10 +98,10 @@ class ManagePc extends BasePay implements PayClientInterface
     /**
      * 支付宝支付
      * @return array
-     * @throws PaymentException
+     * @throws PaymentException|\yii\base\Exception
      * @author 青岛开店星信息技术有限公司
      */
-    public function alipay()
+    public function alipay(): array
     {
         $payConf = $this->getConfig(
             self::CLIENT_TYPE,
@@ -139,7 +142,7 @@ class ManagePc extends BasePay implements PayClientInterface
 
     /**
      * 退款
-     * @return mixed
+     * @return void
      * @author 青岛开店星信息技术有限公司
      */
     public function refund()
@@ -148,8 +151,7 @@ class ManagePc extends BasePay implements PayClientInterface
 
     /**
      * 转账
-     * @return array|bool
-     * @throws PaymentException
+     * @return void
      * @author 青岛开店星信息技术有限公司
      */
     public function transfer()
@@ -158,8 +160,7 @@ class ManagePc extends BasePay implements PayClientInterface
 
     /**
      * 退款
-     * @return array|bool
-     * @throws PaymentException
+     * @return void
      * @author 青岛开店星信息技术有限公司
      */
     public function alipayRefund()

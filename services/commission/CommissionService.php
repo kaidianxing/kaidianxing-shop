@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 开店星新零售管理系统
  * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
@@ -13,14 +12,14 @@
 
 namespace shopstar\services\commission;
 
+use shopstar\bases\service\BaseService;
 use shopstar\constants\commission\CommissionRelationLogConstant;
-use shopstar\models\commission\CommissionAgentModel;
-use shopstar\models\commission\CommissionLevelModel;
 use shopstar\models\commission\CommissionOrderModel;
 use shopstar\models\commission\CommissionRelationModel;
-use shopstar\bases\service\BaseService;
- 
 
+/**
+ * @author 青岛开店星信息技术有限公司
+ */
 class CommissionService extends BaseService
 {
     /**
@@ -28,9 +27,10 @@ class CommissionService extends BaseService
      * @param int $orderId
      * @param int $memberId
      * @return bool
+     * @throws \yii\db\Exception
      * @author 青岛开店星信息技术有限公司
      */
-    public static function orderCreate(int $orderId, int $memberId)
+    public static function orderCreate(int $orderId, int $memberId): bool
     {
         // 上下线关系处理
         CommissionRelationModel::handle($memberId);
@@ -49,9 +49,10 @@ class CommissionService extends BaseService
      * @param int $orderId
      * @param int $memberId
      * @return bool
+     * @throws \yii\db\Exception
      * @author 青岛开店星信息技术有限公司
      */
-    public static function orderPay(int $orderId, int $memberId)
+    public static function orderPay(int $orderId, int $memberId): bool
     {
         // 上下线关系处理
         CommissionRelationModel::handle($memberId, 0, CommissionRelationLogConstant::TYPE_BIND);
@@ -74,7 +75,7 @@ class CommissionService extends BaseService
      * @return bool
      * @author 青岛开店星信息技术有限公司
      */
-    public static function orderFinish(int $orderId, int $memberId)
+    public static function orderFinish(int $orderId, int $memberId): bool
     {
         // 处理分销订单相关表 状态
         CommissionOrderModel::updateOrderFinish($orderId);

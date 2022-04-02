@@ -14,11 +14,11 @@ namespace shopstar\config\modules\permission;
 
 use shopstar\components\permission\BasePermissionConfig;
 
-
 /**
  * 秒杀
  * Class PermissionConfig
- * @package apps\seckill\config
+ * @package shopstar\config\modules\permission
+ * @author 青岛开店星信息技术有限公司
  */
 class SeckillPermissionConfig extends BasePermissionConfig
 {

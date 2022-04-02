@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 开店星新零售管理系统
  * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
@@ -14,18 +13,17 @@
 namespace shopstar\mobile\form;
 
 use shopstar\bases\controller\BaseMobileApiController;
-use shopstar\helpers\RequestHelper;
 use shopstar\constants\form\FormLogConstant;
-use shopstar\constants\form\FormTypeConstant;
 use shopstar\exceptions\form\FormException;
+use shopstar\helpers\RequestHelper;
 use shopstar\models\form\FormModel;
 use shopstar\models\form\FormTempModel;
-
 
 /**
  * 临时表单
  * Class SubmitTempController
- * @package apps\form\client
+ * @package shopstar\mobile\form
+ * @author 青岛开店星信息技术有限公司
  */
 class SubmitTempController extends BaseMobileApiController
 {
@@ -50,9 +48,9 @@ class SubmitTempController extends BaseMobileApiController
         }
 
         $formExists = FormModel::find()->where([
-            'id'      => $params['form_id'],
+            'id' => $params['form_id'],
             'is_deleted' => 0,
-            'status'  => 1
+            'status' => 1
         ])->first();
 
         //查询是否有这个表单并启用
@@ -80,12 +78,12 @@ class SubmitTempController extends BaseMobileApiController
         $params['md5'] = md5($params['old_content']);
 
         // 商品表单, 填充source数据
-        if($formExists['type'] == 4) {
+        if ($formExists['type'] == 4) {
             $params['source'] = FormLogConstant::FORM_SOURCE_ORDER;
         }
 
         //执行添加
-        $result = FormTempModel::submitTempData($this->memberId,$params);
+        $result = FormTempModel::submitTempData($this->memberId, $params);
 
 
         if (is_error($result)) {

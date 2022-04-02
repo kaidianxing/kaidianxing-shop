@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 开店星新零售管理系统
  * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
@@ -17,6 +16,7 @@ namespace shopstar\components\payment\base;
  * 支付宝错误解析
  * Class AlipayError
  * @package shopstar\components\payment\base
+ * @author 青岛开店星信息技术有限公司
  */
 class AlipayError
 {
@@ -31,16 +31,16 @@ class AlipayError
         '40004' => '业务处理失败',
         '40006' => '权限不足',
     ];
-    
+
     /**
      * 解析支付宝错误
      * @param array $raw
      * @return string
      * @author 青岛开店星信息技术有限公司
      */
-    public static function analysisError(array $raw)
+    public static function analysisError(array $raw): string
     {
-        return AlipayError::$codeMap[$raw['alipay_fund_trans_uni_transfer_response']['code']].':'.$raw['alipay_fund_trans_uni_transfer_response']['sub_msg'];
+        return AlipayError::$codeMap[$raw['alipay_fund_trans_uni_transfer_response']['code']] . ':' . $raw['alipay_fund_trans_uni_transfer_response']['sub_msg'];
     }
-    
+
 }

@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 开店星新零售管理系统
  * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
@@ -13,7 +12,7 @@
 
 namespace shopstar\admin\finance;
 
-
+use shopstar\bases\KdxAdminApiController;
 use shopstar\constants\ClientTypeConstant;
 use shopstar\constants\member\MemberCreditRecordStatusConstant;
 use shopstar\constants\member\MemberLogPayTypeConstant;
@@ -27,16 +26,19 @@ use shopstar\models\member\group\MemberGroupModel;
 use shopstar\models\member\MemberLevelModel;
 use shopstar\models\member\MemberLogModel;
 use shopstar\models\member\MemberModel;
-use shopstar\bases\KdxAdminApiController;
 use shopstar\services\member\MemberLogService;
 
 /**
  * 会员充值、提现类
  * Class LogController
- * @package shop\manage\member
+ * @package shopstar\admin\member
  */
 class LogController extends KdxAdminApiController
 {
+
+    /**
+     * @var array
+     */
     public $configActions = [
         'allowHeaderActions' => [
             'recharge',
@@ -115,6 +117,13 @@ class LogController extends KdxAdminApiController
         return $this->result($records);
     }
 
+    /**
+     * @param $records
+     * @return bool
+     * @throws \PhpOffice\PhpSpreadsheet\Exception
+     * @throws \PhpOffice\PhpSpreadsheet\Writer\Exception
+     * @throws \yii\base\Exception
+     */
     private function exportRecharge($records)
     {
         ExcelHelper::export($records, [
@@ -238,6 +247,13 @@ class LogController extends KdxAdminApiController
         return $this->result($records);
     }
 
+    /**
+     * @param $records
+     * @return bool
+     * @throws \PhpOffice\PhpSpreadsheet\Exception
+     * @throws \PhpOffice\PhpSpreadsheet\Writer\Exception
+     * @throws \yii\base\Exception
+     */
     private function exportWithdraw($records)
     {
         ExcelHelper::export($records, [
@@ -286,8 +302,6 @@ class LogController extends KdxAdminApiController
                 'field' => 'created_at',
                 'title' => '申请时间',
             ]
-
-
         ], '提现记录导出');
 
         return true;
@@ -299,7 +313,7 @@ class LogController extends KdxAdminApiController
      * @throws FinanceException
      * @author 青岛开店星信息技术有限公司
      */
-    public function actionUpdateStatus()
+    public function actionUpdateStatus(): \yii\web\Response
     {
         // 获取参数
         $params = RequestHelper::post(['order_id', 'status']);
@@ -347,7 +361,7 @@ class LogController extends KdxAdminApiController
      * @throws FinanceException
      * @author 青岛开店星信息技术有限公司
      */
-    public function actionRechargeRefund()
+    public function actionRechargeRefund(): \yii\web\Response
     {
         // 获取参数
         $orderId = RequestHelper::postInt('order_id');
@@ -379,7 +393,7 @@ class LogController extends KdxAdminApiController
      * @throws FinanceException
      * @author 青岛开店星信息技术有限公司
      */
-    public function actionWithdrawApply()
+    public function actionWithdrawApply(): \yii\web\Response
     {
         // 获取参数
         $orderId = RequestHelper::post('order_id');

@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 开店星新零售管理系统
  * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
@@ -11,9 +10,7 @@
  * @warning 未经许可禁止私自删除版权信息
  */
 
-
 namespace shopstar\admin\goods;
-
 
 use shopstar\bases\KdxAdminApiController;
 use shopstar\constants\goods\GoodsStatusConstant;
@@ -30,6 +27,11 @@ use shopstar\models\log\LogModel;
 use shopstar\services\goods\GoodsService;
 use yii\helpers\Json;
 
+/**
+ * 商品操作
+ * Class OperationController
+ * @package shopstar\admin\goods
+ */
 class OperationController extends KdxAdminApiController
 {
 
@@ -182,7 +184,7 @@ class OperationController extends KdxAdminApiController
      * @throws \yii\db\Exception
      * @author 青岛开店星信息技术有限公司
      */
-    public function actionSetCategory()
+    public function actionSetCategory(): \yii\web\Response
     {
         $post = RequestHelper::post();
         if (empty($post['goods_id']) || !is_numeric($post['method']) || empty($post['category_id'])) {
@@ -276,7 +278,7 @@ class OperationController extends KdxAdminApiController
      * @return \yii\web\Response
      * @author 青岛开店星信息技术有限公司
      */
-    public function actionUnshelve()
+    public function actionUnshelve(): \yii\web\Response
     {
         $goodsId = RequestHelper::post('id');
         $opType = RequestHelper::postInt('op_type'); //操作类型
@@ -333,7 +335,7 @@ class OperationController extends KdxAdminApiController
      * @return \yii\web\Response
      * @author 青岛开店星信息技术有限公司
      */
-    public function actionPutaway()
+    public function actionPutaway(): \yii\web\Response
     {
         $goodsId = RequestHelper::post('id');
 
@@ -392,7 +394,7 @@ class OperationController extends KdxAdminApiController
      * @throws GoodsException
      * @author 青岛开店星信息技术有限公司
      */
-    public function actionDelete()
+    public function actionDelete(): \yii\web\Response
     {
         $goodsId = RequestHelper::post('id');
         if (empty($goodsId)) {
@@ -409,7 +411,7 @@ class OperationController extends KdxAdminApiController
      * @throws GoodsException
      * @author 青岛开店星信息技术有限公司
      */
-    public function actionRecover()
+    public function actionRecover(): \yii\web\Response
     {
         $goodsId = RequestHelper::post('id');
 
@@ -423,14 +425,13 @@ class OperationController extends KdxAdminApiController
         return $this->success($result);
     }
 
-
     /**
      * 批量永久删除
      * @return \yii\web\Response
      * @throws GoodsException
      * @author 青岛开店星信息技术有限公司
      */
-    public function actionForeverDelete()
+    public function actionForeverDelete(): \yii\web\Response
     {
         $goodsId = RequestHelper::post('id');
         if (empty($goodsId)) {
@@ -439,7 +440,6 @@ class OperationController extends KdxAdminApiController
 
         $result = GoodsService::foreverRemove($this->userId, $goodsId, GoodsLogConstant::GOODS_OPERATION_BATCH_REAL_DELETE);
         return $this->success($result);
-
     }
 
 }

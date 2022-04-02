@@ -12,7 +12,6 @@
 
 namespace shopstar\config\apps\wechat;
 
-use shopstar\bases\module\BasePluginProcessor;
 use shopstar\constants\poster\PosterPushTypeConstant;
 use shopstar\helpers\LogHelper;
 use shopstar\helpers\QueueHelper;
@@ -25,8 +24,9 @@ use shopstar\models\wechat\WechatRuleModel;
  * 插件处理器
  * Class PluginProcessor
  * @package apps\poster\config
+ * @author 青岛开店星信息技术有限公司
  */
-class PluginResponse extends BasePluginProcessor implements PluginProcessorInterface
+class PluginResponse implements PluginProcessorInterface
 {
 
     /**

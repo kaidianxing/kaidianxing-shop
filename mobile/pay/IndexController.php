@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 开店星新零售管理系统
  * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
@@ -10,8 +9,6 @@
  * @warning Unauthorized deletion of copyright information is prohibited.
  * @warning 未经许可禁止私自删除版权信息
  */
-
-
 
 namespace shopstar\mobile\pay;
 
@@ -24,7 +21,6 @@ use shopstar\constants\OrderConstant;
 use shopstar\constants\tradeOrder\TradeOrderTypeConstant;
 use shopstar\exceptions\order\OrderException;
 use shopstar\exceptions\sysset\PaymentException;
-use shopstar\helpers\DateTimeHelper;
 use shopstar\helpers\RequestHelper;
 use shopstar\models\member\MemberWechatModel;
 use shopstar\models\member\MemberWxappModel;
@@ -37,6 +33,9 @@ use shopstar\structs\order\OrderPaySuccessStruct;
 use yii\helpers\Json;
 use yii\helpers\StringHelper;
 
+/**
+ * @author 青岛开店星信息技术有限公司
+ */
 class IndexController extends BaseMobileApiController
 {
     /**
@@ -54,7 +53,7 @@ class IndexController extends BaseMobileApiController
         //检测是否可用货到付款
         if (!empty($orderId)) {
             $orderId = StringHelper::explode($orderId);
-            $isDeliveryPay = OrderGoodsModel::isDeliveryPay($this->shopType, $orderId, $this->clientType);
+            $isDeliveryPay = OrderGoodsModel::isDeliveryPay($orderId, $this->clientType);
             if (!$isDeliveryPay) {
                 unset($config['delivery']);
             }
@@ -82,9 +81,11 @@ class IndexController extends BaseMobileApiController
     /**
      * 支付
      * @return array|\yii\web\Response
-     * @throws OrderException|\yii\db\Exception|\yii\base\InvalidConfigException
-     * @throws \yii\base\InvalidConfigException
+     * @throws OrderException
+     * @throws PaymentException
      * @throws \shopstar\exceptions\tradeOrder\TradeOrderPayException
+     * @throws \yii\base\InvalidConfigException
+     * @throws \yii\db\Exception
      * @author 青岛开店星信息技术有限公司
      */
     public function actionPay()

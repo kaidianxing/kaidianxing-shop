@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 开店星新零售管理系统
  * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
@@ -11,10 +10,8 @@
  * @warning 未经许可禁止私自删除版权信息
  */
 
-
 namespace shopstar\services\order\refund;
 
-use apps\creditShop\models\CreditShopOrderModel;
 use shopstar\bases\service\BaseService;
 use shopstar\constants\order\OrderActivityTypeConstant;
 use shopstar\constants\order\OrderConstant;
@@ -29,6 +26,9 @@ use shopstar\models\shop\ShopSettings;
 use shopstar\services\order\OrderService;
 use yii\helpers\Json;
 
+/**
+ * @author 青岛开店星信息技术有限公司
+ */
 class OrderRefundService extends BaseService
 {
 
@@ -156,7 +156,6 @@ class OrderRefundService extends BaseService
         return true;
     }
 
-
     /**
      * 获取可以维权的类型
      * 整单维权
@@ -166,7 +165,7 @@ class OrderRefundService extends BaseService
      * @return array
      * @author 青岛开店星信息技术有限公司
      */
-    public static function getCanRefundType(OrderModel $order, int $orderGoodsId = 0)
+    public static function getCanRefundType(OrderModel $order, int $orderGoodsId = 0): array
     {
         $data = [
             'refund' => true,
@@ -236,7 +235,6 @@ class OrderRefundService extends BaseService
         return $data;
     }
 
-
     /**
      * 计算最多可维权的金额
      * @param OrderModel $order
@@ -244,7 +242,7 @@ class OrderRefundService extends BaseService
      * @return array
      * @author 青岛开店星信息技术有限公司
      */
-    public static function calculatePrice(OrderModel $order, OrderGoodsModel $orderGoods = null)
+    public static function calculatePrice(OrderModel $order, OrderGoodsModel $orderGoods = null): array
     {
         $data = [];
         // 整单维权
@@ -356,7 +354,6 @@ class OrderRefundService extends BaseService
         return $data;
     }
 
-
     /**
      * 取消维权
      * @param int $orderId 订单id
@@ -364,7 +361,7 @@ class OrderRefundService extends BaseService
      * @return array
      * @author 青岛开店星信息技术有限公司
      */
-    public static function cancelRefund(int $orderId, $orderGoodsId = 0)
+    public static function cancelRefund(int $orderId, int $orderGoodsId = 0): array
     {
         $refund = OrderRefundModel::getRefundByOrder($orderId, $orderGoodsId);
 
@@ -518,6 +515,5 @@ class OrderRefundService extends BaseService
             return false;
         }
     }
-
 
 }

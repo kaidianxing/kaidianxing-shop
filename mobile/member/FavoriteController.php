@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 开店星新零售管理系统
  * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
@@ -18,11 +17,13 @@ use shopstar\exceptions\member\MemberException;
 use shopstar\helpers\DateTimeHelper;
 use shopstar\helpers\RequestHelper;
 use shopstar\models\goods\GoodsActivityModel;
-use shopstar\models\goods\GoodsModel;
 use shopstar\models\member\MemberFavoriteModel;
 use shopstar\services\goods\GoodsService;
 use yii\helpers\Json;
 
+/**
+ * @author 青岛开店星信息技术有限公司
+ */
 class FavoriteController extends BaseMobileApiController
 {
     /**
@@ -30,7 +31,7 @@ class FavoriteController extends BaseMobileApiController
      * @return \yii\web\Response
      * @author 青岛开店星信息技术有限公司
      */
-    public function actionIndex()
+    public function actionIndex(): \yii\web\Response
     {
         $now = DateTimeHelper::now();
         $params = [
@@ -45,11 +46,11 @@ class FavoriteController extends BaseMobileApiController
                     $query->select('title, thumb, original_price, price, id,ext_field');
                 }
             ],
-            'leftJoin' => [GoodsActivityModel::tableName(). ' activity', "activity.goods_id=favorite.goods_id and activity.start_time<'$now' and activity.end_time>'$now' and activity.is_delete_activity=0"],
+            'leftJoin' => [GoodsActivityModel::tableName() . ' activity', "activity.goods_id=favorite.goods_id and activity.start_time<'$now' and activity.end_time>'$now' and activity.is_delete_activity=0"],
             'orderBy' => ['favorite.id' => SORT_DESC]
         ];
-        $list = MemberFavoriteModel::getColl($params,[
-            'callable'=>function(&$row) {
+        $list = MemberFavoriteModel::getColl($params, [
+            'callable' => function (&$row) {
                 // 购买按钮
                 $row['goods']['ext_field'] = Json::decode($row['goods']['ext_field']) ?? [];
                 // 自定义购买按钮status, 影响加购按钮及价格文字显示
@@ -65,7 +66,7 @@ class FavoriteController extends BaseMobileApiController
      * @throws MemberException
      * @author 青岛开店星信息技术有限公司
      */
-    public function actionDelete()
+    public function actionDelete(): \yii\web\Response
     {
         $ids = RequestHelper::postArray('ids');
         if (empty($ids)) {
@@ -75,7 +76,7 @@ class FavoriteController extends BaseMobileApiController
 
         return $this->success();
     }
-    
+
     /**
      * 收藏/取消收藏动作
      * @return array|\yii\web\Response

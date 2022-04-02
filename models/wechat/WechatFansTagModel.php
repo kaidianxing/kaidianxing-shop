@@ -18,7 +18,7 @@ use shopstar\helpers\DateTimeHelper;
 
 
 /**
- * This is the model class for table "{{%app_wechat_fans_tag}}".
+ * This is the model class for table "{{%wechat_fans_tag}}".
  *
  * @property int $id
  * @property int $wechat_tag_id 微信粉丝id
@@ -32,7 +32,7 @@ class WechatFansTagModel extends BaseActiveRecord
      */
     public static function tableName()
     {
-        return '{{%app_wechat_fans_tag}}';
+        return '{{%wechat_fans_tag}}';
     }
 
     /**

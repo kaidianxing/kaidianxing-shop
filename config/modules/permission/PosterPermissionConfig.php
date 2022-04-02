@@ -14,11 +14,11 @@ namespace shopstar\config\modules\permission;
 
 use shopstar\components\permission\BasePermissionConfig;
 
-
 /**
  * 超级海报
  * Class PermissionConfig
- * @package apps\poster\config
+ * @package shopstar\config\modules\permission
+ * @author 青岛开店星信息技术有限公司
  */
 class PosterPermissionConfig extends BasePermissionConfig
 {

@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 开店星新零售管理系统
  * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
@@ -29,6 +28,12 @@ use shopstar\models\order\PayOrderModel;
 use Yansongda\Pay\Exceptions\GatewayException;
 use yii\helpers\Json;
 
+/**
+ * 微信公众号支付
+ * Class Wechat
+ * @package shopstar\components\payment\client
+ * @author 青岛开店星信息技术有限公司
+ */
 class Wechat extends BasePay implements PayClientInterface
 {
     const SERVICE_MODEL = 11;
@@ -41,16 +46,16 @@ class Wechat extends BasePay implements PayClientInterface
 
     /**
      * 支付
-     * @param string $payType
      * @return mixed
      * @throws PaymentException
+     * @throws \shopstar\exceptions\order\OrderException
      * @author 青岛开店星信息技术有限公司
      */
     public function pay()
     {
         // 写入订单记录
         $this->write();
-    
+
         // 判断订单来源 抖音的不支持切换
         if ($this->orderData[0]['create_from'] >= 30 && $this->orderData[0]['create_from'] <= 32) {
             throw new PaymentException(PaymentException::PAY_CHANNEL_ERROR);
@@ -206,7 +211,7 @@ class Wechat extends BasePay implements PayClientInterface
                         $redpackSuccessCount = 0;
                         foreach ($redpack as $packIndex => $pack) {
                             $transferOrder = [
-                                'mch_billno' => $this->order_no . sprintf("%02d",$packIndex), // @change likexin 此处先拼接索引，只支持两位，个位数补零
+                                'mch_billno' => $this->order_no . sprintf("%02d", $packIndex), // @change likexin 此处先拼接索引，只支持两位，个位数补零
                                 'send_name' => '商户名称',
                                 'total_amount' => number_format($pack * 100, 0, ".", ""),
                                 're_openid' => $this->openid,
@@ -303,7 +308,7 @@ class Wechat extends BasePay implements PayClientInterface
      * @return array
      * @throws PaymentException
      */
-    public function wechat()
+    public function wechat(): array
     {
         $payConf = $this->getConfig(
             PayClientConstant::CLIENT_WECHAT,
@@ -357,8 +362,9 @@ class Wechat extends BasePay implements PayClientInterface
      * alipay 支付
      * @return array
      * @throws PaymentException
+     * @throws \yii\base\Exception
      */
-    public function alipay()
+    public function alipay(): array
     {
         $payConf = $this->getConfig(
             PayClientConstant::CLIENT_WECHAT,
@@ -401,7 +407,7 @@ class Wechat extends BasePay implements PayClientInterface
 
     /**
      * wechat 退款
-     * @return array|null
+     * @return array|null|void
      * @throws PaymentException
      */
     public function wechatRefund()
@@ -409,7 +415,7 @@ class Wechat extends BasePay implements PayClientInterface
         $payConf = $this->getConfig(
             PayClientConstant::CLIENT_WECHAT,
             PayTypeConstant::getIdentify($this->pay_type));
-        $config = $this->setWechatConfig($payConf, true,true);
+        $config = $this->setWechatConfig($payConf, true, true);
 
         $order = current((array)$this->order);
 
@@ -465,21 +471,20 @@ class Wechat extends BasePay implements PayClientInterface
                 return error($e->getMessage(), PaymentException::REFUND_WECHAT_ERROR);
             }
         }
-
-        return;
     }
 
     /**
      * alipay 退款
-     * @return bool
+     * @return bool|array|void
      * @throws PaymentException
+     * @throws \yii\base\Exception
      */
     public function alipayRefund()
     {
         $payConf = $this->getConfig(
             PayClientConstant::CLIENT_WECHAT,
             PayTypeConstant::getIdentify($this->pay_type));
-        $config = $this->setAlipayConfig($payConf,true);
+        $config = $this->setAlipayConfig($payConf, true);
 
 
         foreach ($this->order as $orderIndex => $orderItem) {
@@ -518,7 +523,5 @@ class Wechat extends BasePay implements PayClientInterface
                 return error('支付宝退款失败', PaymentException::REFUND_ALIPAY_ERROR);
             }
         }
-
-        return;
     }
 }

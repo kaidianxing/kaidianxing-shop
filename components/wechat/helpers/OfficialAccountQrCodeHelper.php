@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 开店星新零售管理系统
  * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
@@ -11,10 +10,7 @@
  * @warning 未经许可禁止私自删除版权信息
  */
 
-
-
 namespace shopstar\components\wechat\helpers;
-
 
 use shopstar\components\platform\Wechat;
 use shopstar\components\wechat\bases\WechatChannelConstant;
@@ -31,8 +27,8 @@ class OfficialAccountQrCodeHelper
     /**
      * 获取临时二维码
      * @param array $qrContent
+     * @param string $temporary
      * @return array|\EasyWeChat\Kernel\Support\Collection|object|\Psr\Http\Message\ResponseInterface|string
-     * @throws \GuzzleHttp\Exception\GuzzleException
      * @author 青岛开店星信息技术有限公司
      */
     public static function getQrCode(array $qrContent, string $temporary = 'temporary')
@@ -47,7 +43,7 @@ class OfficialAccountQrCodeHelper
                 $temporary = 'forever';
                 $result = $instance->qrcode->$temporary($qrContent['value']);
 
-            }else{
+            } else {
                 // 获取二维码
                 $result = $instance->qrcode->$temporary($qrContent['value'], $qrContent['expire']);
             }

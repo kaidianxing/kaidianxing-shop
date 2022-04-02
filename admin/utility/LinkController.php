@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 开店星新零售管理系统
  * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
@@ -13,13 +12,14 @@
 
 namespace shopstar\admin\utility;
 
-use shopstar\models\shop\ShopSettings;
 use shopstar\bases\KdxAdminUtilityController;
+use shopstar\models\shop\ShopSettings;
 
 /**
  * 链接选择器
  * Class LinkController
- * @package modules\utility\manage
+ * @package shopstar\admin\utility
+ * @author 青岛开店星信息技术有限公司
  */
 class LinkController extends KdxAdminUtilityController
 {
@@ -195,33 +195,6 @@ class LinkController extends KdxAdminUtilityController
     ];
 
     /**
-     * @var \string[][] 积分商城链接
-     */
-    public $creditShopLink = [
-        [
-            'name' => '积分商城',
-            'links' => [
-                [
-                    'name' => '积分商城首页',
-                    'url' => '/pagesCreditShop/index'
-                ],
-            ]
-        ],
-    ];
-
-    public $articleLink = [
-        [
-            'name' => '专题文章',
-            'links' => [
-                [
-                    'name' => '专题文章列表',
-                    'url' => '/pagesArticle/list/index',
-                ],
-            ]
-        ],
-    ];
-
-    /**
      * 获取列表
      * @author likexin
      */
@@ -251,7 +224,7 @@ class LinkController extends KdxAdminUtilityController
      * @return array
      * @author likexin
      */
-    public function actionIndex()
+    public function actionIndex(): array
     {
         $links = $this->getLinks();
         return $this->result([

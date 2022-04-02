@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 开店星新零售管理系统
  * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
@@ -11,8 +10,6 @@
  * @warning 未经许可禁止私自删除版权信息
  */
 
-
-
 namespace shopstar\helpers;
 
 use yii\db\Exception;
@@ -21,6 +18,7 @@ use yii\db\Exception;
  * 数据库工具助手类
  * Class DbUtilHelper
  * @package shopstar\helpers
+ * @author 青岛开店星信息技术有限公司
  */
 class DbUtilHelper
 {
@@ -185,7 +183,7 @@ class DbUtilHelper
      * @return string
      * @author likexin
      */
-    public static function createSqlFromSchema($schema)
+    public static function createSqlFromSchema($schema): string
     {
         $pieces = explode('_', $schema['charset']);
         $charset = $pieces[0];
@@ -219,7 +217,6 @@ class DbUtilHelper
         return $sql;
     }
 
-
     /**
      * 表结构对比
      * @param $schema1
@@ -227,7 +224,7 @@ class DbUtilHelper
      * @return array
      * @author likexin
      */
-    protected static function schemaCompare($schema1, $schema2)
+    protected static function schemaCompare($schema1, $schema2): array
     {
         $ret = [];
 
@@ -297,7 +294,7 @@ class DbUtilHelper
      * @return array
      * @author likexin
      */
-    public static function getFixSqls($schema1, $schema2, $strict = false)
+    public static function getFixSqls($schema1, $schema2, bool $strict): array
     {
         if (empty($schema1)) {
             return [static::createSqlFromSchema($schema2)];
@@ -426,7 +423,7 @@ class DbUtilHelper
      * @return string
      * @author likexin
      */
-    protected static function buildIndexSql($index)
+    protected static function buildIndexSql($index): string
     {
         $piece = '';
         $fields = implode('`,`', $index['fields']);
@@ -448,7 +445,7 @@ class DbUtilHelper
      * @return string
      * @author likexin
      */
-    protected static function buildFieldSql($field)
+    protected static function buildFieldSql($field): string
     {
         if (!empty($field['length'])) {
             $length = "({$field['length']})";
@@ -510,7 +507,7 @@ class DbUtilHelper
      * @throws Exception
      * @author likexin
      */
-    public static function hasField($tableName, $field)
+    public static function hasField($tableName, $field): bool
     {
         $db = \Yii::$app->getDb();
         $fields = [];
@@ -532,7 +529,7 @@ class DbUtilHelper
      * @throws Exception
      * @author likexin
      */
-    public static function addField($tableName, $field, $options = '')
+    public static function addField($tableName, $field, string $options = '')
     {
         if (static::hasField($tableName, $field)) {
             return true;

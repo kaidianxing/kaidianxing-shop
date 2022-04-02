@@ -41,6 +41,7 @@ class CoreAttachmentModel extends BaseActiveRecord
      */
     public const HOSTING = 10;
 
+
     /**
      * 映射
      * @var array

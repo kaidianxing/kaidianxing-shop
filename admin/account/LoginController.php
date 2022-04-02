@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 开店星新零售管理系统
  * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
@@ -13,17 +12,14 @@
 
 namespace shopstar\admin\account;
 
-
-use shopstar\models\assistant\AssistantUploadLogModel;
 use shopstar\bases\KdxAdminAccountApiController;
-use shopstar\exceptions\adminAccount\UserLoginException;
 use shopstar\constants\ClientTypeConstant;
 use shopstar\constants\user\UserAuditStatusConstant;
 use shopstar\constants\user\UserIsDeleteConstant;
+use shopstar\exceptions\adminAccount\UserLoginException;
 use shopstar\exceptions\UserException;
 use shopstar\helpers\CryptHelper;
 use shopstar\helpers\DateTimeHelper;
- 
 use shopstar\helpers\RequestHelper;
 use shopstar\models\core\CoreSettings;
 use shopstar\models\member\MemberModel;
@@ -41,6 +37,10 @@ use yii\helpers\Json;
  */
 class LoginController extends KdxAdminAccountApiController
 {
+
+    /**
+     * @var array
+     */
     public $configActions = [
         'allowActions' => ['*'],  // 允许不登录访问的Actions
         'postActions' => ['submit'],   // 需要POST请求访问的Actions
@@ -54,6 +54,7 @@ class LoginController extends KdxAdminAccountApiController
     public function actionManageInit()
     {
         $result['site_settings'] = CoreSettings::get('site');
+
         // name 和 logo 从 shop setting中读取
         $siteSettings = ShopSettings::get('mobile_basic.site');
         $result['site_settings']['name'] = $siteSettings['name'];
@@ -85,7 +86,6 @@ class LoginController extends KdxAdminAccountApiController
             if ($this->clientType == ClientTypeConstant::ADMIN_PC) {
                 $result['setting'] = CoreSettings::get('admin_basic');
             } else {
-
                 $result['setting'] = CoreSettings::get('site');
             }
 
@@ -136,7 +136,6 @@ class LoginController extends KdxAdminAccountApiController
      * 提交登录
      * @return array|int[]|\yii\web\Response
      * @throws UserLoginException
-     * @throws UserException
      * @author likexin
      */
     public function actionSubmit()
@@ -165,7 +164,7 @@ class LoginController extends KdxAdminAccountApiController
                 'username' => $username,
                 'is_deleted' => UserIsDeleteConstant::NOT_IS_DELETE
             ])
-            ->select(['id', 'username', 'is_root', 'password', 'status', 'salt', 'audit_status'])
+            ->select(['id', 'username', 'is_root', 'password', 'status', 'salt'])
             ->one();
 
         if (empty($userModel)) {
@@ -201,7 +200,6 @@ class LoginController extends KdxAdminAccountApiController
         // 记录Session
         UserSession::set($this->sessionId, $user['id'], 'user', $user);
 
-
         return $this->result([
             'user' => [
                 'id' => $user['id'],
@@ -220,36 +218,8 @@ class LoginController extends KdxAdminAccountApiController
      */
     private function getAuditStatusPage(array $user): int
     {
-
         //0 = 不跳转
-        $page = 0;
-
-        if ($user['is_root'] == 1) {
-            return $page;
-        }
-
-        //缓存key
-        $key = 'user_audit_pass_' . $user['id'];
-        $cache = CoreSettings::get($key);
-
-        $auditOpen = CoreSettings::get('user_setting.register.audit');
-
-        //填写资料页
-        if (!empty($auditOpen) && $user['audit_status'] == UserAuditStatusConstant::AUDIT_STATUS_NOT_SUBMIT) {
-            $page = 1;
-        }
-
-        //提示审核成功页
-        if (!empty($cache) && !empty($auditOpen) && $user['audit_status'] == UserAuditStatusConstant::AUDIT_STATUS_CHECK_PASS) {
-            $page = 2;
-        }
-
-        //审核资料页
-        if (!empty($auditOpen) && in_array($user['audit_status'], [UserAuditStatusConstant::AUDIT_STATUS_CHECK_PADDING, UserAuditStatusConstant::AUDIT_STATUS_CHECK_REFUSE])) {
-            $page = 3;
-        }
-
-        return $page;
+        return 0;
     }
 
     /**

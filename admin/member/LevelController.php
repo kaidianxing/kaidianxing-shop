@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 开店星新零售管理系统
  * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
@@ -13,6 +12,7 @@
 
 namespace shopstar\admin\member;
 
+use shopstar\bases\KdxAdminApiController;
 use shopstar\constants\log\member\MemberLogConstant;
 use shopstar\constants\member\MemberLevelConstant;
 use shopstar\exceptions\member\LevelException;
@@ -23,7 +23,6 @@ use shopstar\models\log\LogModel;
 use shopstar\models\member\MemberLevelModel;
 use shopstar\models\member\MemberModel;
 use shopstar\models\shop\ShopSettings;
-use shopstar\bases\KdxAdminApiController;
 use Yii;
 use yii\db\Exception;
 use yii\helpers\Json;
@@ -32,10 +31,14 @@ use yii\web\Response;
 /**
  * 会员等级类
  * Class LevelController
- * @package app\controllers\manage\member
+ * @package shopstar\admin\member
  */
 class LevelController extends KdxAdminApiController
 {
+
+    /**
+     * @var array
+     */
     public $configActions = [
         'postActions' => [
             'add',
@@ -45,10 +48,10 @@ class LevelController extends KdxAdminApiController
             'index'
         ]
     ];
-    
+
     /**
      * 等级列表
-     * @return string
+     * @return array|int[]|Response
      */
     public function actionIndex()
     {
@@ -77,19 +80,19 @@ class LevelController extends KdxAdminApiController
                 'level' => SORT_ASC
             ]
         ];
-        
+
         // 获取所有等级的会员数
         $memberCount = MemberLevelModel::getMemberCount();
-        
+
         // 获取列表
         $levels = MemberLevelModel::getColl($params, [
             'pager' => !($isAll == 1),
             'onlyList' => $isAll == 1,
-            'callable' => function(&$row) use ($memberCount) {
+            'callable' => function (&$row) use ($memberCount) {
                 if ($row['update_condition'] == MemberLevelConstant::LEVEL_UPGRADE_ORDER_COUNT) {
-                    $row['update_text'] = '已完成的订单数量满'. $row['order_count'] .'单';
+                    $row['update_text'] = '已完成的订单数量满' . $row['order_count'] . '单';
                 } else if ($row['update_condition'] == MemberLevelConstant::LEVEL_UPGRADE_ORDER_MONEY) {
-                    $row['update_text'] = '已完成的订单金额'. $row['order_money'] .'元';
+                    $row['update_text'] = '已完成的订单金额' . $row['order_money'] . '元';
                 } else if ($row['update_condition'] == MemberLevelConstant::LEVEL_UPGRADE_GOODS) {
                     $row['update_text'] = '购买指定商品';
                 } else {
@@ -99,13 +102,14 @@ class LevelController extends KdxAdminApiController
                 $row['member_count'] = $memberCount[$row['id']]['count'] ?? 0;
             }
         ]);
-        
+
         if ($isAll) {
             $levels = ['list' => $levels];
         }
+
         return $this->result($levels);
     }
-    
+
     /**
      * 简单会员等级列表
      * @author 青岛开店星信息技术有限公司
@@ -123,13 +127,13 @@ class LevelController extends KdxAdminApiController
             'pager' => false,
             'onlyList' => true
         ]);
-        
+
         return $this->result(['list' => $levels]);
     }
-    
+
     /**
      * 添加会员等级
-     * @return string
+     * @return array|int[]|Response
      * @author 青岛开店星信息技术有限公司
      */
     public function actionAdd()
@@ -140,7 +144,7 @@ class LevelController extends KdxAdminApiController
             if (is_error($res)) {
                 throw new LevelException(LevelException::ADD_LEVEL_FAIL, $res['message']);
             }
-            
+
             $transaction->commit();
         } catch (\Throwable $exception) {
             $transaction->rollBack();
@@ -148,7 +152,7 @@ class LevelController extends KdxAdminApiController
         }
         return $this->success();
     }
-    
+
     /**
      * 修改会员等级
      * @return Response
@@ -156,7 +160,7 @@ class LevelController extends KdxAdminApiController
      * @throws Exception
      * @author 青岛开店星信息技术有限公司
      */
-    public function actionEdit()
+    public function actionEdit(): Response
     {
         $id = RequestHelper::post('id');
         if (empty($id)) {
@@ -175,10 +179,10 @@ class LevelController extends KdxAdminApiController
         }
         return $this->success();
     }
-    
+
     /**
      * 等级详情
-     * @return string
+     * @return array|int[]|Response
      * @throws LevelException
      * @author 青岛开店星信息技术有限公司
      */
@@ -188,38 +192,38 @@ class LevelController extends KdxAdminApiController
         if (empty($id)) {
             throw new LevelException(LevelException::DETAIL_PARAM_ERROR);
         }
-        
+
         $level = MemberLevelModel::find()->where(['id' => $id])->first();
         if (empty($level)) {
             throw new LevelException(LevelException::DETAIL_LEVEL_NOT_EXISTS);
         }
-        
+
         if (!empty($level['goods_ids'])) {
             $level['goods_info'] = GoodsModel::find()
                 ->select('id, title, thumb, type, has_option')
                 ->where(['id' => Json::decode($level['goods_ids'])])
                 ->get();
         }
-        
+
         return $this->result($level);
     }
-    
+
     /**
      * 检查等级排序id是否存在
      * @return Response
      * @throws LevelException
      * @author 青岛开店星信息技术有限公司
      */
-    public function actionCheckLevel()
+    public function actionCheckLevel(): Response
     {
         $level = RequestHelper::postInt('level');
-        
+
         if (!MemberLevelModel::checkLevel($level)) {
             throw new LevelException(LevelException::LEVEL_IS_EXISTS);
         }
         return $this->success();
     }
-    
+
     /**
      * 删除/批量删除会员等级
      * @return Response
@@ -227,18 +231,18 @@ class LevelController extends KdxAdminApiController
      * @throws Exception|\Throwable
      * @author 青岛开店星信息技术有限公司
      */
-    public function actionDelete()
+    public function actionDelete(): Response
     {
         $id = RequestHelper::postArray('id');
         if (empty($id)) {
             throw new LevelException(LevelException::DELETE_LEVEL_FAIL);
         }
-    
+
         // 查找默认等级
         $defaultLevelId = MemberLevelModel::getDefaultLevelId();
-        
+
         $transaction = Yii::$app->getDb()->beginTransaction();
-        
+
         $res = MemberLevelModel::easyDelete([
             'andWhere' => ['<>', 'id', $defaultLevelId], // 默认等级不删
             'afterDelete' => function ($model) use ($defaultLevelId) {
@@ -250,7 +254,7 @@ class LevelController extends KdxAdminApiController
                     'level' => $model->level,
                     'level_name' => $model->level_name,
                     'upgrade_condition' => MemberLevelConstant::getText($model->update_condition),
-                    'discount' => $model->is_discount == 0 ? '无' : ValueHelper::delZero($model->discount).'折',
+                    'discount' => $model->is_discount == 0 ? '无' : ValueHelper::delZero($model->discount) . '折',
                     'state' => MemberLevelModel::$stateText[$model->state],
                 ];
                 LogModel::write(
@@ -261,7 +265,7 @@ class LevelController extends KdxAdminApiController
                     [
                         'log_data' => $model->attributes,
                         'log_primary' => $model->getLogAttributeRemark($logPrimaryData),
-                        'dirty_identify_code'=> [
+                        'dirty_identify_code' => [
                             MemberLogConstant::MEMBER_LEVEL_DELETE,
                         ]
                     ]
@@ -273,17 +277,17 @@ class LevelController extends KdxAdminApiController
             throw new LevelException(LevelException::DELETE_FAIL, $res['message']);
         }
         $transaction->commit();
-        
+
         return $this->success();
     }
-    
+
     /**
      * 修改等级状态
      * @return Response
      * @throws LevelException
      * @author 青岛开店星信息技术有限公司
      */
-    public function actionChangeState()
+    public function actionChangeState(): Response
     {
         $res = MemberLevelModel::easySwitch('state', [
             'andWhere' => [],
@@ -303,7 +307,7 @@ class LevelController extends KdxAdminApiController
                     [
                         'log_data' => $model->attributes,
                         'log_primary' => $model->getLogAttributeRemark($logPrimaryData),
-                        'dirty_identify_code'=> [
+                        'dirty_identify_code' => [
                             MemberLogConstant::MEMBER_LEVEL_DELETE,
                         ]
                     ]
@@ -313,17 +317,17 @@ class LevelController extends KdxAdminApiController
         if (is_error($res)) {
             throw new LevelException(LevelException::CHANGE_LEVEL_STATE_FAIL, $res['message']);
         }
-        
+
         return $this->success();
     }
-    
+
     /**
      * 修改等级升级方式
      * @return Response
      * @throws LevelException
      * @author 青岛开店星信息技术有限公司
      */
-    public function actionSetType()
+    public function actionSetType(): Response
     {
         $updateType = RequestHelper::get('update_type');
         try {
@@ -339,29 +343,29 @@ class LevelController extends KdxAdminApiController
                     'log_primary' => [
                         '升级方式' => $updateType == 1 ? '订单完成后' : '付款后'
                     ],
-                    'dirty_identify_code'=> [
+                    'dirty_identify_code' => [
                         MemberLogConstant::MEMBER_LEVEL_UPGRADE,
                     ]
                 ]
             );
-            
+
         } catch (Exception $exception) {
             throw new LevelException(LevelException::CHANGE_UPDATE_TYPE_FAIL);
         }
         return $this->success();
     }
-    
+
     /**
      * 获取会员升级方式
      * 1 订单完成后   2 付款后
      * @return Response
      * @author 青岛开店星信息技术有限公司
      */
-    public function actionGetType()
+    public function actionGetType(): Response
     {
         $type = ShopSettings::get('member.level.update_type');
-        
+
         return $this->result(['type' => $type]);
     }
-    
+
 }

@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 开店星新零售管理系统
  * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
@@ -27,6 +26,12 @@ use shopstar\models\order\PayOrderModel;
 use Yansongda\Pay\Exceptions\GatewayException;
 use yii\helpers\Json;
 
+/**
+ * H5支付
+ * Class H5
+ * @package shopstar\components\payment\client
+ * @author 青岛开店星信息技术有限公司
+ */
 class H5 extends BasePay implements PayClientInterface
 {
 
@@ -34,20 +39,21 @@ class H5 extends BasePay implements PayClientInterface
 
     /**
      * 支付
-     * @param string $payType
      * @return mixed
+     * @throws PaymentException
+     * @throws \shopstar\exceptions\order\OrderException
      * @author 青岛开店星信息技术有限公司
      */
     public function pay()
     {
         // 写入订单记录
         $this->write();
-    
+
         // 判断订单来源 抖音的不支持切换
         if ($this->orderData[0]['create_from'] >= 30 && $this->orderData[0]['create_from'] <= 32) {
             throw new PaymentException(PaymentException::PAY_CHANNEL_ERROR);
         }
-        
+
         // 获取支付方式
         $payType = PayTypeConstant::getIdentify($this->pay_type);
 
@@ -60,6 +66,8 @@ class H5 extends BasePay implements PayClientInterface
     /**
      * 退款
      * @return mixed
+     * @throws PaymentException
+     * @throws \shopstar\exceptions\order\OrderException
      * @author 青岛开店星信息技术有限公司
      */
     public function refund()
@@ -97,8 +105,9 @@ class H5 extends BasePay implements PayClientInterface
 
     /**
      * 转账
-     * @param $config
      * @return array|bool
+     * @throws PaymentException
+     * @throws \yii\base\Exception
      */
     public function transfer()
     {
@@ -146,6 +155,9 @@ class H5 extends BasePay implements PayClientInterface
         throw new \Exception('H5暂不支持此类型转账');
     }
 
+    /**
+     * @throws \Exception
+     */
     public function wechat()
     {
         throw new \Exception('h5 undefined wechat method');
@@ -203,14 +215,14 @@ class H5 extends BasePay implements PayClientInterface
     /**
      * alipay 退款
      * @return bool|array
-     * @throws PaymentException
+     * @throws PaymentException|\yii\base\Exception
      */
     public function alipayRefund()
     {
         $payConf = $this->getConfig(
             PayClientConstant::CLIENT_H5,
             PayTypeConstant::getIdentify($this->pay_type));
-        $config = $this->setAlipayConfig($payConf,true);
+        $config = $this->setAlipayConfig($payConf, true);
 
 
         foreach ($this->order as $orderIndex => $orderItem) {

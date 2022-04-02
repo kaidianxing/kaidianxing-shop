@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 开店星新零售管理系统
  * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
@@ -15,15 +14,18 @@ namespace shopstar\constants;
 
 use shopstar\bases\constant\BaseConstant;
 
+/**
+ * @author 青岛开店星信息技术有限公司
+ */
 class CacheTypeConstant extends BaseConstant
 {
 
     const CACHE_DEFINE = [
-        CacheTypeConstant::USER_PROFILE   => ['key' =>'user_profile', 'type' =>'string', 'expire' =>3600],
-        CacheTypeConstant::MANAGE_PROFILE => ['key' =>'manage_profile', 'type' =>'string', 'expire' =>3600],
-        CacheTypeConstant::ROLE_PERMS     => ['key' =>'role_perms', 'type' =>'string', 'expire' =>3600],
-        CacheTypeConstant::PRINTER_ACCESS_TOKEN => ['key' =>'printer_access_token', 'type' =>'string', 'expire' =>600],
-        CacheTypeConstant::MAKE_TOKEN => ['key' =>'make_token', 'type' =>'string', 'expire' =>86400],
+        CacheTypeConstant::USER_PROFILE => ['key' => 'user_profile', 'type' => 'string', 'expire' => 3600],
+        CacheTypeConstant::MANAGE_PROFILE => ['key' => 'manage_profile', 'type' => 'string', 'expire' => 3600],
+        CacheTypeConstant::ROLE_PERMS => ['key' => 'role_perms', 'type' => 'string', 'expire' => 3600],
+        CacheTypeConstant::PRINTER_ACCESS_TOKEN => ['key' => 'printer_access_token', 'type' => 'string', 'expire' => 600],
+        CacheTypeConstant::MAKE_TOKEN => ['key' => 'make_token', 'type' => 'string', 'expire' => 86400],
     ];
 
     /**

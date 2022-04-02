@@ -18,7 +18,7 @@ use shopstar\bases\model\BaseSettings;
 
 /**
  * 应用-店铺装修-设置实体类
- * This is the model class for table "{{%app_diypage_settings}}".
+ * This is the model class for table "{{%diypage_settings}}".
  *
  * @property string $key 设置名
  * @property string $value 设置值
@@ -31,7 +31,7 @@ class DiypageSettings extends BaseSettings
      */
     public static function tableName()
     {
-        return '{{%app_diypage_settings}}';
+        return '{{%diypage_settings}}';
     }
 
     /**

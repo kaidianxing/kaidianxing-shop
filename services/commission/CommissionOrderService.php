@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 开店星新零售管理系统
  * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
@@ -10,7 +9,6 @@
  * @warning Unauthorized deletion of copyright information is prohibited.
  * @warning 未经许可禁止私自删除版权信息
  */
-
 
 namespace shopstar\services\commission;
 
@@ -38,6 +36,9 @@ use shopstar\models\order\OrderPackageModel;
 use shopstar\models\shop\ShopSettings;
 use yii\helpers\Json;
 
+/**
+ * @author 青岛开店星信息技术有限公司
+ */
 class CommissionOrderService extends BaseService
 {
 
@@ -589,11 +590,13 @@ class CommissionOrderService extends BaseService
         return true;
     }
 
-
     /**
      * 导出分销订单
      * @param array $where
      * @param array $searchs
+     * @throws \PhpOffice\PhpSpreadsheet\Exception
+     * @throws \PhpOffice\PhpSpreadsheet\Writer\Exception
+     * @throws \yii\base\Exception
      * @author 青岛开店星信息技术有限公司
      */
     public static function export(array $where, array $searchs)
@@ -748,7 +751,6 @@ class CommissionOrderService extends BaseService
         ExcelHelper::export($list, self::$exportField, '分销订单数据导出');
         die;
     }
-
 
     /**
      * 默认导出的字段

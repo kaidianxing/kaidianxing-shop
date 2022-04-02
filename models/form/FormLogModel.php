@@ -17,7 +17,7 @@ use shopstar\constants\form\FormConstant;
 use shopstar\constants\form\FormLogConstant;
 
 /**
- * This is the model class for table "{{%app_form_log}}".
+ * This is the model class for table "{{%form_log}}".
  *
  * @property int $id auto increment id
  * @property int $form_id 表单ID
@@ -39,7 +39,7 @@ class FormLogModel extends BaseActiveRecord
      */
     public static function tableName()
     {
-        return '{{%app_form_log}}';
+        return '{{%form_log}}';
     }
 
     /**

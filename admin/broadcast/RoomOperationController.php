@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 开店星新零售管理系统
  * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
@@ -11,18 +10,15 @@
  * @warning 未经许可禁止私自删除版权信息
  */
 
-
-
 namespace shopstar\admin\broadcast;
 
-
+use shopstar\bases\KdxAdminApiController;
 use shopstar\components\wechat\helpers\MiniProgramBroadcastRoomHelper;
-use shopstar\helpers\RequestHelper;
-use shopstar\models\goods\GoodsModel;
 use shopstar\exceptions\broadcast\BroadcastRoomOperationException;
+use shopstar\helpers\RequestHelper;
 use shopstar\models\broadcast\BroadcastRoomGoodsMapModel;
 use shopstar\models\broadcast\BroadcastRoomModel;
-use shopstar\bases\KdxAdminApiController;
+use shopstar\models\goods\GoodsModel;
 
 /**
  * 小程序直播间运营

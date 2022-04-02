@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 开店星新零售管理系统
  * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
@@ -19,6 +18,7 @@ use shopstar\bases\exception\BaseException;
  * 商品数据异常
  * Class GoodsException
  * @package shopstar\exceptions\statistics
+ * @author 青岛开店星信息技术有限公司
  */
 class GoodsException extends BaseException
 {
@@ -28,17 +28,17 @@ class GoodsException extends BaseException
      * 20商品异常
      * 01错误码
      */
-    
+
     /**
      * @Message("详情不存在")
      */
     const GOODS_DETAIL_NOT_EXISTS = 252001;
-    
+
     /**
      * @Message("参数错误")
      */
     const GOODS_DETAIL_PARAMS_ERROR = 252002;
-    
-    
+
+
     /*************业务端异常结束*************/
 }

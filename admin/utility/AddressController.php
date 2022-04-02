@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 开店星新零售管理系统
  * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
@@ -13,18 +12,22 @@
 
 namespace shopstar\admin\utility;
 
-use shopstar\models\core\CoreAddressModel;
 use shopstar\bases\KdxAdminUtilityController;
+use shopstar\models\core\CoreAddressModel;
 use yii\helpers\Json;
 
 /**
  * 系统地址控制器
  * Class AddressController
- * @package modules\utility\manage
+ * @package shopstar\admin\utility
+ * @author 青岛开店星信息技术有限公司
  */
 class AddressController extends KdxAdminUtilityController
 {
 
+    /**
+     * @var array
+     */
     public $configActions = [
         'allowActions' => ['*'],  // 允许不登录访问
     ];
@@ -65,9 +68,5 @@ class AddressController extends KdxAdminUtilityController
 
         return $this->result(['result' => $result]);
     }
-
-
-
-
 
 }

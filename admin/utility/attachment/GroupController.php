@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 开店星新零售管理系统
  * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
@@ -13,17 +12,18 @@
 
 namespace shopstar\admin\utility\attachment;
 
+use shopstar\bases\KdxAdminUtilityController;
 use shopstar\helpers\ArrayHelper;
 use shopstar\helpers\DateTimeHelper;
 use shopstar\helpers\RequestHelper;
 use shopstar\models\core\attachment\CoreAttachmentGroupModel;
 use shopstar\models\core\attachment\CoreAttachmentModel;
-use shopstar\bases\KdxAdminUtilityController;
 
 /**
  * 附件分组
  * Class GroupController
- * @package modules\utility\manage
+ * @package shopstar\admin\utility\attachment
+ * @author 青岛开店星信息技术有限公司
  */
 class GroupController extends KdxAdminUtilityController
 {
@@ -44,7 +44,7 @@ class GroupController extends KdxAdminUtilityController
      * @return array
      * @author likexin
      */
-    private function getDefaultGroup(int $type)
+    private function getDefaultGroup(int $type): array
     {
         $andWhere = [
             'scene' => $this->attachmentScene,

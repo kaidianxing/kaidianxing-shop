@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 开店星新零售管理系统
  * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
@@ -11,8 +10,6 @@
  * @warning 未经许可禁止私自删除版权信息
  */
 
-
-
 namespace shopstar\bases\module;
 
 use Yii;
@@ -23,7 +20,8 @@ use yii\base\Module;
 /**
  * 模块基类
  * Class BaseModule
- * @package shopstar\base
+ * @package shopstar\bases\module
+ * @author 青岛开店星信息技术有限公司
  */
 class BaseModule extends Module
 {
@@ -84,7 +82,7 @@ class BaseModule extends Module
      * @param string $prefix
      * @return bool
      */
-    private function isIncorrectClassNameOrPrefix($className, $prefix)
+    private function isIncorrectClassNameOrPrefix($className, $prefix): bool
     {
         if (!preg_match('%^[a-z][a-z0-9\\-_]*$%', $className)) {
             return true;
@@ -98,7 +96,7 @@ class BaseModule extends Module
 
     /**
      * @param string $id
-     * @return object|Controller|null
+     * @return object|string|null
      * @throws InvalidConfigException
      * @author 青岛开店星信息技术有限公司
      */

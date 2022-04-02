@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 开店星新零售管理系统
  * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
@@ -13,36 +12,36 @@
 
 namespace shopstar\admin\order;
 
+use shopstar\bases\KdxAdminApiController;
 use shopstar\constants\log\order\DispatchLogConstant;
-
 use shopstar\exceptions\order\DispatchException;
-use shopstar\helpers\ArrayHelper;
- 
 use shopstar\helpers\RequestHelper;
 use shopstar\models\log\LogModel;
 use shopstar\models\order\DispatchModel;
 use shopstar\models\shop\ShopSettings;
-use shopstar\bases\KdxAdminApiController;
 use yii\web\Response;
 
 /**
  * 配送方式
  * Class DispatchController
- * @package app\controllers\manage\order
+ * @package shopstar\admin\order
  */
 class DispatchController extends KdxAdminApiController
 {
 
+    /**
+     * @var array
+     */
     public $configActions = [
         'allowPermActions' => [
             'get-list',
             'get-default',
         ]
     ];
-    
+
     /**
      * 配送方式列表
-     * @return string
+     * @return array|int[]|Response
      * @author 青岛开店星信息技术有限公司
      */
     public function actionIndex()
@@ -101,7 +100,7 @@ class DispatchController extends KdxAdminApiController
 
     /**
      * 配送方式详情
-     * @return string
+     * @return array|int[]|Response
      * @throws DispatchException
      * @author 青岛开店星信息技术有限公司
      */
@@ -147,7 +146,7 @@ class DispatchController extends KdxAdminApiController
      * @throws DispatchException
      * @author 青岛开店星信息技术有限公司
      */
-    public function actionEdit()
+    public function actionEdit(): Response
     {
         $id = RequestHelper::postInt('id');
         if (empty($id)) {
@@ -171,10 +170,10 @@ class DispatchController extends KdxAdminApiController
 
     /**
      * 新增配送方式
-     * @return string|Response
+     * @return Response
      * @author 青岛开店星信息技术有限公司
      */
-    public function actionAdd()
+    public function actionAdd(): Response
     {
         $transaction = \Yii::$app->getDb()->beginTransaction();
         try {
@@ -218,7 +217,7 @@ class DispatchController extends KdxAdminApiController
      * @throws DispatchException
      * @author 青岛开店星信息技术有限公司
      */
-    public function actionChangeState()
+    public function actionChangeState(): Response
     {
         $id = RequestHelper::post('ids');
         $state = RequestHelper::post('state');
@@ -239,7 +238,7 @@ class DispatchController extends KdxAdminApiController
      * @throws DispatchException
      * @author 青岛开店星信息技术有限公司
      */
-    public function actionChangeDefault()
+    public function actionChangeDefault(): Response
     {
         $id = RequestHelper::getInt('id');
         $isDefault = RequestHelper::getInt('is_default');
@@ -257,6 +256,7 @@ class DispatchController extends KdxAdminApiController
         } catch (\Throwable $exception) {
             throw new DispatchException(DispatchException::CHANGE_DEFAULT_FAIL);
         }
+
         return $this->success();
     }
 
@@ -291,7 +291,7 @@ class DispatchController extends KdxAdminApiController
 
         ShopSettings::set('dispatch.express.enable', $enable);
         // 配送方式排序处理
-        DispatchModel::updateSort($this->shopType, $enable, 10);
+        DispatchModel::updateSort($enable, 10);
 
         LogModel::write(
             $this->userId,
@@ -303,7 +303,7 @@ class DispatchController extends KdxAdminApiController
                 'log_primary' => [
                     '状态' => $enable == 1 ? '开启' : '关闭'
                 ],
-                'dirty_identify_code'=> [
+                'dirty_identify_code' => [
                     DispatchLogConstant::EXPRESS_ENABLE_SETTING,
                 ]
             ]

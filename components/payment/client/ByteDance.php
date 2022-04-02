@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 开店星新零售管理系统
  * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
@@ -23,6 +22,12 @@ use shopstar\helpers\LogHelper;
 use shopstar\models\shop\ShopSettings;
 use yii\helpers\Json;
 
+/**
+ * 字节跳动支付
+ * Class ByteDance
+ * @package shopstar\components\payment\client
+ * @author 青岛开店星信息技术有限公司
+ */
 class ByteDance extends BasePay implements PayClientInterface
 {
     const CLIENT_TYPE = 'byte_dance';
@@ -104,6 +109,8 @@ class ByteDance extends BasePay implements PayClientInterface
 
     /**
      * 退款
+     * @throws PaymentException
+     * @throws \shopstar\exceptions\order\OrderException
      * @author 青岛开店星信息技术有限公司
      */
     public function refund()
@@ -147,12 +154,13 @@ class ByteDance extends BasePay implements PayClientInterface
             $orderItem->refund_data = Json::encode($res);
             $orderItem->save();
         }
-
-        return;
     }
 
     /**
      * 转账
+     * @throws PaymentException
+     * @throws \yii\base\Exception
+     * @throws \Exception
      * @author 青岛开店星信息技术有限公司
      */
     public function transfer()
@@ -208,7 +216,7 @@ class ByteDance extends BasePay implements PayClientInterface
      * @return string
      * @author 青岛开店星信息技术有限公司
      */
-    private function createSign($params, $payAppSecret)
+    private function createSign($params, $payAppSecret): string
     {
         unset($params["sign"]);
         unset($params["app_id"]);

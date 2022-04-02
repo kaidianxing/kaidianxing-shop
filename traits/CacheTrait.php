@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 开店星新零售管理系统
  * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
@@ -19,6 +18,7 @@ use shopstar\helpers\CacheHelper;
  * 缓存
  * Trait CacheTrait
  * @package shopstar\traits
+ * @author 青岛开店星信息技术有限公司.
  */
 trait CacheTrait
 {
@@ -29,6 +29,7 @@ trait CacheTrait
      * @param $cacheInfo
      * @param null $additionalKey
      * @return bool|mixed
+     * @throws \Exception
      * @author 青岛开店星信息技术有限公司
      */
     public static function stringCache($cacheType, $cacheInfo, $additionalKey = null)
@@ -50,6 +51,7 @@ trait CacheTrait
      * @param $cacheType
      * @param null $additionalKey
      * @return mixed
+     * @throws \Exception
      * @author 青岛开店星信息技术有限公司
      */
     public static function getStringCache($cacheType, $additionalKey = null)
@@ -64,6 +66,7 @@ trait CacheTrait
      * @param $cacheType
      * @param null $additionalKey
      * @return mixed
+     * @throws \Exception
      * @author 青岛开店星信息技术有限公司
      */
     public static function deleteCache($cacheType, $additionalKey = null)
@@ -78,6 +81,7 @@ trait CacheTrait
      * @param $cacheType
      * @param null $additionalKey
      * @return mixed
+     * @throws \Exception
      * @author 青岛开店星信息技术有限公司
      */
     public static function ttlCache($cacheType, $additionalKey = null)
@@ -87,6 +91,12 @@ trait CacheTrait
         return \Yii::$app->redis->ttl($cache_key);
     }
 
+    /**
+     * @param $cacheType
+     * @param $cacheKey
+     * @throws \Exception
+     * @author 青岛开店星信息技术有限公司
+     */
     private static function setExpire($cacheType, $cacheKey)
     {
         $expire_time = CacheHelper::getExpire($cacheType);

@@ -36,7 +36,6 @@ use yii\db\ActiveQuery;
  * @property string $last_ip 最后登录ip
  * @property int $group_id 分组id
  * @property int $is_deleted 是否已删除
- * @property int $audit_status 审核状态  0 未审核  10 已通过   11 已拒绝
  * @property string $delete_time 删除时间
  */
 class UserModel extends BaseActiveRecord
@@ -55,7 +54,7 @@ class UserModel extends BaseActiveRecord
     public function rules()
     {
         return [
-            [['is_root', 'status', 'group_id', 'is_deleted', 'audit_status'], 'integer'],
+            [['is_root', 'status', 'group_id', 'is_deleted'], 'integer'],
             [['created_at', 'last_login', 'delete_time'], 'safe'],
             [['username'], 'string', 'max' => 50],
             [['password', 'last_ip'], 'string', 'max' => 255],
@@ -80,10 +79,6 @@ class UserModel extends BaseActiveRecord
             'last_ip' => '最后登录ip',
             'group_id' => '分组id',
             'is_deleted' => '是否已删除',
-            'audit_status' => '审核状态
-                                0 未审核
-                                10 已通过 
-                                11 已拒绝',
             'delete_time' => '删除时间',
         ];
     }

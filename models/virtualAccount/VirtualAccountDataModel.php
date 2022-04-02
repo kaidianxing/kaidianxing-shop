@@ -28,7 +28,7 @@ use yii\helpers\Json;
 
 
 /**
- * This is the model class for table "{{%app_virtual_account_data}}".
+ * This is the model class for table "{{%virtual_account_data}}".
  *
  * @property int $id
  * @property int $virtual_account_id 卡密库id
@@ -67,7 +67,7 @@ class VirtualAccountDataModel extends BaseActiveRecord
      */
     public static function tableName()
     {
-        return '{{%app_virtual_account_data}}';
+        return '{{%virtual_account_data}}';
     }
 
     /**

@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 开店星新零售管理系统
  * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
@@ -13,18 +12,18 @@
 
 namespace shopstar\admin\commission\settings;
 
-use shopstar\helpers\RequestHelper;
-use shopstar\models\log\LogModel;
+use shopstar\bases\KdxAdminApiController;
 use shopstar\constants\commission\CommissionLogConstant;
 use shopstar\exceptions\commission\CommissionSetException;
+use shopstar\helpers\RequestHelper;
 use shopstar\models\commission\CommissionLevelModel;
 use shopstar\models\commission\CommissionSettings;
-use shopstar\bases\KdxAdminApiController;
+use shopstar\models\log\LogModel;
 
 /**
  * 结算设置
  * Class SettlementController
- * @package apps\commission\manage\settings
+ * @package shopstar\admin\commission\settings
  */
 class SettlementController extends KdxAdminApiController
 {
@@ -37,7 +36,6 @@ class SettlementController extends KdxAdminApiController
             'set',
         ]
     ];
-
 
     /**
      * 获取设置
@@ -52,7 +50,7 @@ class SettlementController extends KdxAdminApiController
             'settings' => $settings,
         ]);
     }
-    
+
     /**
      * 保存设置
      * @return array|int[]|\yii\web\Response
@@ -102,6 +100,7 @@ class SettlementController extends KdxAdminApiController
                 throw new CommissionSetException(CommissionSetException::COMMISSION_SETTLEMENT_WITHDRAW_MONEY_NOT_FEE_ERROR);
             }
         }
+
         // 自定义结算天数
         if ($settings['settlement_day_type'] == 2) {
             // 天数不能为空
@@ -113,6 +112,7 @@ class SettlementController extends KdxAdminApiController
                 throw new CommissionSetException(CommissionSetException::COMMISSION_SETTLEMENT_CALCULATE_DAYS_ERROR);
             }
         }
+
         // 自动审核
         if ($settings['withdraw_audit'] == 2) {
             // 分销等级不能为空
@@ -149,7 +149,7 @@ class SettlementController extends KdxAdminApiController
                         break;
                 }
             }
-            
+
             LogModel::write(
                 $this->userId,
                 CommissionLogConstant::COMMISSION_SETTLEMENT_EDIT,
@@ -159,19 +159,19 @@ class SettlementController extends KdxAdminApiController
                     'log_data' => $settings,
                     'log_primary' => [
                         '佣金计算方式' => $settings['calculate_type'] == 1 ? '商品折扣价' : '实际支付价',
-                        '最低提现额度' => $settings['withdraw_limit'].' 元',
+                        '最低提现额度' => $settings['withdraw_limit'] . ' 元',
                         '提现手续费' => $settings['withdraw_fee_type'] == 1 ? '不扣除' : '自定义',
-                        '手续费' => $settings['withdraw_fee'] ? $settings['withdraw_fee'].' %' : '-',
+                        '手续费' => $settings['withdraw_fee'] ? $settings['withdraw_fee'] . ' %' : '-',
                         '免手续费' => $settings['free_fee_type'] == 1 ? '不免手续费' : '自定义免手续费区间',
-                        '免手续费区间' => $settings['free_fee_type'] == 2 ? $settings['free_fee_start'].' 元 - '.$settings['free_fee_end'].' 元' : '-',
-    
+                        '免手续费区间' => $settings['free_fee_type'] == 2 ? $settings['free_fee_start'] . ' 元 - ' . $settings['free_fee_end'] . ' 元' : '-',
+
                         '结算天数类型' => $settings['settlement_day_type'] == 1 ? '订单完成后即可提现' : '自定义结算天数',
-                        '结算天数' => $settings['settlement_days'] ? '订单确认收货后 '.$settings['settlement_days'].' 天可申请提现' : '-',
-    
+                        '结算天数' => $settings['settlement_days'] ? '订单确认收货后 ' . $settings['settlement_days'] . ' 天可申请提现' : '-',
+
                         '提现审核' => $settings['withdraw_audit'] == 1 ? '手动审核' : '自动审核',
                         '分销商等级' => $level['name'] ?: '-',
-                        '提现金额' => $settings['auto_check_price'] ? $settings['auto_check_price'].' 元' : '-',
-    
+                        '提现金额' => $settings['auto_check_price'] ? $settings['auto_check_price'] . ' 元' : '-',
+
                         '提现方式' => implode(', ', $withdrawType) ?: '-',
                     ],
                     'dirty_identity_code' => [
@@ -179,7 +179,7 @@ class SettlementController extends KdxAdminApiController
                     ]
                 ]
             );
-            
+
         } catch (\Throwable $exception) {
             throw new CommissionSetException(CommissionSetException::COMMISSION_SETTLEMENT_SAVE_FAIL);
         }

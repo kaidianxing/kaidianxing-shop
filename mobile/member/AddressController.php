@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 开店星新零售管理系统
  * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
@@ -19,6 +18,9 @@ use shopstar\helpers\RequestHelper;
 use shopstar\models\member\MemberAddressModel;
 use yii\web\Response;
 
+/**
+ * @author 青岛开店星信息技术有限公司
+ */
 class AddressController extends BaseMobileApiController
 {
     /**
@@ -26,7 +28,7 @@ class AddressController extends BaseMobileApiController
      * @return Response
      * @author 青岛开店星信息技术有限公司
      */
-    public function actionIndex()
+    public function actionIndex(): Response
     {
         $params = [
             'andWhere' => [
@@ -34,7 +36,7 @@ class AddressController extends BaseMobileApiController
                 ['is_delete' => 0]
             ],
             'select' => 'id,name,mobile,province,city,area,address,is_default,address_code',
-            'orderBy'=>['is_default' => SORT_DESC,'id' => SORT_DESC]
+            'orderBy' => ['is_default' => SORT_DESC, 'id' => SORT_DESC]
         ];
 
         $list = MemberAddressModel::getColl($params);
@@ -47,11 +49,11 @@ class AddressController extends BaseMobileApiController
      * @throws \yii\db\Exception
      * @author 青岛开店星信息技术有限公司
      */
-    public function actionCreate()
+    public function actionCreate(): Response
     {
         $transaction = \Yii::$app->db->beginTransaction();
         try {
-            $res = MemberAddressModel::saveAddress($this->memberId,0,$this->shopType);
+            $res = MemberAddressModel::saveAddress($this->memberId, 0);
             if (is_error($res)) {
                 throw new MemberException(MemberException::MEMBER_ADDRESS_CREATE_FAIL, $res['message']);
             }
@@ -73,7 +75,7 @@ class AddressController extends BaseMobileApiController
      * @throws \yii\db\Exception
      * @author 青岛开店星信息技术有限公司
      */
-    public function actionSave()
+    public function actionSave(): Response
     {
         $id = RequestHelper::postInt('id');
         if (empty($id)) {
@@ -81,7 +83,7 @@ class AddressController extends BaseMobileApiController
         }
         $transaction = \Yii::$app->getDb()->beginTransaction();
         try {
-            $res = MemberAddressModel::saveAddress($this->memberId, $id,$this->shopType);
+            $res = MemberAddressModel::saveAddress($this->memberId, $id);
             if (is_error($res)) {
                 throw new MemberException(MemberException::MEMBER_ADDRESS_SAVE_FAIL, $res['message']);
             }
@@ -103,7 +105,7 @@ class AddressController extends BaseMobileApiController
      * @throws MemberException|\yii\db\Exception
      * @author 青岛开店星信息技术有限公司
      */
-    public function actionDelete()
+    public function actionDelete(): Response
     {
         $id = RequestHelper::getInt('id');
         if (empty($id)) {
@@ -116,7 +118,7 @@ class AddressController extends BaseMobileApiController
             throw new MemberException(MemberException::MEMBER_ADDRESS_DELETE_FAIL, $res['message']);
         }
         $transaction->commit();
-        
+
         return $this->success();
     }
 
@@ -126,7 +128,7 @@ class AddressController extends BaseMobileApiController
      * @throws MemberException
      * @author 青岛开店星信息技术有限公司
      */
-    public function actionSetDefault()
+    public function actionSetDefault(): Response
     {
         $id = RequestHelper::getInt('id');
         if (empty($id)) {
@@ -144,7 +146,7 @@ class AddressController extends BaseMobileApiController
         }
         return $this->success();
     }
-    
+
     /**
      * 获取地址详情
      * @return array|Response

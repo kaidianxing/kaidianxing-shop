@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 开店星新零售管理系统
  * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
@@ -17,6 +16,7 @@ namespace shopstar\helpers;
  * 会话助手类
  * Class SessionHelper
  * @package shopstar\helpers
+ * @author 青岛开店星信息技术有限公司
  */
 class SessionHelper
 {
@@ -26,7 +26,7 @@ class SessionHelper
      * @param null $key
      * @param null $default_value
      * @return mixed|null
-     * @author liyang
+     * @author 青岛开店星信息技术有限公司
      */
     public static function get($key = null, $default_value = null)
     {
@@ -45,7 +45,7 @@ class SessionHelper
      * @param string|array $value
      * @param int $expire
      * @return mixed
-     * @author liyang
+     * @author 青岛开店星信息技术有限公司
      */
     public static function set($key, $value,$expire = 0)
     {
@@ -63,7 +63,7 @@ class SessionHelper
      * $session 是否存在 key
      * @param $key
      * @return bool
-     * @author liyang
+     * @author 青岛开店星信息技术有限公司
      */
     public static function has($key)
     {
@@ -81,7 +81,7 @@ class SessionHelper
     /**
      * @param $key
      * @return mixed
-     * @author liyang
+     * @author 青岛开店星信息技术有限公司
      */
     public static function remove($key)
     {

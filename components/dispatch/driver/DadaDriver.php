@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 开店星新零售管理系统
  * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
@@ -22,11 +21,11 @@ use yii\helpers\Json;
  * 达达驱动类
  * Class DadaDriver
  * @package shopstar\components\dispatch\driver
+ * @author 青岛开店星信息技术有限公司
  */
 class DadaDriver extends BaseDispatchDriver implements DispatchDriverInterface
 {
 
-    // TODO 上线后切换域名
 //    private $url = 'http://newopen.qa.imdada.cn';
     private $url = 'http://newopen.imdada.cn';
     private $APP_KEY = '';
@@ -87,9 +86,9 @@ class DadaDriver extends BaseDispatchDriver implements DispatchDriverInterface
     {
 
         $data['shop_no'] = $this->shop_no;
-        $data['city_code']  = $this->city_code;
-        $data['callback'] = ShopUrlHelper::build('dispatch/notify.php',[],true);
-        return self::getResult($this->API_ADDORDER,$data);
+        $data['city_code'] = $this->city_code;
+        $data['callback'] = ShopUrlHelper::build('dispatch/notify.php', [], true);
+        return self::getResult($this->API_ADDORDER, $data);
     }
 
     /**

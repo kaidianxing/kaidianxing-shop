@@ -22,11 +22,10 @@ $modules = [
     ],
 ];
 
-
 // 如果没安装注册安装模块
-if (!SHOP_STAR_IS_INSTALLED) {
+if (!SHOP_STAR_IS_INSTALLED && is_file(SHOP_STAR_PATH . '/install/Module.php')) {
     $modules['install'] = [
-        'class' => 'modules\install\config\InstallModule',
+        'class' => 'install\Module',
     ];
 }
 

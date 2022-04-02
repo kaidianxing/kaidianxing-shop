@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 开店星新零售管理系统
  * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
@@ -11,16 +10,13 @@
  * @warning 未经许可禁止私自删除版权信息
  */
 
-
-
 namespace shopstar\helpers;
-
-use function GuzzleHttp\Psr7\str;
 
 /**
  * 日期时间助手类
  * Class DateTime
  * @package shopstar\helpers
+ * @author 青岛开店星信息技术有限公司
  */
 class DateTimeHelper
 {
@@ -35,7 +31,7 @@ class DateTimeHelper
      * @return false|string
      * @author likexin
      */
-    public static function now($time = true)
+    public static function now(bool $time = true)
     {
         return $time ? date('Y-m-d H:i:s') : date('Y-m-d');
     }
@@ -55,8 +51,9 @@ class DateTimeHelper
      * 获取年份
      * @param int $long
      * @return array
+     * @author 青岛开店星信息技术有限公司
      */
-    static function getYears($long = 10)
+    static function getYears(int $long = 10): array
     {
 
         $years = [];
@@ -70,66 +67,59 @@ class DateTimeHelper
 
     /**
      * 获取月份
-     * @param $full 是否补足0
+     * @param bool $full 是否补足0
      * @return array
+     * @author 青岛开店星信息技术有限公司
      */
-
-    static function getMonths($full = false)
+    public static function getMonths(bool $full): array
     {
-
         $months = [];
         for ($i = 1;$i <= 12;$i++) {
             $months[] = ($full && strlen($i) <= 1 ? '0' : '') . $i;
         }
         return $months;
-
     }
-
 
     /**
      * 获取小时
-     * @param $full 是否补足0
+     * @param bool $full 是否补足0
      * @return array
+     * @author 青岛开店星信息技术有限公司
      */
-
-    static function getHours($full = false)
+    public static function getHours(bool $full): array
     {
-
         $hours = [];
         for ($i = 0;$i <= 23;$i++) {
             $hours[] = ($full && strlen($i) <= 1 ? '0' : '') . $i;
         }
         return $hours;
-
     }
 
     /**
      * 获取分钟
-     * @param $full 是否补足0
+     * @param bool $full 是否补足0
      * @return array
+     * @author 青岛开店星信息技术有限公司
      */
-
-    static function getMintues($full = false)
+    public static function getMintues(bool $full): array
     {
-
         $mintues = [];
         for ($i = 0;$i <= 59;$i++) {
             $mintues[] = ($full && strlen($i) <= 1 ? '0' : '') . $i;
         }
         return $mintues;
-
     }
 
     /**
      * 时间戳转换时间格式
-     *
      * @param int $timestamp 时间戳
      * @param string $tag d 只日期 m 到分钟 s 到秒
      * @return string 时间
+     * @author 青岛开店星信息技术有限公司
      */
-    static function getString($timestamp = 0, $tag = 'd')
+    static function getString(int $timestamp = 0, string $tag = 'd'): string
     {
-        if (empty($time)) {
+        if (empty($timestamp)) {
             return '';
         }
         if ($tag == 'd') {
@@ -143,28 +133,28 @@ class DateTimeHelper
 
     /**
      * 两个时间相差几天
-     *
      * @param string $date1 时间字符串1
      * @param string $date2 时间字符串2
      * @return int 天数
+     * @author 青岛开店星信息技术有限公司
      */
-    static function days($date1, $date2)
+    static function days(string $date1, string $date2): int
     {
         return abs(ceil((strtotime($date1) - strtotime($date2)) / 86400));
     }
 
     /**
-     *  时间差 几天前 几分钟前
-     * @param int $the_time 时间timestamp
+     * 时间差 几天前 几分钟前
+     * @param string $time 时间timestamp
      * @return string 相差的时间文字描述
+     * @author 青岛开店星信息技术有限公司
      */
-    static function before($the_time)
+    static function before(string $time): string
     {
-
         $now_time = time();
-        $dur = $now_time - (strstr($the_time, '-') ? strtotime($the_time) : $the_time);
+        $dur = $now_time - (strstr($time, '-') ? strtotime($time) : $time);
         if ($dur < 0) {
-            return $the_time;
+            return $time;
         } else {
             if ($dur < 60) {
                 return '刚刚';
@@ -178,7 +168,7 @@ class DateTimeHelper
                         if ($dur < 259200) {//3天内
                             return floor($dur / 86400) . '天前';
                         } else {
-                            return date('m-d', $the_time);
+                            return date('m-d', $time);
                         }
                     }
                 }
@@ -188,11 +178,12 @@ class DateTimeHelper
 
     /**
      * 获取月份的最大天数
-     * @param $year
-     * @param $month
+     * @param string $year
+     * @param string $month
      * @return false|string
+     * * @author 青岛开店星信息技术有限公司
      */
-    static function getMaxDay($year, $month)
+    static function getMaxDay(string $year, string $month)
     {
         return date('t', strtotime("{$year}-{$month} -1"));
     }
@@ -200,9 +191,11 @@ class DateTimeHelper
     /**
      * 获取某个周的开始日期结束日期
      * @param $year
-     * @param $week 0 获取所有周
+     * @param int $week 0 获取所有周
+     * @return array
+     * @author 青岛开店星信息技术有限公司
      */
-    static function getWeek($year, $week = 0)
+    static function getWeek($year, $week = 0): array
     {
 
         $year_start = $year . "-01-01";
@@ -240,9 +233,11 @@ class DateTimeHelper
     /**
      * 获取某个周的开始日期结束日期
      * @param $year
-     * @param $week 0 获取所有周
+     * @param $week_num
+     * @return array
+     * @author 青岛开店星信息技术有限公司
      */
-    public static function getWeekDate($year, $week_num)
+    public static function getWeekDate($year, $week_num): array
     {
         $first_day_of_year = mktime(0, 0, 0, 1, 1, $year);
         $first_week_day = date('N', $first_day_of_year);
@@ -262,13 +257,13 @@ class DateTimeHelper
 
     /**
      *  加上多少时间
-     *
      * @param int/string $startTime 开始时间
      * @param int $timeStamp 增加的时间戳
      * @param bool $isTimeStamp 是否返回时间戳
      * @return false|int|string
+     * @author 青岛开店星信息技术有限公司
      */
-    static function after($startTime, $timeStamp, $isTimeStamp = false)
+    static function after($startTime, int $timeStamp, bool $isTimeStamp)
     {
         if (!is_numeric($startTime)) {
             $startTime = strtotime($startTime);
@@ -279,12 +274,12 @@ class DateTimeHelper
 
     /**
      * 时间差 几天后 几小时后 几分钟后
-     * @param $createTime
-     * @param $theTime
-     * @return false|string
-     * @author Jackie
+     * @param string $createTime
+     * @param string $theTime
+     * @return string
+     * @author 青岛开店星信息技术有限公司
      */
-    static function afterFormat($createTime, $theTime)
+    static function afterFormat(string $createTime, string $theTime): string
     {
         if (empty($theTime)) {
             return '';
@@ -319,10 +314,10 @@ class DateTimeHelper
     /**
      * 获取当前毫秒时间戳
      * @return float
+     * @author 青岛开店星信息技术有限公司
      */
-    static function microtime()
+    static function microtime(): float
     {
-
         list($msec, $sec) = explode(' ', microtime());
 
         $msectime = (float)sprintf('%.0f', (floatval($msec) + floatval($sec)) * 1000);
@@ -332,12 +327,12 @@ class DateTimeHelper
 
     /**
      * 获取指定日期段内每一天的日期
-     * @param $startDate
-     * @param $endDate
+     * @param string $startDate
+     * @param string $endDate
      * @return array
      * @author 青岛开店星信息技术有限公司
      */
-    public static function getDateRange($startDate, $endDate)
+    public static function getDateRange(string $startDate, string $endDate): array
     {
         $sTimestamp = strtotime($startDate);
         $eTimestamp = strtotime($endDate);
@@ -354,7 +349,7 @@ class DateTimeHelper
      * @return array
      * @author 青岛开店星信息技术有限公司
      */
-    public static function getMonthDate()
+    public static function getMonthDate(): array
     {
         $time = time();
         $startTime = mktime(0, 0, 0, date("m", $time), 1, date("Y", $time));

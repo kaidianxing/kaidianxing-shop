@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 开店星新零售管理系统
  * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
@@ -13,7 +12,6 @@
 
 namespace shopstar\mobile\commission;
 
-use shopstar\mobile\commission\CommissionClientApiController;
 use shopstar\models\commission\CommissionAgentModel;
 use shopstar\models\commission\CommissionSettings;
 use shopstar\models\member\MemberModel;
@@ -21,7 +19,8 @@ use shopstar\models\member\MemberModel;
 /**
  * 佣金排名
  * Class RankController
- * @package apps\commission\client
+ * @package shopstar\mobile\commission
+ * @author 青岛开店星信息技术有限公司
  */
 class RankController extends CommissionClientApiController
 {
@@ -46,11 +45,11 @@ class RankController extends CommissionClientApiController
             $commissionField = 'agent.commission_pay';
             $andWhere[] = ['<>', 'agent.commission_pay', 0];
         }
-        
+
 
         // 显示数量
         $limit = max(10, (int)$rankSettings['show_total']);
-        
+
         $params = [
             'alias' => 'agent',
             'where' => [],

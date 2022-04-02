@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 开店星新零售管理系统
  * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
@@ -11,7 +10,6 @@
  * @warning 未经许可禁止私自删除版权信息
  */
 
-
 namespace shopstar\helpers;
 
 use yii\helpers\FileHelper as BaseFileHelper;
@@ -20,6 +18,7 @@ use yii\helpers\FileHelper as BaseFileHelper;
  * 文件助手类
  * Class FileHelper
  * @package shopstar\helpers
+ * @author 青岛开店星信息技术有限公司
  */
 class FileHelper extends BaseFileHelper
 {
@@ -31,8 +30,9 @@ class FileHelper extends BaseFileHelper
      * @param string $body 要写入的内容
      * @param null $flags 附加内容 例如 FILE_APPEND
      * @return bool|array
+     * @author 青岛开店星信息技术有限公司
      */
-    public static function write($path, $body = '', $flags = null)
+    public static function write(string $path, string $body = '', $flags = null)
     {
         if (is_dir($path)) {
             return error('有同名的文件夹存在, 写入失败!');
@@ -52,7 +52,7 @@ class FileHelper extends BaseFileHelper
      * 覆盖写入
      * @param string $path
      * @param string $targetPath
-     * @return array|bool|int
+     * @return array|bool
      * @author likexin
      */
     public static function cover(string $path, string $targetPath)
@@ -89,7 +89,7 @@ class FileHelper extends BaseFileHelper
      * @param string $file
      * @return string
      */
-    public static function getExtension($file = '')
+    public static function getExtension(string $file = ''): string
     {
         return strtolower(pathinfo($file, PATHINFO_EXTENSION));
     }
@@ -101,7 +101,7 @@ class FileHelper extends BaseFileHelper
      * @return bool
      * @throws \yii\base\Exception
      */
-    public static function move($source, $target)
+    public static function move(string $source, string $target): bool
     {
         self::createDirectory(dirname($target));
         if (is_uploaded_file($source)) {
@@ -162,8 +162,9 @@ class FileHelper extends BaseFileHelper
      * 检测远程文件是否存在
      * @param string $url 远程文件链接
      * @return bool
+     * @author 青岛开店星信息技术有限公司
      */
-    public static function checkRemoteFileExists($url)
+    public static function checkRemoteFileExists(string $url): bool
     {
         $curl = curl_init($url);
         //不取回数据
@@ -186,8 +187,9 @@ class FileHelper extends BaseFileHelper
      * @param string $path 路径地址
      * @param array $option 额外参数
      * @return array
+     * @author 青岛开店星信息技术有限公司
      */
-    public static function fileReaddir($path, $option = [])
+    public static function fileReaddir(string $path, array $option = []): array
     {
         $option = array_merge([
             'md5' => false,
@@ -247,7 +249,7 @@ class FileHelper extends BaseFileHelper
      * @param array $options
      * @return array
      */
-    public static function fileGlob(string $path, array $options = [])
+    public static function fileGlob(string $path, array $options = []): array
     {
         $options = array_merge([
             'md5' => false,
@@ -311,7 +313,7 @@ class FileHelper extends BaseFileHelper
      * @return bool
      * @author likexin
      */
-    public static function checkCompletion(string $path, string $md5)
+    public static function checkCompletion(string $path, string $md5): bool
     {
         if (empty($path) || empty($md5)) {
             return false;

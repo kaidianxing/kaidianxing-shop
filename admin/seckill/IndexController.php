@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 开店星新零售管理系统
  * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
@@ -13,8 +12,10 @@
 
 namespace shopstar\admin\seckill;
 
+use shopstar\bases\KdxAdminApiController;
 use shopstar\constants\activity\ActivityConstant;
-
+use shopstar\constants\seckill\SeckillLogConstant;
+use shopstar\exceptions\seckill\SeckillException;
 use shopstar\helpers\DateTimeHelper;
 use shopstar\helpers\QueueHelper;
 use shopstar\helpers\RequestHelper;
@@ -28,18 +29,17 @@ use shopstar\models\order\OrderActivityModel;
 use shopstar\models\order\OrderGoodsModel;
 use shopstar\models\order\OrderModel;
 use shopstar\models\shop\ShopSettings;
-use shopstar\constants\seckill\SeckillLogConstant;
-use shopstar\exceptions\seckill\SeckillException;
-use shopstar\bases\KdxAdminApiController;
 use yii\helpers\Json;
 
 /**
  * 秒杀
  * Class IndexController
- * @package apps\seckill\manage
+ * @package shopstar\admin\seckill
+ * @author 青岛开店星信息技术有限公司
  */
 class IndexController extends KdxAdminApiController
 {
+
     /**
      * 活动列表
      * @author 青岛开店星信息技术有限公司
@@ -47,12 +47,12 @@ class IndexController extends KdxAdminApiController
     public function actionList()
     {
         $data = RequestHelper::get();
-        
+
         $list = ShopMarketingModel::getActivityList($data, 'seckill');
-        
+
         return $this->result($list);
     }
-    
+
     /**
      * 详情
      * @throws SeckillException
@@ -68,10 +68,10 @@ class IndexController extends KdxAdminApiController
         if (empty($detail)) {
             throw new SeckillException(SeckillException::SECKILL_DETAIL_ACTIVITY_NOT_EXISTS);
         }
-    
+
         return $this->result(['data' => $detail]);
     }
-    
+
     /**
      * 添加活动
      * @author 青岛开店星信息技术有限公司
@@ -105,7 +105,7 @@ class IndexController extends KdxAdminApiController
                         return error('预热时间不能为空');
                     }
                     $data->rules = Json::encode($data->rules);
-                    
+
                     // 校验商品
                     $res = ShopMarketingGoodsMapModel::checkGoodsInfo($goodsInfo, $data->start_time, $data->end_time, [
                         'is_seckill' => true
@@ -118,8 +118,8 @@ class IndexController extends KdxAdminApiController
                 'afterSave' => function ($data) use ($closeDelay, $goodsInfo) {
 
                     // 保存商品
-                    ShopMarketingGoodsMapModel::saveGoodsMap($goodsInfo, $data,['type' => 'seckill']);
-                
+                    ShopMarketingGoodsMapModel::saveGoodsMap($goodsInfo, $data, ['type' => 'seckill']);
+
                     // 添加定时关闭任务
                     QueueHelper::push(new AutoStopActivityJob([
                         'id' => $data->id,
@@ -150,16 +150,16 @@ class IndexController extends KdxAdminApiController
             if (is_error($res)) {
                 throw new SeckillException(SeckillException::SECKILL_ADD_FAIL, $res['message']);
             }
-            
+
             $transaction->commit();
         } catch (\Throwable $exception) {
             $transaction->rollBack();
             return $this->error($exception->getMessage(), $exception->getCode());
         }
-        
+
         return $this->success();
     }
-    
+
     /**
      * 数据
      * @throws SeckillException
@@ -171,7 +171,7 @@ class IndexController extends KdxAdminApiController
         if (empty($id)) {
             throw new SeckillException(SeckillException::STATISTICS_PARAMS_ERROR);
         }
-        
+
         $select = [
             'activity_goods.goods_id',
             'activity_goods.option_id',
@@ -185,9 +185,9 @@ class IndexController extends KdxAdminApiController
             'select' => $select,
             'alias' => 'activity_goods',
             'leftJoins' => [
-                [OrderActivityModel::tableName(). 'order_activity', 'order_activity.activity_id=activity_goods.activity_id and activity_type=\'seckill\''],
-                [OrderGoodsModel::tableName().' order_goods', 'order_goods.order_id=order_activity.order_id and order_goods.goods_id=activity_goods.goods_id and order_goods.option_id=activity_goods.option_id'],
-                [OrderModel::tableName().' order', 'order.id=order_goods.order_id']
+                [OrderActivityModel::tableName() . 'order_activity', 'order_activity.activity_id=activity_goods.activity_id and activity_type=\'seckill\''],
+                [OrderGoodsModel::tableName() . ' order_goods', 'order_goods.order_id=order_activity.order_id and order_goods.goods_id=activity_goods.goods_id and order_goods.option_id=activity_goods.option_id'],
+                [OrderModel::tableName() . ' order', 'order.id=order_goods.order_id']
             ],
             'where' => [
                 'and',
@@ -198,9 +198,9 @@ class IndexController extends KdxAdminApiController
                 'activity_goods.goods_id', 'activity_goods.option_id'
             ]
         ];
-        
+
         $list = ShopMarketingGoodsMapModel::getColl($params);
-        
+
         // 商品
         $goodsIds = array_unique(array_column($list['list'], 'goods_id'));
         // 商品列表
@@ -224,10 +224,10 @@ class IndexController extends KdxAdminApiController
 
         }
         unset($item);
-        
+
         return $this->result($list);
     }
-    
+
     /**
      * 编辑
      * @throws SeckillException
@@ -249,12 +249,12 @@ class IndexController extends KdxAdminApiController
             throw new SeckillException(SeckillException::SECKILL_EDIT_ACTIVITY_NOT_EXISTS);
         }
         // 结束时间不能为空 || 结束时间不能小于起始时间
-        if(empty($endTime) || (strtotime($endTime) < strtotime($activity->start_time))){
+        if (empty($endTime) || (strtotime($endTime) < strtotime($activity->start_time))) {
             throw new SeckillException(SeckillException::SECKILL_DELETE_PARAMS_ERROR);
         }
 
         // 新结束时间不能小于旧结束时间
-        if(strtotime($endTime) < strtotime($activity->end_time)){
+        if (strtotime($endTime) < strtotime($activity->end_time)) {
             throw new SeckillException(SeckillException::NEW_EDIT_EMD_TIME_NOT_LESS_THAN_OLD_END_TIME_ERROR);
         }
 
@@ -263,7 +263,7 @@ class IndexController extends KdxAdminApiController
             $activity->preheat_time = $preheatTime;
         }
         $activity->end_time = $endTime;
-        
+
         if (!$activity->save()) {
             throw new SeckillException(SeckillException::SECKILL_EDIT_FAIL);
         }
@@ -274,6 +274,7 @@ class IndexController extends KdxAdminApiController
         QueueHelper::push(new AutoStopActivityJob([
             'id' => $id,
         ]), $closeDelay);
+
         // 日志
         LogModel::write(
             $this->userId,
@@ -294,10 +295,10 @@ class IndexController extends KdxAdminApiController
                 ]
             ]
         );
-        
+
         return $this->success();
     }
-    
+
     /**
      * 手动停止
      * @throws SeckillException
@@ -309,13 +310,15 @@ class IndexController extends KdxAdminApiController
         if (empty($id)) {
             throw new SeckillException(SeckillException::SECKILL_MANUAL_STOP_PARAMS_ERROR);
         }
-        
+
         $res = ShopMarketingModel::manualStop($id, 'seckill');
         if (is_error($res)) {
             throw new SeckillException(SeckillException::SECKILL_MANUAL_STOP_FAIL, $res['message']);
         }
+
         // 活动商品停止
         GoodsActivityModel::changeEndTime($id, 'seckill', DateTimeHelper::now());
+
         // 日志
         LogModel::write(
             $this->userId,
@@ -334,10 +337,10 @@ class IndexController extends KdxAdminApiController
                 ]
             ]
         );
-        
+
         return $this->success();
     }
-    
+
     /**
      * 删除活动
      * @throws SeckillException
@@ -353,8 +356,10 @@ class IndexController extends KdxAdminApiController
         if (is_error($res)) {
             throw new SeckillException(SeckillException::SECKILL_DELETE_FAIL, $res['message']);
         }
+
         // 删除活动商品表
         GoodsActivityModel::deleteActivity($id, 'seckill');
+
         // 日志
         LogModel::write(
             $this->userId,
@@ -375,10 +380,10 @@ class IndexController extends KdxAdminApiController
                 ]
             ]
         );
-        
+
         return $this->success();
     }
-    
+
     /**
      * 获取设置
      * @author 青岛开店星信息技术有限公司
@@ -388,7 +393,7 @@ class IndexController extends KdxAdminApiController
         $setting = ShopSettings::get('activity.seckill');
         return $this->result(['data' => $setting]);
     }
-    
+
     /**
      * 修改设置
      * @author 青岛开店星信息技术有限公司
@@ -399,8 +404,9 @@ class IndexController extends KdxAdminApiController
             'close_type' => RequestHelper::post('close_type', 0),
             'close_time' => RequestHelper::post('close_time', 15),
         ];
+
         ShopSettings::set('activity.seckill', $setting);
-    
+
         LogModel::write(
             $this->userId,
             SeckillLogConstant::CHANGE_SETTING,
@@ -410,7 +416,7 @@ class IndexController extends KdxAdminApiController
                 'log_data' => $setting,
                 'log_primary' => [
                     '未付款订单' => $setting['close_type'] == 0 ? '永不关闭' : '自定义关闭时间',
-                    '关闭时间' => $setting['close_type'] == 0 ? '-' :'拍下未付款订单'.$setting['close_time'].'分钟内未付款，自动关闭订单'
+                    '关闭时间' => $setting['close_type'] == 0 ? '-' : '拍下未付款订单' . $setting['close_time'] . '分钟内未付款，自动关闭订单'
                 ],
                 'dirty_identity_code' => [
                     SeckillLogConstant::CHANGE_SETTING,
@@ -419,6 +425,5 @@ class IndexController extends KdxAdminApiController
         );
         return $this->result(['data' => $setting]);
     }
-
 
 }

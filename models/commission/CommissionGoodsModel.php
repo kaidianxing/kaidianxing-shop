@@ -20,7 +20,7 @@ use shopstar\models\goods\GoodsOptionModel;
 use yii\helpers\Json;
 
 /**
- * This is the model class for table "{{%app_commission_goods}}".
+ * This is the model class for table "{{%commission_goods}}".
  *
  * @property int $id id
  * @property int $goods_id 商品id
@@ -35,7 +35,7 @@ class CommissionGoodsModel extends BaseActiveRecord
      */
     public static function tableName()
     {
-        return '{{%app_commission_goods}}';
+        return '{{%commission_goods}}';
     }
 
     /**

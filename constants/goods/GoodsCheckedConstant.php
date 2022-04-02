@@ -11,8 +11,6 @@
  * @warning 未经许可禁止私自删除版权信息
  */
 
-
-
 namespace shopstar\constants\goods;
 
 use shopstar\bases\constant\BaseConstant;

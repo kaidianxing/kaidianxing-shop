@@ -21,7 +21,7 @@ use shopstar\wechat\constants\WechatSyncTaskStatusConstant;
 use shopstar\wechat\constants\WechatSyncTaskTypeConstant;
 
 /**
- * This is the model class for table "{{%app_wechat_sync_task}}".
+ * This is the model class for table "{{%wechat_sync_task}}".
  *
  * @property int $id
  * @property int $type 任务类型
@@ -41,7 +41,7 @@ class WechatSyncTaskModel extends BaseActiveRecord
      */
     public static function tableName()
     {
-        return '{{%app_wechat_sync_task}}';
+        return '{{%wechat_sync_task}}';
     }
 
     /**

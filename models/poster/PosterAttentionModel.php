@@ -17,7 +17,7 @@ use shopstar\bases\model\BaseActiveRecord;
 
 
 /**
- * This is the model class for table "{{%app_poster_attention_profile}}".
+ * This is the model class for table "{{%poster_attention_profile}}".
  *
  * @property int $id auto increment id
  * @property int $poster_id 海报ID
@@ -55,7 +55,7 @@ class PosterAttentionModel extends BaseActiveRecord
      */
     public static function tableName()
     {
-        return '{{%app_poster_attention}}';
+        return '{{%poster_attention}}';
     }
 
     /**

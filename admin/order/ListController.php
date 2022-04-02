@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 开店星新零售管理系统
  * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
@@ -22,7 +21,6 @@ use shopstar\constants\order\OrderPaymentTypeConstant;
 use shopstar\constants\order\OrderStatusConstant;
 use shopstar\constants\order\OrderTypeConstant;
 use shopstar\constants\RefundConstant;
-
 use shopstar\helpers\RequestHelper;
 use shopstar\models\commission\CommissionOrderDataModel;
 use shopstar\models\order\OrderGoodsModel;
@@ -35,10 +33,14 @@ use shopstar\services\order\OrderExportService;
  * 订单列表
  * Class ListController
  * @author 青岛开店星信息技术有限公司
- * @package shop\manage\order
+ * @package shopstar\admin\order
  */
 class ListController extends KdxAdminApiController
 {
+
+    /**
+     * @var array
+     */
     public $configActions = [
         'allowHeaderActions' => [
             'index',
@@ -124,9 +126,10 @@ class ListController extends KdxAdminApiController
     /**
      * 查看所有订单
      * @return \yii\web\Response
+     * @throws \yii\base\Exception
      * @author 青岛开店星信息技术有限公司
      */
-    public function actionIndex()
+    public function actionIndex(): \yii\web\Response
     {
         $data = $this->lists();
         return $this->success($data);
@@ -135,9 +138,10 @@ class ListController extends KdxAdminApiController
     /**
      * 查看已关闭订单
      * @return \yii\web\Response
+     * @throws \yii\base\Exception
      * @author 青岛开店星信息技术有限公司
      */
-    public function actionClose()
+    public function actionClose(): \yii\web\Response
     {
         $data = $this->lists('CLOSE');
         return $this->success($data);
@@ -146,9 +150,10 @@ class ListController extends KdxAdminApiController
     /**
      * 查看待支付订单
      * @return \yii\web\Response
+     * @throws \yii\base\Exception
      * @author 青岛开店星信息技术有限公司
      */
-    public function actionPay()
+    public function actionPay(): \yii\web\Response
     {
         $data = $this->lists('WAIT_PAY');
         return $this->success($data);
@@ -157,9 +162,10 @@ class ListController extends KdxAdminApiController
     /**
      * 查看待发货订单
      * @return \yii\web\Response
+     * @throws \yii\base\Exception
      * @author 青岛开店星信息技术有限公司
      */
-    public function actionSend()
+    public function actionSend(): \yii\web\Response
     {
         $data = $this->lists('WAIT_SEND');
         return $this->success($data);
@@ -168,9 +174,10 @@ class ListController extends KdxAdminApiController
     /**
      * 查看待收货订单
      * @return \yii\web\Response
+     * @throws \yii\base\Exception
      * @author 青岛开店星信息技术有限公司
      */
-    public function actionPick()
+    public function actionPick(): \yii\web\Response
     {
         $data = $this->lists('WAIT_PICK');
         return $this->success($data);
@@ -179,9 +186,10 @@ class ListController extends KdxAdminApiController
     /**
      * 查看已完成订单
      * @return \yii\web\Response
+     * @throws \yii\base\Exception
      * @author 青岛开店星信息技术有限公司
      */
-    public function actionSuccess()
+    public function actionSuccess(): \yii\web\Response
     {
         $data = $this->lists('SUCCESS');
         return $this->success($data);
@@ -190,9 +198,10 @@ class ListController extends KdxAdminApiController
     /**
      * 维权订单
      * @return \yii\web\Response
+     * @throws \yii\base\Exception
      * @author 青岛开店星信息技术有限公司
      */
-    public function actionRefund()
+    public function actionRefund(): \yii\web\Response
     {
         $data = $this->lists('REFUND');
         return $this->success($data);
@@ -202,6 +211,8 @@ class ListController extends KdxAdminApiController
      * 订单列表数据
      * @param null $status
      * @return array|OrderModel[]
+     * @throws \PhpOffice\PhpSpreadsheet\Exception
+     * @throws \PhpOffice\PhpSpreadsheet\Writer\Exception
      * @throws \yii\base\Exception
      * @author 青岛开店星信息技术有限公司
      */
@@ -397,11 +408,10 @@ class ListController extends KdxAdminApiController
 
         //拼团订单id
         $groupsOrderId = [];
-        $creditShopOrderId = []; // 积分商城订单id
 
         //查询订单
         $orders = OrderModel::getColl($params, [
-            'callable' => function (&$row) use (&$groupsOrderId, &$creditShopOrderId) {
+            'callable' => function (&$row) use (&$groupsOrderId) {
                 $row = OrderModel::decode($row);
                 $row['auto_close_time'] = strtotime($row['auto_close_time']);
                 // 查找订单分销信息
@@ -426,11 +436,6 @@ class ListController extends KdxAdminApiController
         $orderGoodsWhere = [
             'order_id' => array_keys($orders['list']),
         ];
-
-        // 如果有积分商城订单  过滤掉
-        if (!empty($creditShopOrderId)) {
-            $andWhere[] = ['not in', 'order_id', $creditShopOrderId];
-        }
 
         //如果有快递助手 and 不等于代付款时 需要验证是否存在其他快递
         if ($status != 'WAIT_PAY') {
@@ -499,17 +504,6 @@ class ListController extends KdxAdminApiController
                         break;
                     }
                 }
-            }
-        }
-
-
-        // 积分商城订单
-        if (!empty($creditShopOrderId)) {
-            $creditShopOrder = CreditShopOrderModel::find()->select(['order_id', 'pay_credit', 'credit_unit'])->where(['order_id' => $creditShopOrderId])->indexBy('order_id')->get();
-            foreach ($creditShopOrder as $orderId => $order) {
-                $orders['list'][$orderId]['pay_credit'] = $order['pay_credit'];
-                $orders['list'][$orderId]['order_goods'][0]['credit'] = $order['pay_credit']; // 只有一个商品
-                $orders['list'][$orderId]['order_goods'][0]['credit_unit'] = $order['credit_unit']; // 只有一个商品
             }
         }
 
@@ -602,4 +596,5 @@ class ListController extends KdxAdminApiController
         'ext_field',
         'is_count',
     ];
+
 }

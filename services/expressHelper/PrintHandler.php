@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 开店星新零售管理系统
  * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
@@ -11,9 +10,7 @@
  * @warning 未经许可禁止私自删除版权信息
  */
 
-
 namespace shopstar\services\expressHelper;
-
 
 use shopstar\constants\order\OrderStatusConstant;
 use shopstar\helpers\DateTimeHelper;
@@ -29,6 +26,7 @@ use yii\helpers\Json;
  * 打印助手
  * Class PrintHandler
  * @package shopstar\models\expressHelper
+ * @author 青岛开店星信息技术有限公司
  */
 class PrintHandler
 {
@@ -38,7 +36,7 @@ class PrintHandler
      * @param array $orderGoodsId
      * @return array
      */
-    public function getPrintList(int $orderId, array $orderGoodsId)
+    public function getPrintList(int $orderId, array $orderGoodsId): array
     {
         //获取需要打印的所有订单和订单商品
         $orderInfo = $this->getOrder($orderId, $orderGoodsId);
@@ -147,7 +145,7 @@ class PrintHandler
      * @return array
      * @author 青岛开店星信息技术有限公司
      */
-    private function getPrintRecord(int $orderId)
+    private function getPrintRecord(int $orderId): array
     {
         //获取订单商品的打印记录
         $allPrintRecord = ExpressHelperRequestRecordModel::find()
@@ -238,7 +236,7 @@ class PrintHandler
      * @return string
      * @author 青岛开店星信息技术有限公司
      */
-    public function getOrderCode($orderNo, array $orderGoodsId)
+    public function getOrderCode($orderNo, array $orderGoodsId): string
     {
         asort($orderGoodsId);
         return substr($orderNo, 0, 14) . StringHelper::shortMd5($orderNo . Json::encode($orderGoodsId));
@@ -252,7 +250,7 @@ class PrintHandler
      * @return array
      * @author 青岛开店星信息技术有限公司
      */
-    public function getKdnParams($orderInfo, array $expressTemplate, array $consignerTemplate)
+    public function getKdnParams($orderInfo, array $expressTemplate, array $consignerTemplate): array
     {
         //获取快递面单模板
         if (empty($expressTemplate)) {
@@ -342,7 +340,7 @@ class PrintHandler
      * @return array
      * @author 青岛开店星信息技术有限公司
      */
-    public function getTemplateData(int $consignerTemplateId, int $expressTemplateId)
+    public function getTemplateData(int $consignerTemplateId, int $expressTemplateId): array
     {
         //获取面单模板
 

@@ -23,7 +23,7 @@ use shopstar\models\order\OrderGoodsModel;
 use shopstar\models\order\OrderModel;
 
 /**
- * This is the model class for table "{{%app_commission_agent}}".
+ * This is the model class for table "{{%commission_agent}}".
  *
  * @property int $member_id 用户ID
  * @property int $agent_id 上级ID
@@ -48,7 +48,7 @@ class CommissionAgentModel extends BaseActiveRecord
      */
     public static function tableName()
     {
-        return '{{%app_commission_agent}}';
+        return '{{%commission_agent}}';
     }
 
     /**

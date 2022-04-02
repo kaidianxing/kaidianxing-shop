@@ -11,14 +11,13 @@
  * @warning 未经许可禁止私自删除版权信息
  */
 
-
-
 namespace shopstar\helpers;
 
 /**
  * ZIP助手类
  * Class ZipHelper
  * @package shopstar\helpers
+ * @author 青岛开店星信息技术有限公司
  */
 class ZipHelper {
     protected static $ctrl_dir = [];

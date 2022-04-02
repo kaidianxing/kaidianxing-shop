@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 开店星新零售管理系统
  * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
@@ -16,19 +15,26 @@ namespace shopstar\components\byteDance;
 use shopstar\components\byteDance\bases\ByteDanceConstant;
 use yii\base\Component;
 
+/**
+ * 字节跳动组件入口
+ * Class ByteDanceComponent
+ * @package shopstar\components\byteDance
+ * @author 青岛开店星信息技术有限公司
+ */
 class ByteDanceComponent extends Component
 {
+
     /**
      * 小程序实例
      * @var null
      */
     private static $instance = null;
-    
+
     /**
      * @var string 实例存储驱动类型
      */
     private static $channel = null;
-    
+
     /**
      * @param string $channel
      * @param array $config
@@ -57,4 +63,5 @@ class ByteDanceComponent extends Component
 
         return self::$instance;
     }
+    
 }

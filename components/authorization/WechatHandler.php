@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 开店星新零售管理系统
  * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
@@ -11,10 +10,9 @@
  * @warning 未经许可禁止私自删除版权信息
  */
 
-
-
 namespace shopstar\components\authorization;
 
+use Overtrue\Socialite\AuthorizeFailedException;
 use shopstar\components\platform\Wechat;
 use shopstar\components\wechat\bases\WechatChannelConstant;
 use shopstar\components\wechat\WechatComponent;
@@ -24,14 +22,13 @@ use shopstar\helpers\RequestHelper;
 use shopstar\helpers\ShopUrlHelper;
 use shopstar\models\member\MemberLoginModel;
 use shopstar\models\member\MemberWechatModel;
-use Overtrue\Socialite\AuthorizeFailedException;
 use yii\helpers\Json;
 
 /**
  * 微信公众号授权
  * Class WechatHandler
+ * @package shopstar\components\authorization
  * @author 青岛开店星信息技术有限公司
- * @package shopstar\models\member\accountHandler
  */
 class WechatHandler extends AuthorizationHandlerInterface
 {
@@ -49,7 +46,7 @@ class WechatHandler extends AuthorizationHandlerInterface
             'url' => '',
         ], $options);
 
-        $baseUrl = ShopUrlHelper::wap( '/kdxLogin/dealWechat', [], true).'?a=a';
+        $baseUrl = ShopUrlHelper::wap('/kdxLogin/dealWechat', [], true) . '?a=a';
 
         if (!empty($options['target_params'])) {
             $paramsData = http_build_query(['target_params' => $options['target_params']]);
@@ -74,7 +71,7 @@ class WechatHandler extends AuthorizationHandlerInterface
      * 登录操作
      * @param string $sessionId
      * @return mixed
-     * @throws MemberException
+     * @throws MemberException|\yii\base\InvalidConfigException
      * @author 青岛开店星信息技术有限公司
      */
     public function login(string $sessionId)
@@ -92,4 +89,5 @@ class WechatHandler extends AuthorizationHandlerInterface
 
         return MemberLoginModel::login($userInfo['id'], $sessionId, $userInfo, ClientTypeConstant::CLIENT_WECHAT);
     }
+
 }

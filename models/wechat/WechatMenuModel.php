@@ -17,7 +17,7 @@ use shopstar\components\wechat\helpers\OfficialAccountFansHelper;
 use shopstar\helpers\DateTimeHelper;
 
 /**
- * This is the model class for table "{{%app_wechat_menu}}".
+ * This is the model class for table "{{%wechat_menu}}".
  *
  * @property int $id
  * @property string $name 菜单名称
@@ -32,7 +32,7 @@ class WechatMenuModel extends BaseActiveRecord
      */
     public static function tableName()
     {
-        return '{{%app_wechat_menu}}';
+        return '{{%wechat_menu}}';
     }
 
     /**

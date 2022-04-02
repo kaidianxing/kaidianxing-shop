@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 开店星新零售管理系统
  * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
@@ -13,18 +12,15 @@
 
 namespace shopstar\admin\account\auth;
 
-
-use shopstar\bases\exception\BaseApiException;
+use shopstar\bases\KdxAdminApiController;
 use shopstar\exceptions\base\wechat\WechatException;
 use shopstar\exceptions\member\MemberException;
 use shopstar\helpers\RequestHelper;
-use shopstar\bases\KdxAdminAccountApiController;
-use shopstar\bases\KdxAdminApiController;
 
 /**
  * 微信小程序授权登录
  * Class WxappController
- * @package modules\account\manage\auth
+ * @package shopstar\admin\account\auth
  */
 class WxappController extends KdxAdminApiController
 {
@@ -36,7 +32,6 @@ class WxappController extends KdxAdminApiController
     /**
      * 登录分发
      * @throws MemberException
-     * @throws BaseApiException
      * @author 青岛开店星信息技术有限公司
      */
     public function actionAuth()
@@ -55,7 +50,7 @@ class WxappController extends KdxAdminApiController
 
     /**
      * 获取用户信息分发
-     * @throws MemberException
+     * @throws MemberException|WechatException
      * @author 青岛开店星信息技术有限公司
      * @action login
      */
@@ -70,8 +65,8 @@ class WxappController extends KdxAdminApiController
         }
 
         $result = (new $class())->login($this->sessionId);
-        if (is_error($result)){
-            throw new WechatException(WechatException::WECHAT_PARAMETER_IS_WRONG,$result['message']);
+        if (is_error($result)) {
+            throw new WechatException(WechatException::WECHAT_PARAMETER_IS_WRONG, $result['message']);
         }
         $this->result($result);
     }

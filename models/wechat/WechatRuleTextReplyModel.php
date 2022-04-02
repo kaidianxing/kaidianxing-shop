@@ -16,7 +16,7 @@ use shopstar\bases\model\BaseActiveRecord;
 use shopstar\exceptions\wechat\WechatException;
 
 /**
- * This is the model class for table "{{%app_wechat_rule_text_reply}}".
+ * This is the model class for table "{{%wechat_rule_text_reply}}".
  *
  * @property int $id
  * @property int $rule_id 规则id
@@ -29,7 +29,7 @@ class WechatRuleTextReplyModel extends BaseActiveRecord
      */
     public static function tableName()
     {
-        return '{{%app_wechat_rule_text_reply}}';
+        return '{{%wechat_rule_text_reply}}';
     }
 
     /**

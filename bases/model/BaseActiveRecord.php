@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 开店星新零售管理系统
  * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
@@ -11,8 +10,6 @@
  * @warning 未经许可禁止私自删除版权信息
  */
 
-
-
 namespace shopstar\bases\model;
 
 use shopstar\helpers\ArrayHelper;
@@ -22,7 +19,6 @@ use yii\db\ActiveRecord;
 use yii\db\Expression;
 
 /**
- * @author 青岛开店星信息技术有限公司
  * Class BaseActiveRecord
  * @package shopstar\base\model
  * @method BaseActiveQuery where($condition, $params = []) static
@@ -30,6 +26,7 @@ use yii\db\Expression;
  * @method BaseActiveQuery orWhere($condition, $params = []) static
  * @method BaseActiveQuery andFilterWhere($condition) static
  * @method BaseActiveQuery orFilterWhere($condition) static
+ * @author 青岛开店星信息技术有限公司
  */
 class BaseActiveRecord extends ActiveRecord
 {
@@ -169,7 +166,7 @@ class BaseActiveRecord extends ActiveRecord
                     foreach ($param as $join) {
                         if (is_array($join) && !empty($join)) {
                             //$self->$key($join[0], $join[1]);
-                            $self->join('CROSS JOIN',$join[0]);
+                            $self->join('CROSS JOIN', $join[0]);
                         }
                     }
                 }

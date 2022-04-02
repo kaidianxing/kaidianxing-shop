@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 开店星新零售管理系统
  * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
@@ -20,7 +19,8 @@ use yii\base\Component;
 /**
  * 支付组件
  * Class StorageComponent
- * @package shopstar\components\storage
+ * @package shopstar\components\payment
+ * @author 青岛开店星信息技术有限公司
  */
 class PayComponent extends Component
 {
@@ -31,6 +31,13 @@ class PayComponent extends Component
     // client wxapp wechat h5
     // order MemberLogModel CouponLogModel OrderModel
 
+    /**
+     * 获取实例
+     * @param array $config
+     * @return array|object
+     * @throws \yii\base\InvalidConfigException
+     * @author likexin
+     */
     public static function getInstance(array $config)
     {
         // 获取存储驱动
@@ -38,10 +45,8 @@ class PayComponent extends Component
         if (!$client) {
             return error("`{$client}` Pay Client not Found.");
         }
-        
-        $config['class'] = $client['class'];
-        $factory = Yii::createObject($config);
 
-        return $factory;
+        $config['class'] = $client['class'];
+        return Yii::createObject($config);
     }
 }

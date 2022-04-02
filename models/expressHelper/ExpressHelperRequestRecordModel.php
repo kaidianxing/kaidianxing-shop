@@ -17,7 +17,7 @@ use shopstar\bases\model\BaseActiveRecord;
 use yii\helpers\StringHelper;
 
 /**
- * This is the model class for table "{{%app_express_helper_request_record}}".
+ * This is the model class for table "{{%express_helper_request_record}}".
  *
  * @property int $id
  * @property int $order_id 商城订单id
@@ -38,7 +38,7 @@ class ExpressHelperRequestRecordModel extends BaseActiveRecord
      */
     public static function tableName()
     {
-        return '{{%app_express_helper_request_record}}';
+        return '{{%express_helper_request_record}}';
     }
 
     /**

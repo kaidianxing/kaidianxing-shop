@@ -16,7 +16,7 @@ namespace shopstar\models\consumeReward;
 use shopstar\helpers\DateTimeHelper;
 
 /**
- * This is the model class for table "{{%app_consume_reward_activity}}".
+ * This is the model class for table "{{%consume_reward_activity}}".
  *
  * @property int $id
  * @property string $title 活动名称
@@ -100,7 +100,7 @@ class ConsumeRewardActivityModel extends \shopstar\bases\model\BaseActiveRecord
      */
     public static function tableName()
     {
-        return '{{%app_consume_reward_activity}}';
+        return '{{%consume_reward_activity}}';
     }
 
     /**

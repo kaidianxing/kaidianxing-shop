@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 开店星新零售管理系统
  * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
@@ -11,17 +10,13 @@
  * @warning 未经许可禁止私自删除版权信息
  */
 
-
-
 namespace shopstar\admin\user;
 
-
+use shopstar\bases\KdxAdminApiController;
 use shopstar\constants\CacheTypeConstant;
-use shopstar\constants\ClientTypeConstant;
 use shopstar\constants\log\user\UserLogConstant;
 use shopstar\constants\user\UserAuditStatusConstant;
 use shopstar\exceptions\UserException;
- 
 use shopstar\helpers\RequestHelper;
 use shopstar\helpers\ValueHelper;
 use shopstar\models\log\LogModel;
@@ -31,11 +26,17 @@ use shopstar\models\role\ManagerModel;
 use shopstar\models\role\ManagerRoleModel;
 use shopstar\models\role\ManagerVerifyMapModel;
 use shopstar\models\user\UserModel;
-use shopstar\bases\KdxAdminApiController;
 use shopstar\services\role\ManagerService;
 
+/**
+ * 操作员
+ * Class IndexController
+ * @package shopstar\admin\sysset
+ * @author 青岛开店星信息技术有限公司
+ */
 class IndexController extends KdxAdminApiController
 {
+
     /**
      * 操作员列表
      * @action index
@@ -251,9 +252,6 @@ class IndexController extends KdxAdminApiController
         $params['member_id'] = $post['member_id'] ?? '0';
         $params['verify_point_id'] = $post['verify_point_id'];
 
-        //店铺操作员默认通过
-        $params['audit_status'] = UserAuditStatusConstant::AUDIT_STATUS_CHECK_PASS;
-
         $res = ManagerService::createByPost($params);
         $primary = [
             '操作员账号' => $post['username'],
@@ -337,6 +335,7 @@ class IndexController extends KdxAdminApiController
     /**
      * 禁用
      * @return array|\yii\web\Response
+     * @throws UserException
      * @author 青岛开店星信息技术有限公司
      */
     public function actionForbidden()
@@ -382,7 +381,7 @@ class IndexController extends KdxAdminApiController
      * @return \yii\web\Response
      * author: 青岛开店星信息技术有限公司
      */
-    public function actionCheckUser()
+    public function actionCheckUser(): \yii\web\Response
     {
         $username = RequestHelper::get('username');
 
@@ -390,4 +389,5 @@ class IndexController extends KdxAdminApiController
 
         return $this->success(['data' => $res]);
     }
+
 }

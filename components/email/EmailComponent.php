@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 开店星新零售管理系统
  * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
@@ -11,14 +10,12 @@
  * @warning 未经许可禁止私自删除版权信息
  */
 
-
 namespace shopstar\components\email;
 
 use shopstar\constants\notice\MailerConstant;
+use shopstar\models\shop\ShopSettings;
 use shopstar\models\virtualAccount\VirtualAccountDataModel;
 use shopstar\models\virtualAccount\VirtualAccountModel;
- 
-use shopstar\models\shop\ShopSettings;
 use shopstar\services\core\attachment\CoreAttachmentService;
 use Swift_Mailer;
 use Swift_Message;
@@ -30,6 +27,7 @@ use yii\helpers\Json;
  * Email组件
  * Class EmailComponent
  * @package shopstar\components\email
+ * @author 青岛开店星信息技术有限公司
  */
 class EmailComponent extends Component
 {
@@ -171,11 +169,9 @@ class EmailComponent extends Component
 
             $newMessageBody .= $messageBody;
         }
+
         // 替换循环卡密信息进模板
-        $body = str_replace('{%messageBody%}', $newMessageBody, $body);
-
-        return $body;
-
+        return str_replace('{%messageBody%}', $newMessageBody, $body);
     }
 
 

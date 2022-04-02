@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 开店星新零售管理系统
  * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
@@ -16,15 +15,13 @@ namespace shopstar\components\response\channels;
 use shopstar\components\response\bases\BaseResponseChannel;
 use shopstar\components\response\bases\ResponseChannelInterface;
 use shopstar\components\response\bases\ResponsePluginTypeMapConstant;
-use shopstar\components\wechat\helpers\OfficialAccountMessageTextHelper;
-use shopstar\helpers\LogHelper;
-use shopstar\constants\poster\PosterPushTypeConstant;
 use Yii;
 
 /**
  * 公众号渠道
  * Class OfficialAccountChannel
  * @package shopstar\components\response\channels
+ * @author 青岛开店星信息技术有限公司
  */
 class OfficialAccountChannel extends BaseResponseChannel implements ResponseChannelInterface
 {
@@ -32,6 +29,7 @@ class OfficialAccountChannel extends BaseResponseChannel implements ResponseChan
     /**
      * 发送
      * @return mixed
+     * @throws \yii\base\InvalidConfigException
      * @author 青岛开店星信息技术有限公司
      */
     public function respond()

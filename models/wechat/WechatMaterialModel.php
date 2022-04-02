@@ -24,7 +24,7 @@ use shopstar\services\core\attachment\CoreAttachmentService;
 use yii\web\UploadedFile;
 
 /**
- * This is the model class for table "{{%app_wechat_material}}".
+ * This is the model class for table "{{%wechat_material}}".
  *
  * @property int $id
  * @property int $media_id 素材id
@@ -43,7 +43,7 @@ class WechatMaterialModel extends BaseActiveRecord
      */
     public static function tableName()
     {
-        return '{{%app_wechat_material}}';
+        return '{{%wechat_material}}';
     }
 
     /**

@@ -265,13 +265,12 @@ class OrderGoodsModel extends BaseActiveRecord
 
     /**
      * 是否可用货到付款
-     * @param $shopType
      * @param $orderId
      * @param int $clientType
      * @return bool
      * @author 青岛开店星信息技术有限公司
      */
-    public static function isDeliveryPay($shopType, $orderId, int $clientType)
+    public static function isDeliveryPay($orderId, int $clientType): bool
     {
         $settingEnable = ShopSettings::get('sysset.payment.typeset.' . ClientTypeConstant::getIdentify($clientType) . '.enable');
         if ($settingEnable == 0) {

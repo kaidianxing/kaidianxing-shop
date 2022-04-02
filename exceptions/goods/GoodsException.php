@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 开店星新零售管理系统
  * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
@@ -11,11 +10,13 @@
  * @warning 未经许可禁止私自删除版权信息
  */
 
-
 namespace shopstar\exceptions\goods;
 
 use shopstar\bases\exception\BaseException;
 
+/**
+ * @author 青岛开店星信息技术有限公司
+ */
 class GoodsException extends BaseException
 {
     /******************************分类100******************************/
@@ -102,7 +103,7 @@ class GoodsException extends BaseException
      * @Message("分组未找到")
      */
     const GROUP_SWITCH_GROUP_NOT_FOUND_ERROR = 200208;
-    
+
 
     /******************************商品400******************************/
     /**
@@ -234,7 +235,7 @@ class GoodsException extends BaseException
      * @Message("商品分销佣金设置保存失败")
      */
     const GOODS_COMMISSION_SAVE_FAIL = 200431;
-    
+
     /**
      * @Message("会员等级折扣不能为空")
      */
@@ -312,14 +313,13 @@ class GoodsException extends BaseException
      * @Message("购买按钮点击电话号码类型错误")
      */
     const GOODS_SAVE_BUY_BUTTON_CLICK_TELEPHONE_TYPE_ERROR = 200446;
-    
+
     /**
      * @Message("配送方式错误")
      */
     const DISPATCH_MODE_VERIFY_NOT_PERM = 200447;
-    
-    
-    
+
+
     /******************************操作200******************************/
 
     /**
@@ -430,12 +430,12 @@ class GoodsException extends BaseException
      * @Message("没有浏览权限")
      */
     const CLIENT_DETAIL_GET_DETAIL_PERM_ERROR = 200704;
-    
+
     /**
      * @Message("商品列表为空")
      */
     const CLIENT_GOODS_LIST_IS_EMPTY = 200705;
-    
+
     /**
      * @Message("参数错误")
      */
@@ -518,7 +518,7 @@ class GoodsException extends BaseException
      * @Message("购物车删除商品ID不能为空")
      */
     const CLIENT_GOODS_CART_DELETE_ID_NOT_EMPTY = 200809;
-    
+
     /**
      * @Message("商品信息错误")
      */
@@ -559,7 +559,6 @@ class GoodsException extends BaseException
      * @Message("Label保存失败")
      */
     const LABEL_SAVE_ERROR = 200816;
-
 
 
 }

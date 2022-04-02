@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 开店星新零售管理系统
  * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
@@ -24,7 +23,8 @@ use shopstar\models\shop\ShopSettings;
 /**
  * 余额明细
  * Class BalanceLogController
- * @package app\controllers\wap\member
+ * @package shopstar\mobile\member
+ * @author 青岛开店星信息技术有限公司
  */
 class BalanceLogController extends BaseMobileApiController
 {
@@ -46,7 +46,7 @@ class BalanceLogController extends BaseMobileApiController
             'orderBy' => 'record.created_at desc',
             'alias' => 'record',
             'leftJoins' => [
-                [OrderModel::tableName().' order','order.id = record.order_id']
+                [OrderModel::tableName() . ' order', 'order.id = record.order_id']
             ]
         ];
 

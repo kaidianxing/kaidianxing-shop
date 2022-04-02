@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 开店星新零售管理系统
  * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
@@ -10,7 +9,6 @@
  * @warning Unauthorized deletion of copyright information is prohibited.
  * @warning 未经许可禁止私自删除版权信息
  */
-
 
 namespace shopstar\helpers;
 
@@ -24,6 +22,7 @@ use yii\base\Exception;
  * Excel处理助手
  * Class ExcelHelper
  * @package shopstar\helpers
+ * @author 青岛开店星信息技术有限公司
  */
 class ExcelHelper
 {
@@ -184,7 +183,7 @@ class ExcelHelper
      * @param array $diffFileds 需要保留的字段
      * @param string $pk 主键
      * @return array
-     * @author Jackie
+     * @author 青岛开店星信息技术有限公司
      */
     public static function exportFilter(array $list, array $diffFileds, string $pk = 'id')
     {
@@ -247,7 +246,7 @@ class ExcelHelper
      * @param $excefile
      * @return array
      */
-    public static function import($excefile, $startRow = 2 ,$tmpPath = 'tmp/')
+    public static function import($excefile, $startRow = 2, $tmpPath = 'tmp/')
     {
         $tmpPath = Yii::getAlias('@webroot') . '/' . $tmpPath;
         if (!isset($_FILES[$excefile])) {
@@ -266,7 +265,7 @@ class ExcelHelper
 
         $file = StringHelper::random(32, true) . "." . $ext;
         // 如果文件夹不存在 则创建
-        if(!is_dir($tmpPath)){
+        if (!is_dir($tmpPath)) {
             mkdir($tmpPath);
         }
         FileHelper::createDirectory($tmpPath);
@@ -357,7 +356,7 @@ class ExcelHelper
             }
 
             //设置单元格格式
-            if($format){
+            if ($format) {
                 $excel->getActiveSheet()->getStyle(self::column_str($key))->getNumberFormat()
                     ->setFormatCode($format);
             }
@@ -373,7 +372,6 @@ class ExcelHelper
             $rownum++;
         }
         $excel->getActiveSheet()->setTitle($title);
-
 
 
         $filename = urlencode($title);

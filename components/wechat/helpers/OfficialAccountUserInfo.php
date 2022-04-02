@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 开店星新零售管理系统
  * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
@@ -13,12 +12,9 @@
 
 namespace shopstar\components\wechat\helpers;
 
-
+use shopstar\components\platform\Wechat;
 use shopstar\components\wechat\bases\WechatChannelConstant;
 use shopstar\components\wechat\WechatComponent;
-use shopstar\helpers\HttpHelper;
-use yii\helpers\Json;
-use shopstar\components\platform\Wechat;
 
 class OfficialAccountUserInfo
 {
@@ -32,21 +28,7 @@ class OfficialAccountUserInfo
     {
         try {
             $instance = WechatComponent::getInstance(WechatChannelConstant::CHANNEL_OFFICIAL_ACCOUNT, [])->factory;
-
-
-//            获取access_token
-//            $accessTokenArr = $instance->access_token->getToken();
-//            $accessToken = $accessTokenArr['access_token'] ?? '';
-//            $tokenRes = HttpHelper::get('https://api.weixin.qq.com/cgi-bin/token' . '?' .
-//                http_build_query(['grant_type' => 'client_credential', 'appid' => $instance->app_id, 'secret' => $instance->secret]));
-//            $tokenRes = Json::decode($tokenRes);
-//            $accessToken = $tokenRes['access_token'];
-
-//            获取用户信息
-//            $result = HttpHelper::get('https://api.weixin.qq.com/cgi-bin/user/info' . '?' .
-//                http_build_query(['access_token' => $accessToken, 'openid' => $openid]));
             $result = $instance->user->get($openid);
-
         } catch (\Exception $exception) {
             $result = $exception;
         }

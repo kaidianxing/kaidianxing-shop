@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 开店星新零售管理系统
  * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
@@ -13,23 +12,26 @@
 
 namespace shopstar\admin\sysset;
 
+use shopstar\bases\KdxAdminApiController;
 use shopstar\constants\log\sysset\ExpressLogConstant;
-
 use shopstar\exceptions\sysset\ExpressException;
-use shopstar\helpers\DateTimeHelper;
 use shopstar\helpers\RequestHelper;
 use shopstar\models\log\LogModel;
 use shopstar\models\shop\ShopSettings;
-use shopstar\bases\KdxAdminApiController;
 use yii\db\Exception;
 
 /**
  * 物流信息配置
- * Class IndexController
- * @package shop\manage\sysset\express
+ * Class ExpressController
+ * @package shopstar\admin\sysset\express
+ * @author 青岛开店星信息技术有限公司
  */
 class ExpressController extends KdxAdminApiController
 {
+
+    /**
+     * @var array
+     */
     public $configActions = [
         'postActions' => [
             'edit',
@@ -38,6 +40,7 @@ class ExpressController extends KdxAdminApiController
             'dispatch-enable'
         ]
     ];
+
     /**
      * 获取物流配置
      * @return array|\yii\web\Response
@@ -138,13 +141,6 @@ class ExpressController extends KdxAdminApiController
      */
     public function actionDispatchEnable()
     {
-
-        //判断商户
-        $selffetch = 0;
-        $express = 0;
-        $intracity = 0;
-        $verify = 0;
-
         $selffetch = ShopSettings::get('dispatch.selffetch.enable');
         $express = ShopSettings::get('dispatch.express.enable');
         $intracity = ShopSettings::get('dispatch.intracity.enable');
@@ -192,4 +188,5 @@ class ExpressController extends KdxAdminApiController
             }
         }
     }
+    
 }

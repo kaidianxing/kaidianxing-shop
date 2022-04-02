@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 开店星新零售管理系统
  * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
@@ -13,49 +12,41 @@
 
 namespace shopstar\components\permission;
 
+use shopstar\bases\KdxAdminApiController;
 use shopstar\helpers\CacheHelper;
 use shopstar\helpers\FileHelper;
 use shopstar\helpers\StringHelper;
-use shopstar\services\core\CoreAppService;
 use shopstar\models\role\ManagerModel;
-use shopstar\models\shop\ShopAppModel;
-use shopstar\bases\KdxAdminApiController;
+use shopstar\services\core\CoreAppService;
 use yii\helpers\Json;
 
 /**
- *
  * Class Permission
  * @package shopstar\components\permission
+ * @author 青岛开店星信息技术有限公司
  */
 class Permission
 {
-    // Client-Type 区分各端   50:单店铺/平台   52:商户 53: B端
-    // shop-type   区分单店铺/平台
-    // shop-id     取应用权限
-
 
     /**
      * 检测权限
      * @param KdxAdminApiController $controller
      * @return bool
+     * @throws \Exception
      * @author 青岛开店星信息技术有限公司
      */
     public static function check(KdxAdminApiController $controller): bool
     {
         // 获取当前控制器权限
-        $controllerPerm = self::getControllerPerm(str_replace("kdx/api","manage",$controller->uniqueId), $controller->shopType);
+        $controllerPerm = self::getControllerPerm(str_replace("kdx/api", "manage", $controller->uniqueId));
 
         // 没有配置 返回false
         if (empty($controllerPerm)) {
             return false;
         }
-        // 判断店铺应用权限 TODO 青岛开店星信息技术有限公司 暂时不用判断
-        if ($controllerPerm['is_plugin']) {
-            // 根据店铺类型 判断
-        }
-        
+
         // 获取角色权限
-        $roles = ManagerModel::getPerms($controller->userId, $controller->shopType);
+        $roles = ManagerModel::getPerms($controller->userId, $controller->user['is_root'] > 0);
         // 获取当前控制器的perm key
         $permKey = $controllerPerm['actions'][$controller->action->id];
         // 兼容数组格式
@@ -78,16 +69,15 @@ class Permission
 
     /**
      * 获取所有权限key
-     * @param int $shopType
      * @return array
      * @author 青岛开店星信息技术有限公司
      */
-    public static function getAllPermKey(int $shopType): array
+    public static function getAllPermKey(): array
     {
         // 获取所有
-        $permKey = CacheHelper::get('all_perm_key_' . $shopType);
+        $permKey = CacheHelper::get('all_perm_key');
         if (empty($permKey)) {
-            $controllerTree = self::getAllPermTree($shopType);
+            $controllerTree = self::getAllPermTree();
             // 权限key
             $permKey = [];
             foreach ($controllerTree as $item) {
@@ -105,7 +95,7 @@ class Permission
                 $permKey[$perm['identity']] = array_unique(array_merge($permKeyItem, $permKey[$perm['identity']] ?? []));
             }
             // 缓存 不判断是否有权限
-            CacheHelper::set('all_perm_key_' . $shopType, Json::encode($permKey));
+            CacheHelper::set('all_perm_key', Json::encode($permKey));
         } else {
             $permKey = Json::decode($permKey);
         }
@@ -121,24 +111,23 @@ class Permission
 
     /**
      * 创建权限树
-     * @param int $shopType
      * @author 青岛开店星信息技术有限公司
      */
-    private static function createAllPermTree(int $shopType)
+    private static function createAllPermTree()
     {
         // 创建个key来判断是否创建完成 如果没有完成  等待完成再继续
         // is_created_perm_cache 空 未创建  1创建中  2创建完成
         $redis = \Yii::$app->redis;
-        $isCreatedCache = $redis->setnx('kdx_shop_is_created_perm_cache_' . $shopType, 0);
+        $isCreatedCache = $redis->setnx('kdx_shop_is_created_perm_cache', 0);
         if ($isCreatedCache == 1) {
             // 创建中
-            CacheHelper::set('is_created_perm_cache_' . $shopType, 1);
+            CacheHelper::set('is_created_perm_cache', 1);
         } else if ($isCreatedCache == 0) {
             // 如果正在创建 则等待创建完成
             while (true) {
                 // 睡眠 0.01秒
                 usleep(10000);
-                $iFinish = CacheHelper::get('is_created_perm_cache_' . $shopType);
+                $iFinish = CacheHelper::get('is_created_perm_cache');
                 if ($iFinish == 2) {
                     break;
                 }
@@ -146,7 +135,7 @@ class Permission
         }
 
         // 如果不存在key 重新创建
-        if (!\Yii::$app->redis->exists(BasePermissionConfig::getCacheKey($shopType))) {
+        if (!\Yii::$app->redis->exists(BasePermissionConfig::getCacheKey())) {
             // shop 下配置
             $configClass = FileHelper::fileGlob(SHOP_STAR_PATH . '/config/modules/permission/', ['recursive' => false]);
             foreach ($configClass as $item) {
@@ -157,8 +146,8 @@ class Permission
                 $fileName = basename($item, '.php');
                 $className = 'shopstar\config\modules\permission\\' . $fileName;
                 /** @var $config BasePermissionConfig */
-                $config = new $className($shopType);
-                $config->createPermTree($shopType);
+                $config = new $className();
+                $config->createPermTree();
             }
 
             // plugins 下配置
@@ -168,43 +157,41 @@ class Permission
                 $className = 'apps\\' . $pluginName . '\config\PermissionConfig';
                 if (class_exists($className)) {
                     /** @var $config BasePermissionConfig */
-                    $config = new $className($shopType);
-                    $config->createPermTree($shopType);
+                    $config = new $className();
+                    $config->createPermTree();
                 }
             }
             // 创建完成
-            CacheHelper::set('is_created_perm_cache_' . $shopType, 2);
+            CacheHelper::set('is_created_perm_cache', 2);
         }
     }
 
     /**
      * 获取所有权限
-     * @param int $shopType
      * @return mixed
      * @author 青岛开店星信息技术有限公司
      */
-    private static function getAllPermTree(int $shopType)
+    private static function getAllPermTree()
     {
         // 先判断是否需要重新创建
-        self::createAllPermTree($shopType);
+        self::createAllPermTree();
 
-        return \Yii::$app->redis->hvals(BasePermissionConfig::getCacheKey($shopType));
+        return \Yii::$app->redis->hvals(BasePermissionConfig::getCacheKey());
     }
 
     /**
      * 获取控制器权限
      * @param string $controllerName
-     * @param int $shopType
      * @return array
      * @author 青岛开店星信息技术有限公司
      */
-    private static function getControllerPerm(string $controllerName, int $shopType): array
+    private static function getControllerPerm(string $controllerName): array
     {
         // 先判断是否需要重新创建
-        self::createAllPermTree($shopType);
+        self::createAllPermTree();
 
         // 读取缓存  (缓存不判断权限, 只要有, 就缓存
-        $perms = \Yii::$app->redis->hget(BasePermissionConfig::getCacheKey($shopType), $controllerName);
+        $perms = \Yii::$app->redis->hget(BasePermissionConfig::getCacheKey(), $controllerName);
 
         // 缓存没有 配置错误 返回空
         if (empty($perms)) {
@@ -218,11 +205,10 @@ class Permission
 
     /**
      * 获取角色用的权限树结构
-     * @param int $shopType
      * @return array
      * @author 青岛开店星信息技术有限公司
      */
-    public static function getPermTreeForRole(int $shopType): array
+    public static function getPermTreeForRole(): array
     {
         // 重新读取config 每次生成 用自己的缓存
         $perm = [];
@@ -236,8 +222,8 @@ class Permission
             $fileName = basename($item, '.php');
             $className = 'shopstar\config\modules\permission\\' . $fileName;
             /** @var $config BasePermissionConfig */
-            $config = new $className($shopType);
-            $config->getPermForRole($perm, $shopType);
+            $config = new $className();
+            $config->getPermForRole($perm);
         }
 
         // plugins 下配置
@@ -247,8 +233,8 @@ class Permission
             $className = 'apps\\' . $pluginName . '\config\PermissionConfig';
             if (class_exists($className)) {
                 /** @var $config BasePermissionConfig */
-                $config = new $className($shopType);
-                $config->getPermForRole($perm, $shopType);
+                $config = new $className();
+                $config->getPermForRole($perm);
             }
         }
 

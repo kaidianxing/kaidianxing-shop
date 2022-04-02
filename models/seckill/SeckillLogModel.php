@@ -13,7 +13,7 @@
 namespace shopstar\models\seckill;
 
 /**
- * This is the model class for table "{{%app_seckill_log}}".
+ * This is the model class for table "{{%seckill_log}}".
  *
  * @property string $id
  * @property int $member_id 会员id
@@ -29,7 +29,7 @@ class SeckillLogModel extends \shopstar\bases\model\BaseActiveRecord
      */
     public static function tableName()
     {
-        return '{{%app_seckill_log}}';
+        return '{{%seckill_log}}';
     }
 
     /**

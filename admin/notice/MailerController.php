@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 开店星新零售管理系统
  * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
@@ -13,27 +12,28 @@
 
 namespace shopstar\admin\notice;
 
+use shopstar\bases\KdxAdminApiController;
 use shopstar\components\email\EmailComponent;
-use shopstar\helpers\RequestHelper;
-use shopstar\models\log\LogModel;
-use shopstar\models\shop\ShopSettings;
 use shopstar\constants\notice\MailerConstant;
 use shopstar\constants\notice\NoticeLogConstant;
 use shopstar\exceptions\notice\NoticeException;
-use shopstar\bases\KdxAdminApiController;
+use shopstar\helpers\RequestHelper;
+use shopstar\models\log\LogModel;
+use shopstar\models\shop\ShopSettings;
 
 /**
  * 邮箱设置
  * Class MailerController
- * @author
- * @package apps\notice\manage
+ * @author 青岛开店星信息技术有限公司
+ * @package shopstar\admin\notice
  */
 class MailerController extends KdxAdminApiController
 {
+
     /**
      * 获取邮箱配置
+     * @return array|\yii\web\Response
      * @author 青岛开店星信息技术有限公司
-     * @return array|mixed|string
      */
     public function actionGet()
     {
@@ -43,8 +43,8 @@ class MailerController extends KdxAdminApiController
 
     /**
      * 保存设置
-     * @author 青岛开店星信息技术有限公司
      * @return array|\yii\web\Response
+     * @author 青岛开店星信息技术有限公司
      */
     public function actionSet()
     {
@@ -95,9 +95,9 @@ class MailerController extends KdxAdminApiController
 
     /**
      * 测试发送邮件接口
-     * @throws NoticeException
-     * @author 青岛开店星信息技术有限公司
      * @return array|\yii\web\Response
+     * @throws NoticeException|\yii\base\InvalidConfigException
+     * @author 青岛开店星信息技术有限公司
      */
     public function actionTestSend()
     {

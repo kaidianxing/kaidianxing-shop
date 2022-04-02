@@ -17,7 +17,8 @@ use shopstar\bases\module\BaseModule;
 /**
  * 商城模块配置()
  * Class KdxModule
- * @package shop\config
+ * @package shopstar\config\modules
+ * @author 青岛开店星信息技术有限公司
  */
 class KdxModule extends BaseModule
 {
@@ -51,7 +52,7 @@ class KdxModule extends BaseModule
      * @return bool
      * @author likexin
      */
-    private function isMobile()
+    private function isMobile(): bool
     {
         // 如果标记了自定义域名
         if (\Yii::$app->params['isWapCustomDomain']) {

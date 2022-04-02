@@ -9,6 +9,7 @@
  * @warning Unauthorized deletion of copyright information is prohibited.
  * @warning 未经许可禁止私自删除版权信息
  */
+
 namespace shopstar\config\apps\notice;
 
 use shopstar\constants\components\notice\NoticeTypeConstant;
@@ -18,7 +19,7 @@ class NoticeSceneGroup implements NoticeSceneGroupInterface
 {
     /**
      * 获取场景值映射
-     * @return mixed
+     * @return array
      * @author 青岛开店星信息技术有限公司
      */
     public static function getSceneGroupMap()

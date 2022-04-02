@@ -15,7 +15,7 @@ namespace shopstar\models\virtualAccount;
 use shopstar\bases\model\BaseActiveRecord;
 
 /**
- * This is the model class for table "{{%app_virtual_account_order_map}}".
+ * This is the model class for table "{{%virtual_account_order_map}}".
  *
  * @property int $id
  * @property int $order_id 订单id
@@ -39,7 +39,7 @@ class VirtualAccountOrderMapModel extends BaseActiveRecord
      */
     public static function tableName()
     {
-        return '{{%app_virtual_account_order_map}}';
+        return '{{%virtual_account_order_map}}';
     }
 
     /**

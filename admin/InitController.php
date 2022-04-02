@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 开店星新零售管理系统
  * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
@@ -11,12 +10,10 @@
  * @warning 未经许可禁止私自删除版权信息
  */
 
-
 namespace shopstar\admin;
 
 use shopstar\bases\KdxAdminApiController;
 use shopstar\constants\CloudServiceConstant;
-
 use shopstar\helpers\ShopUrlHelper;
 use shopstar\models\core\CoreSettings;
 use shopstar\models\role\ManagerModel;
@@ -26,11 +23,15 @@ use shopstar\services\core\attachment\CoreAttachmentService;
 /**
  * 业务端初始化
  * Class InitController
- * @package shop\manage
+ * @package shopstar\admin
+ * @author 青岛开店星信息技术有限公司
  */
 class InitController extends KdxAdminApiController
 {
 
+    /**
+     * @var array
+     */
     public $configActions = [
         'allowPermActions' => [
             'index',
@@ -40,13 +41,14 @@ class InitController extends KdxAdminApiController
     /**
      * 读取数据
      * @return array|\yii\web\Response
-     * @throws \Matrix\Exception
      * @throws \yii\base\InvalidConfigException
+     * @throws \Exception
      * @author likexin
      */
     public function actionIndex()
     {
         $result = [];
+
         // 当前登录用户信息
         $result['user'] = [
             'id' => $this->user['id'],
@@ -54,7 +56,7 @@ class InitController extends KdxAdminApiController
             'group_id' => $this->user['group_id'] ?? 0,
             'is_root' => $this->user['is_root'] ? 1 : 0,
 
-            'perms' => ManagerModel::getPerms($this->userId, $this->shopType)
+            'perms' => ManagerModel::getPerms($this->userId, $this->user['is_root'] > 0)
         ];
         // 如果是超管返回管理端入口
         if ($result['user']['is_root'] == 1) {
@@ -73,12 +75,8 @@ class InitController extends KdxAdminApiController
             'logo' => $shopSettings['logo'] ?? '',
         ];
 
-        //添加店铺类型
-        $result['shop_type'] = $this->shopType;
-
         //服务专属功能
         $result['service_function'] = [
-//            CloudServiceConstant::FUNCTION_LADDER_GROUP => CloudServiceHelper::checkServiceFunction(CloudServiceConstant::FUNCTION_LADDER_GROUP)
             CloudServiceConstant::FUNCTION_LADDER_GROUP => true
         ];
 

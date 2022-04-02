@@ -16,7 +16,7 @@ use shopstar\bases\model\BaseActiveRecord;
 
 /**
  * 应用-店铺装修-模板实体类
- * This is the model class for table "{{%app_diypage_template}}".
+ * This is the model class for table "{{%diypage_template}}".
  *
  * @property int $id 模板ID
  * @property int $system_id 系统模板ID 0:非系统模板 >0:系统模板
@@ -35,7 +35,7 @@ class DiypageTemplateModel extends BaseActiveRecord
      */
     public static function tableName()
     {
-        return '{{%app_diypage_template}}';
+        return '{{%diypage_template}}';
     }
 
     /**

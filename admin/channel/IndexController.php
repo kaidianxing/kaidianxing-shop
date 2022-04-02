@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 开店星新零售管理系统
  * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
@@ -11,25 +10,30 @@
  * @warning 未经许可禁止私自删除版权信息
  */
 
-
 namespace shopstar\admin\channel;
-
 
 use shopstar\bases\KdxAdminApiController;
 use shopstar\constants\ClientTypeConstant;
 use shopstar\constants\core\CoreAppTypeConstant;
-use shopstar\helpers\CloudServiceHelper;
-use shopstar\helpers\LiYangHelper;
 use shopstar\helpers\RequestHelper;
 use shopstar\helpers\ShopUrlHelper;
 use shopstar\models\byteDance\ByteDanceUploadLogModel;
-use shopstar\services\core\CoreAppService;
 use shopstar\models\shop\ShopSettings;
 use shopstar\models\wxapp\WxappUploadLogModel;
 use shopstar\services\core\attachment\CoreAttachmentService;
+use shopstar\services\core\CoreAppService;
 
+/**
+ * 渠道首页接口
+ * Class IndexController
+ * @author 青岛开店星信息技术有限公司
+ * @package shopstar\admin\channel
+ */
 class IndexController extends KdxAdminApiController
 {
+    /**
+     * @var array
+     */
     public $configActions = [
         'allowPermActions' => [
             'get-channel'
@@ -52,7 +56,6 @@ class IndexController extends KdxAdminApiController
         $list['list'] = array_values($list['list']);
 
         return $this->result($list);
-
     }
 
     /**
@@ -61,7 +64,7 @@ class IndexController extends KdxAdminApiController
      * @throws \yii\base\InvalidConfigException
      * @author 青岛开店星信息技术有限公司
      */
-    private function getWechatInfo()
+    private function getWechatInfo(): array
     {
         // 未配置公众号
         $result = ShopSettings::get('channel_setting.' . ClientTypeConstant::getIdentify(ClientTypeConstant::CLIENT_WECHAT));
@@ -72,19 +75,6 @@ class IndexController extends KdxAdminApiController
 
         // 二维码地址
         $qrcodeUrl = CoreAttachmentService::getUrl($result['qr_code']);
-
-        // CloudUpload 记录
-        try {
-            CloudServiceHelper::post(LiYangHelper::ROUTE_SYSTEM_AUTH_SHOP_WECHAT, [
-                'wechat_name' => $result['name'] ?? '',
-                'app_id' => $result['app_id'] ?? '',
-                'qrcode_url' => $qrcodeUrl,
-            ], [
-                'timeout' => 2,
-            ]);
-        } catch (\Throwable $exception) {
-
-        }
 
         // 返回公众号配置信息
         return [
@@ -103,16 +93,17 @@ class IndexController extends KdxAdminApiController
 
     /**
      * 获取小程序信息
+     * @return array
+     * @throws \EasyWeChat\Kernel\Exceptions\InvalidArgumentException
+     * @throws \EasyWeChat\Kernel\Exceptions\RuntimeException
      * @author 青岛开店星信息技术有限公司
      */
-    private function getWxappInfo()
+    private function getWxappInfo(): array
     {
-        $data = [
+        return [
             'qrcode' => WxappUploadLogModel::getWxappUnlimitedQRcode(),//二维码
             'status' => ShopSettings::get('channel.' . ClientTypeConstant::getIdentify(ClientTypeConstant::CLIENT_WXAPP))
         ];
-
-        return $data;
     }
 
     /**
@@ -120,7 +111,7 @@ class IndexController extends KdxAdminApiController
      * @return array
      * @author 青岛开店星信息技术有限公司
      */
-    private function getWapInfo()
+    private function getWapInfo(): array
     {
         return [
             'is_open' => ShopSettings::get('channel.' . ClientTypeConstant::getIdentify(ClientTypeConstant::CLIENT_H5), 0),
@@ -131,17 +122,15 @@ class IndexController extends KdxAdminApiController
 
     /**
      * 头条
-     * @return array|int[]|\yii\web\Response
+     * @return array|int[]
      * @author 青岛开店星信息技术有限公司
      */
-    private function getToutiaoInfo()
+    private function getToutiaoInfo(): array
     {
-        $data = [
-            'toutiao_qrcode' => ByteDanceUploadLogModel::getByteDanceQrcode('toutiao'),
+        return [
+            'toutiao_qrcode' => ByteDanceUploadLogModel::getByteDanceQrcode(),
             'status' => ShopSettings::get('channel.byte_dance')
         ];
-
-        return $data;
     }
 
     /**
@@ -149,28 +138,26 @@ class IndexController extends KdxAdminApiController
      * @return array
      * @author 青岛开店星信息技术有限公司
      */
-    private function getDouyinInfo()
+    private function getDouyinInfo(): array
     {
-        $data = [
+        return [
             'douyin_qrcode' => ByteDanceUploadLogModel::getByteDanceQrcode('douyin'),
             'status' => ShopSettings::get('channel.byte_dance')
         ];
-
-        return $data;
     }
 
     /**
      * 设置店铺渠道状态
      * @return \yii\web\Response
-     * @throws \yii\db\Exception
      * @author 青岛开店星信息技术有限公司
      */
-    public function actionSetStatus()
+    public function actionSetStatus(): \yii\web\Response
     {
         $status = RequestHelper::postInt('status', 0);
         $clientType = RequestHelper::postInt('client_type', 0);
 
         ShopSettings::set('channel.' . ClientTypeConstant::getIdentify($clientType), $status);
+
         return $this->success();
     }
 }

@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 开店星新零售管理系统
  * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
@@ -11,8 +10,6 @@
  * @warning 未经许可禁止私自删除版权信息
  */
 
-
-
 namespace shopstar\services\goods;
 
 use shopstar\helpers\StringHelper;
@@ -21,6 +18,7 @@ use shopstar\models\commission\CommissionAgentModel;
 use shopstar\models\commission\CommissionGoodsModel;
 use shopstar\models\commission\CommissionSettings;
 use shopstar\models\goods\category\GoodsCategoryMapModel;
+use shopstar\models\goods\GoodsMemberLevelDiscountModel;
 use shopstar\models\goods\GoodsModel;
 use shopstar\models\member\MemberLevelModel;
 use shopstar\models\member\MemberModel;
@@ -85,13 +83,6 @@ class GoodsDetailsActivityHandler
     private $clientType = 0;
 
     /**
-     * 店铺类型
-     * @var array|int
-     * @author 青岛开店星信息技术有限公司.
-     */
-    private $shopType = 0;
-
-    /**
      * @var array 附加参数
      */
     private $options = [];
@@ -101,10 +92,9 @@ class GoodsDetailsActivityHandler
      * @param $goodsInfo
      * @param int $memberId
      * @param int $clientType
-     * @param int $shopType
      * @param array $options 附加参数
      */
-    public function __construct($goodsInfo, int $memberId, int $clientType, int $shopType = 0, array $options = [])
+    public function __construct($goodsInfo, int $memberId, int $clientType, array $options = [])
     {
         if (is_int($goodsInfo)) {
             $goodsInfo = GoodsModel::findOne(['id' => $goodsInfo]);
@@ -118,7 +108,6 @@ class GoodsDetailsActivityHandler
         $this->goodsInfo = $goodsInfo;
         $this->clientType = $clientType;
         $this->memberInfo = MemberModel::findOne($memberId);
-        $this->shopType = $shopType;
         $this->options = $options;
     }
 
@@ -127,20 +116,18 @@ class GoodsDetailsActivityHandler
      * @return array
      * @author 青岛开店星信息技术有限公司
      */
-    public function getGoods()
+    public function getGoods(): array
     {
         return $this->goodsInfo;
     }
 
     /**
      * 获取设置
-     * @param int $shopType
      * @return array|mixed|string
      * @author 青岛开店星信息技术有限公司
      */
-    public function getSetting($shopType = 0)
+    public function getSetting()
     {
-
         if (empty(self::$settings)) {
             self::$settings = ShopSettings::get('sale');
         }
@@ -179,13 +166,13 @@ class GoodsDetailsActivityHandler
      * @param $goodsInfo
      * @param int $memberId
      * @param int $clientType
-     * @param int $shopType
+     * @param array $options
      * @return GoodsDetailsActivityHandler
      * @author 青岛开店星信息技术有限公司
      */
-    public static function init($goodsInfo, int $memberId, int $clientType, int $shopType = 0, array $options = [])
+    public static function init($goodsInfo, int $memberId, int $clientType, array $options = [])
     {
-        return new self($goodsInfo, $memberId, $clientType, $shopType, $options);
+        return new self($goodsInfo, $memberId, $clientType, $options);
     }
 
     /**
@@ -194,7 +181,7 @@ class GoodsDetailsActivityHandler
      * @return array
      * @author 青岛开店星信息技术有限公司
      */
-    public function activityMutex(int $isOriginalBuy)
+    public function activityMutex(int $isOriginalBuy): array
     {
         $goodsActivityType = [];
         //获取当前可用的活动插件
@@ -234,7 +221,6 @@ class GoodsDetailsActivityHandler
         return array_column($usableActivity, 'identify');
     }
 
-
     /**
      * 自动化执行，活动执行方法可以单独调用也可以执行自动化
      * @param array $options
@@ -242,7 +228,7 @@ class GoodsDetailsActivityHandler
      * @return bool
      * @author 青岛开店星信息技术有限公司
      */
-    public function automation(array $options = [], int $isOriginalBuy = 0)
+    public function automation(array $options = [], int $isOriginalBuy = 0): bool
     {
         //计算活动计算
         $activity = $this->activityMutex($isOriginalBuy);
@@ -331,7 +317,9 @@ class GoodsDetailsActivityHandler
 
         //获取用户会员等级
         $memberLevel = MemberLevelModel::findOne(['id' => $this->memberInfo['level_id'], 'state' => 1]);
-        if (empty($memberLevel)) return;
+        if (empty($memberLevel)) {
+            return;
+        }
         $memberLevel = $memberLevel->toArray();
 
         $goodsDiscount = [];
@@ -399,7 +387,7 @@ class GoodsDetailsActivityHandler
      * @return array
      * @author 青岛开店星信息技术有限公司
      */
-    private function defaultMemberLevelDiscount(float $minPrice, float $maxPrice, array $memberLevel)
+    private function defaultMemberLevelDiscount(float $minPrice, float $maxPrice, array $memberLevel): array
     {
         $rule = $memberLevel['discount'] / 10;
 
@@ -413,7 +401,7 @@ class GoodsDetailsActivityHandler
      * 指定会员折扣/价格 多规格不参与
      * @param float $goodsPrice
      * @param array $discount
-     * @return float|mixed
+     * @return array
      * @author 青岛开店星信息技术有限公司
      */
     private function designatedMembershipLevel(float $goodsPrice, array $discount)
@@ -432,7 +420,7 @@ class GoodsDetailsActivityHandler
      * @param float $minPrice
      * @param float $maxPrice
      * @param array $discount
-     * @return int|mixed
+     * @return array
      * @author 青岛开店星信息技术有限公司
      */
     private function optionDesignatedMembershipLevel(float $minPrice, float $maxPrice, array $discount)
@@ -514,7 +502,7 @@ class GoodsDetailsActivityHandler
     {
 
         // 获取满额立减设置
-        $setting = $this->getSetting($this->shopType)['basic']['enough'];
+        $setting = $this->getSetting()['basic']['enough'];
         // 如果系统设置关闭 返回false
         if ($setting['state'] <= 0) {
             return;
@@ -529,7 +517,6 @@ class GoodsDetailsActivityHandler
 
     /**
      * 余额
-     * @return bool
      * @author 青岛开店星信息技术有限公司
      */
     public function balance()
@@ -584,36 +571,38 @@ class GoodsDetailsActivityHandler
      * 预计佣金
      * @author 青岛开店星信息技术有限公司
      */
-    private function commission()
+    private function commission(): void
     {
         // 判断该商品是否参与分销
         if ($this->goodsInfo['is_commission'] != 1) {
-            return error('未参与分销');
+            error('未参与分销');
+            return;
         }
         // 获取当前会员分销等级
         $agent = CommissionAgentModel::find()->select('status, level_id')->where(['member_id' => $this->memberInfo['id']])->first();
         // 非分销商则返回
         if (empty($agent) || $agent['status'] != 1) {
-            return error('该会员非分销商');
+            error('该会员非分销商');
+            return;
         }
         // 获取是否开启佣金显示
         $set = CommissionSettings::get('set.show_commission');
         if ($set != 1) {
-            return error('未开启佣金显示');
+            error('未开启佣金显示');
+            return;
         }
         // 获取预计佣金
 
         $commission = CommissionGoodsModel::getMaxCommission($this->goodsInfo['id'], $this->goodsInfo['type'], $this->goodsInfo['has_option'], $agent['level_id'], $this->clientType);
 
         $this->setActivity('commission', ['max' => $commission]);
-        return true;
     }
 
     /**
      * 获取购物奖励活动
      * @author 青岛开店星信息技术有限公司
      */
-    private function shoppingReward()
+    private function shoppingReward(): bool
     {
 
         $activity = ShoppingRewardActivityModel::getOpenActivity($this->clientType);

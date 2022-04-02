@@ -17,7 +17,7 @@ use shopstar\bases\model\BaseActiveRecord;
 
 
 /**
- * This is the model class for table "{{%app_poster_scan}}".
+ * This is the model class for table "{{%poster_scan}}".
  *
  * @property int $id auto increment id
  * @property int $poster_id 海报ID
@@ -32,7 +32,7 @@ class PosterScanModel extends BaseActiveRecord
      */
     public static function tableName()
     {
-        return '{{%app_poster_scan}}';
+        return '{{%poster_scan}}';
     }
 
     /**

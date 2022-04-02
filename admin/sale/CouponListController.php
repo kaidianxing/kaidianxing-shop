@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 开店星新零售管理系统
  * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
@@ -13,7 +12,6 @@
 
 namespace shopstar\admin\sale;
 
-use apps\creditShop\models\CreditShopGoodsModel;
 use shopstar\bases\KdxAdminApiController;
 use shopstar\constants\coupon\CouponConstant;
 use shopstar\constants\log\sale\CouponLogConstant;
@@ -33,9 +31,17 @@ use shopstar\models\sale\CouponRuleModel;
 use shopstar\services\sale\CouponService;
 use yii\helpers\StringHelper;
 
+/**
+ * 优惠券列表
+ * Class CouponListController
+ * @package shopstar\admin\sale
+ */
 class CouponListController extends KdxAdminApiController
 {
 
+    /**
+     * @var array
+     */
     public $configActions = [
         'allowPermActions' => [
             'index'
@@ -47,14 +53,13 @@ class CouponListController extends KdxAdminApiController
      * @return \yii\web\Response
      * @author 青岛开店星信息技术有限公司
      */
-    public function actionIndex()
+    public function actionIndex(): \yii\web\Response
     {
         $get = RequestHelper::get();
         $by = RequestHelper::get('by', 'desc');
         $sort = RequestHelper::get('sort', 'sort');
         $pager = RequestHelper::getInt('pager', 1);
         $isValidity = RequestHelper::get('is_validity');
-        $isCreditShop = RequestHelper::get('is_credit_shop');
 
         $where = [];
 
@@ -167,7 +172,7 @@ class CouponListController extends KdxAdminApiController
      * @throws CouponException
      * @author 青岛开店星信息技术有限公司
      */
-    public function actionDetail()
+    public function actionDetail(): \yii\web\Response
     {
         $id = RequestHelper::getInt('id');
         if (empty($id)) {
@@ -225,7 +230,7 @@ class CouponListController extends KdxAdminApiController
      * @throws \yii\db\Exception
      * @author 青岛开店星信息技术有限公司
      */
-    public function actionAdd()
+    public function actionAdd(): \yii\web\Response
     {
         $transaction = \Yii::$app->getDb()->beginTransaction();
         // 保存
@@ -246,7 +251,7 @@ class CouponListController extends KdxAdminApiController
      * @throws CouponException
      * @author 青岛开店星信息技术有限公司
      */
-    public function actionEdit()
+    public function actionEdit(): \yii\web\Response
     {
         $id = RequestHelper::post('id');
         if (empty($id)) {
@@ -273,7 +278,7 @@ class CouponListController extends KdxAdminApiController
      * @throws CouponException
      * @author 青岛开店星信息技术有限公司
      */
-    public function actionDelete()
+    public function actionDelete(): \yii\web\Response
     {
         $id = RequestHelper::get('id');
         // 删除类型  1仅删除  2删除用户已领取的

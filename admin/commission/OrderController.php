@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 开店星新零售管理系统
  * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
@@ -13,33 +12,34 @@
 
 namespace shopstar\admin\commission;
 
-use shopstar\services\commission\CommissionOrderService;
-use shopstar\constants\order\OrderActivityTypeConstant;
-use shopstar\constants\order\OrderTypeConstant;
+use shopstar\bases\KdxAdminApiController;
+use shopstar\constants\commission\CommissionLogConstant;
+use shopstar\exceptions\commission\CommissionOrderException;
 use shopstar\helpers\DateTimeHelper;
- 
 use shopstar\helpers\RequestHelper;
+use shopstar\models\commission\CommissionAgentModel;
+use shopstar\models\commission\CommissionOrderDataModel;
+use shopstar\models\commission\CommissionOrderGoodsModel;
+use shopstar\models\commission\CommissionOrderModel;
 use shopstar\models\log\LogModel;
 use shopstar\models\member\MemberModel;
 use shopstar\models\order\OrderGoodsModel;
 use shopstar\models\order\OrderModel;
 use shopstar\models\order\refund\OrderRefundModel;
-use shopstar\constants\commission\CommissionLogConstant;
-use shopstar\exceptions\commission\CommissionOrderException;
-use shopstar\models\commission\CommissionAgentModel;
-use shopstar\models\commission\CommissionOrderDataModel;
-use shopstar\models\commission\CommissionOrderGoodsModel;
-use shopstar\models\commission\CommissionOrderModel;
-use shopstar\bases\KdxAdminApiController;
+use shopstar\services\commission\CommissionOrderService;
 use yii\helpers\Json;
 
 /**
  * 分销订单
  * Class OrderController
- * @package apps\commission\manage
+ * @package shopstar\admin\commission
  */
 class OrderController extends KdxAdminApiController
 {
+
+    /**
+     * @var array
+     */
     public $configActions = [
         'postActions' => [
             'change-commission',
@@ -48,7 +48,6 @@ class OrderController extends KdxAdminApiController
             'index'
         ]
     ];
-
 
     /**
      * 分销订单列表
@@ -126,16 +125,16 @@ class OrderController extends KdxAdminApiController
             [OrderModel::tableName() . ' as order', 'order.id = commission_order.order_id'],
             [OrderRefundModel::tableName() . ' as order_refund', 'order_refund.order_id = commission_order.order_id']
         ];
-        
+
         if (!empty($get['member_id'])) {
             if ($get['member_type'] == 0) {
                 $where[] = ['order.member_id' => $get['member_id']];
             } else {
-                $leftJoins[] = [CommissionOrderDataModel::tableName().'order_data', 'order_data.order_id = order.id'];
+                $leftJoins[] = [CommissionOrderDataModel::tableName() . 'order_data', 'order_data.order_id = order.id'];
                 $where[] = ['order_data.agent_id' => $get['member_id']];
             }
         }
-        
+
 
         $searchs = [
             [['order.member_nickname', 'order.member_realname', 'order.member_mobile'], 'like', 'member_keyword'],
@@ -360,7 +359,6 @@ class OrderController extends KdxAdminApiController
         }
 
         return $this->success();
-
     }
 
 }

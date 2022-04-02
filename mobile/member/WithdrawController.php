@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 开店星新零售管理系统
  * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
@@ -25,6 +24,9 @@ use shopstar\models\member\MemberLogModel;
 use shopstar\models\member\MemberModel;
 use shopstar\models\shop\ShopSettings;
 
+/**
+ * @author 青岛开店星信息技术有限公司
+ */
 class WithdrawController extends BaseMobileApiController
 {
     /**
@@ -33,7 +35,7 @@ class WithdrawController extends BaseMobileApiController
      * @throws FinanceException
      * @author 青岛开店星信息技术有限公司
      */
-    public function actionIndex()
+    public function actionIndex(): \yii\web\Response
     {
         $data = [];
 
@@ -186,7 +188,7 @@ class WithdrawController extends BaseMobileApiController
      * @return bool
      * @throws FinanceException
      */
-    private function checkPayType($set, $payType = 0)
+    private function checkPayType($set, int $payType = 0): bool
     {
 
         $type = explode(',', $set['withdraw_type']);
@@ -219,7 +221,7 @@ class WithdrawController extends BaseMobileApiController
      * @return array
      * @author 青岛开店星信息技术有限公司
      */
-    public function calculateFee($money, $set)
+    public function calculateFee($money, $set): array
     {
         $fee = $set['withdraw_fee'];
 
@@ -252,11 +254,11 @@ class WithdrawController extends BaseMobileApiController
         $result = MemberLogModel::getColl(
             [
                 'select' => 'id, log_sn, created_at, status, pay_type, money,send_credit,real_money,charge,deduct_money,  remark',
-                'where' => compact('member_id',  'type'),
+                'where' => compact('member_id', 'type'),
                 'orderBy' => ['created_at' => SORT_DESC]
             ],
             [
-                'callable' => function(&$row) {
+                'callable' => function (&$row) {
                     $row = MemberLogModel::decode($row);
                 }
             ]

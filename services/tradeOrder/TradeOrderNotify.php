@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 开店星新零售管理系统
  * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
@@ -10,7 +9,6 @@
  * @warning Unauthorized deletion of copyright information is prohibited.
  * @warning 未经许可禁止私自删除版权信息
  */
-
 
 namespace shopstar\services\tradeOrder;
 
@@ -26,7 +24,6 @@ use shopstar\helpers\QueueHelper;
 use shopstar\jobs\order\BytedanceSettleJob;
 use shopstar\models\tradeOrder\TradeOrderModel;
 use shopstar\structs\order\OrderPaySuccessStruct;
-use yii\base\BaseObject;
 use yii\helpers\Json;
 
 /**
@@ -90,7 +87,8 @@ class TradeOrderNotify
 
     /**
      * 开始处理
-     * @return int
+     * @return string
+     * @throws \yii\base\Exception
      * @author likexin
      */
     public function handler()
@@ -156,13 +154,13 @@ class TradeOrderNotify
                 $this->payPrice = (float)bcdiv($this->notifyParams['total_fee'], 100, 2);
                 break;
             case 'alipay':
-                
+
                 $this->notifyParams = $this->raw;
-    
+
                 if (trim($this->notifyParams['trade_status']) !== 'TRADE_SUCCESS') {
                     throw new TradeOrderNotifyException(TradeOrderNotifyException::ALIPAY_NOTIFY_ERROR);
                 }
-    
+
                 // 交易订单号
                 $this->tradeNo = $this->notifyParams['out_trade_no'] ?? '';
                 // 外部交易订单号
@@ -200,7 +198,7 @@ class TradeOrderNotify
         if (empty($this->outTradeNo)) {
             throw new TradeOrderNotifyException(TradeOrderNotifyException::CHECK_PARAMS_OUT_TRADE_NO_EMPTY);
         }
-        
+
         if ($this->payPrice <= 0) {
             throw new TradeOrderNotifyException(TradeOrderNotifyException::CHECK_PARAMS_PAY_PRICE_EMPTY);
         }
@@ -267,7 +265,7 @@ class TradeOrderNotify
         if ($this->type == 'balance') {
             return;
         }
-        
+
         // 调用支付组件验签
         $check = PaymentNewComponent::getInstance($this->type, [
             'payType' => $this->tradeOrder[0]['pay_type'],
@@ -316,7 +314,7 @@ class TradeOrderNotify
                 if (is_error($call)) {
                     return $call;
                 }
-                
+
                 // 字节跳动支付 创建结算任务
                 if ($tradeOrder->pay_type == PayTypeConstant::PAY_TYPE_BYTEDANCE) {
                     QueueHelper::push(new BytedanceSettleJob([

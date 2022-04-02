@@ -21,7 +21,7 @@ use yii\helpers\Json;
 
 
 /**
- * This is the model class for table "{{%app_recharge_reward_log}}".
+ * This is the model class for table "{{%recharge_reward_log}}".
  *
  * @property int $id
  * @property int $member_id 会员id
@@ -40,7 +40,7 @@ class RechargeRewardLogModel extends \shopstar\bases\model\BaseActiveRecord
      */
     public static function tableName()
     {
-        return '{{%app_recharge_reward_log}}';
+        return '{{%recharge_reward_log}}';
     }
 
     /**

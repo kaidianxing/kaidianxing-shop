@@ -52,7 +52,7 @@ class NewGiftsActivityModel extends \shopstar\bases\model\BaseActiveRecord
      */
     public static function tableName()
     {
-        return '{{%app_new_gifts_activity}}';
+        return '{{%new_gifts_activity}}';
     }
 
     /**

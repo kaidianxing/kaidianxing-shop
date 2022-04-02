@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 开店星新零售管理系统
  * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
@@ -11,36 +10,36 @@
  * @warning 未经许可禁止私自删除版权信息
  */
 
-
 namespace shopstar\admin\goods;
 
 use shopstar\bases\KdxAdminApiController;
-use shopstar\models\diypage\DiypageModel;
-use shopstar\models\virtualAccount\VirtualAccountModel;
-use shopstar\models\wxapp\WxappUploadLogModel;
-use shopstar\constants\goods\GoodsBuyButtonConstant;
 use shopstar\constants\goods\GoodsDispatchTypeConstant;
 use shopstar\constants\goods\GoodsReductionTypeConstant;
 use shopstar\constants\goods\GoodsStatusConstant;
 use shopstar\constants\goods\GoodsTypeConstant;
 use shopstar\constants\log\goods\GoodsLogConstant;
 use shopstar\exceptions\goods\GoodsException;
-use shopstar\helpers\DateTimeHelper;
 use shopstar\helpers\ExcelHelper;
- 
 use shopstar\helpers\RequestHelper;
-use shopstar\helpers\VideoHelper;
-use shopstar\models\activity\ShopMarketingModel;
-use shopstar\models\goods\GoodsActivityModel;
+use shopstar\models\diypage\DiypageModel;
 use shopstar\models\goods\GoodsModel;
-use shopstar\models\goods\GoodsPermMapModel;
-use shopstar\services\goods\GoodsCreator;
+use shopstar\models\virtualAccount\VirtualAccountModel;
+use shopstar\models\wxapp\WxappUploadLogModel;
 use shopstar\services\goods\GoodsAdminQueryService;
+use shopstar\services\goods\GoodsCreator;
 use shopstar\services\goods\GoodsService;
 
+/**
+ * 商品
+ * Class IndexController
+ * @package shopstar\admin\goods
+ */
 class IndexController extends KdxAdminApiController
 {
 
+    /**
+     * @var array
+     */
     public $configActions = [
         'postActions' => [
             'create',
@@ -59,11 +58,6 @@ class IndexController extends KdxAdminApiController
             'get-diy-page-buy-button-text',
         ]
     ];
-
-    public function actionIndex()
-    {
-
-    }
 
     /**
      * 随机获取一个上架的商品ID(装修调用)
@@ -93,7 +87,7 @@ class IndexController extends KdxAdminApiController
      * @throws \yii\base\Exception
      * @author 青岛开店星信息技术有限公司
      */
-    public function actionList()
+    public function actionList(): \yii\web\Response
     {
         $pager = RequestHelper::getInt('pager', 0);
         $export = RequestHelper::getInt('export', 0); //是否是导出
@@ -129,10 +123,10 @@ class IndexController extends KdxAdminApiController
     /**
      * 获取单个商品
      * @return \yii\web\Response
-     * @throws GoodsException
+     * @throws GoodsException|\yii\base\InvalidConfigException
      * @author 青岛开店星信息技术有限公司
      */
-    public function actionGet()
+    public function actionGet(): \yii\web\Response
     {
         $goodsId = RequestHelper::getInt('id', 0);
         $flag = RequestHelper::get('flag', '');
@@ -153,7 +147,7 @@ class IndexController extends KdxAdminApiController
      * @throws GoodsException
      * @author 青岛开店星信息技术有限公司
      */
-    public function actionAdd()
+    public function actionAdd(): \yii\web\Response
     {
         return $this->save();
     }
@@ -165,10 +159,12 @@ class IndexController extends KdxAdminApiController
      * @throws GoodsException
      * @author 青岛开店星信息技术有限公司
      */
-    protected function save($isEdit = false)
+    protected function save(bool $isEdit = false): \yii\web\Response
     {
         $data = RequestHelper::post();
-        (new GoodsCreator($this->userId ?: 0, $this->shopType, $data, $isEdit))->init($data);
+
+        (new GoodsCreator($this->userId ?: 0, $data, $isEdit))->init($data);
+
         return $this->success();
     }
 
@@ -178,7 +174,7 @@ class IndexController extends KdxAdminApiController
      * @throws GoodsException
      * @author 青岛开店星信息技术有限公司
      */
-    public function actionEdit()
+    public function actionEdit(): \yii\web\Response
     {
         return $this->save(true);
     }
@@ -195,6 +191,7 @@ class IndexController extends KdxAdminApiController
         $field = RequestHelper::post('field');
         $value = RequestHelper::post('value');
         $result = GoodsModel::changeProperty($this->userId, $id, $field, $value);
+
         return $this->result($result);
     }
 
@@ -204,7 +201,7 @@ class IndexController extends KdxAdminApiController
      * @throws GoodsException
      * @author 青岛开店星信息技术有限公司
      */
-    public function actionDelete()
+    public function actionDelete(): \yii\web\Response
     {
         $id = RequestHelper::post('id');
         $result = GoodsService::deleteGoods($this->userId, $id, GoodsLogConstant::GOODS_DELETE);
@@ -217,7 +214,7 @@ class IndexController extends KdxAdminApiController
      * @throws \Throwable
      * @author 青岛开店星信息技术有限公司
      */
-    public function actionForeverDelete()
+    public function actionForeverDelete(): \yii\web\Response
     {
         $id = RequestHelper::postInt('id');
         $result = GoodsService::foreverRemove($this->userId, $id, GoodsLogConstant::GOODS_REAL_DELETE);
@@ -238,11 +235,12 @@ class IndexController extends KdxAdminApiController
         if (empty($goodsId)) {
             throw new GoodsException(GoodsException::CATEGORY_GET_ONE_PARAMS_ERROR);
         }
-        $data = [];
+
         $data = [
             'qrcode' => WxappUploadLogModel::getWxappQRcode('/kdxGoods/detail/index', ['goods_id' => $goodsId]),//二维码
             'url' => '/kdxGoods/detail/index?goods_id=' . $goodsId,
         ];
+
         return $this->result(['data' => $data]);
     }
 
@@ -251,7 +249,7 @@ class IndexController extends KdxAdminApiController
      * @return \yii\web\Response
      * @author 青岛开店星信息技术有限公司
      */
-    public function actionGetVirtualAccount()
+    public function actionGetVirtualAccount(): \yii\web\Response
     {
         $params = [
             'where' => [
@@ -268,6 +266,7 @@ class IndexController extends KdxAdminApiController
             'pager' => false,
             'onlyList' => true,
         ]);
+
         return $this->success(['data' => $data]);
     }
 
@@ -295,7 +294,6 @@ class IndexController extends KdxAdminApiController
         return $this->result(['data' => $data]);
     }
 
-
     /**
      * 导出
      * @param $list
@@ -313,18 +311,21 @@ class IndexController extends KdxAdminApiController
                 $category = array_column($item['category'], 'name');
                 $item['category'] = implode('、', $category);
             }
+
             // 规格
             if ($item['has_option'] == 1) {
                 $item['option'] = '多规格';
             } else {
                 $item['option'] = '单规格';
             }
+
             // 商品状态
             $item['status'] = GoodsStatusConstant::getText($item['status']);
             // 减库存方式
             $item['reduction_type'] = GoodsReductionTypeConstant::getText($item['reduction_type']);
 
             $extField = $item['ext_field'];
+
             // 营销标签
             $tags = [];
             if ($item['is_recommand'] == 1) {
@@ -337,6 +338,7 @@ class IndexController extends KdxAdminApiController
                 $tags[] = '新品';
             }
             $item['tags'] = implode('、', $tags);
+
             // 物流支持
             $express = [];
             if ($item['dispatch_express'] == 1) {
@@ -346,10 +348,13 @@ class IndexController extends KdxAdminApiController
                 $express[] = '同城';
             }
             $item['express'] = implode('、', $express);
+
             // 货到付款
             $item['is_delivery_pay'] = $extField['is_delivery_pay'] ? '是' : '否';
+
             // 运费设置
             $item['dispatch_type'] = GoodsDispatchTypeConstant::getText($item['dispatch_type']);
+
             // 是否参与分销
             $item['is_commission'] = $item['is_commission'] ? '是' : '否';
 

@@ -16,7 +16,7 @@ namespace shopstar\models\printer;
 use shopstar\bases\model\BaseActiveRecord;
 
 /**
- * This is the model class for table "{{%app_printer_manual_log}}".
+ * This is the model class for table "{{%printer_manual_log}}".
  *
  * @property int $id auto increment
  * @property int $order_id 订单
@@ -32,7 +32,7 @@ class PrinterManualLogModel extends BaseActiveRecord
      */
     public static function tableName()
     {
-        return '{{%app_printer_manual_log}}';
+        return '{{%printer_manual_log}}';
     }
 
     /**

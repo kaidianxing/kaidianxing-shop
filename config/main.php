@@ -10,10 +10,9 @@
  * @warning 未经许可禁止私自删除版权信息
  */
 
-
 // 检测配置、读取本地配置
 $localConfig = \shopstar\helpers\YamlHelper::loadFile(__DIR__ . '/conf.yaml');
-if (empty($localConfig)) {
+if (empty($localConfig) && SHOP_STAR_IS_INSTALLED) {
     die('配置加载失败，请检查 config/conf.yaml 配置文件');
 }
 
@@ -65,7 +64,7 @@ return [
     'defaultRoute' => 'index',
     'vendorPath' => SHOP_STAR_VENDOR_PATH,
     'controllerNamespace' => 'shopstar\controllers',
-    'viewPath' => SHOP_STAR_PATH . '/shopstar/views',
+    'viewPath' => SHOP_STAR_PATH . '/views',
     'components' => [
 
         /**

@@ -14,11 +14,11 @@ namespace shopstar\config\modules\permission;
 
 use shopstar\components\permission\BasePermissionConfig;
 
-
 /**
  * 快递助手权限
  * Class PermissionConfig
- * @package apps\expressHelper\config
+ * @package shopstar\config\modules\permission
+ * @author 青岛开店星信息技术有限公司
  */
 class ExpressHelperPermissionConfig extends BasePermissionConfig
 {
@@ -26,22 +26,22 @@ class ExpressHelperPermissionConfig extends BasePermissionConfig
      * @var string 权限模块标识
      */
     protected $identity = 'expressHelper';
-    
+
     /**
      * @var string 路由前缀
      */
     protected $prefix = 'manage/expressHelper/';
-    
+
     /**
      * @var string 分组名称
      */
     protected $groupName = '快递助手';
-    
+
     /**
      * @var bool 是否插件
      */
     protected $isPlugin = true;
-    
+
     /**
      * @var array[] 权限配置
      */

@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 开店星新零售管理系统
  * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
@@ -19,6 +18,7 @@ use shopstar\bases\exception\BaseException;
  * 海报列表异常
  * Class FormException
  * @package shopstar\exceptions\form
+ * @author 青岛开店星信息技术有限公司
  */
 class FormException extends BaseException
 {
@@ -121,25 +121,19 @@ class FormException extends BaseException
      */
     const FORM_PAGE_SUBMIT_FORM_DATA_NOT_EMPTY = 421007;
 
-
     /**
      * @Message("表单名称重复")
      */
     const FORM_PAGE_SUBMIT_FORM_DATA_NAME_EXIT = 421008;
-
-
 
     /**
      * @Message("临时表转入正式表失败")
      */
     const FORM_TEMP_TO_LOG_EMPTY = 421009;
 
-
     /**
      * @Message("数据格式不正确")
      */
     const FORM_TEMP_DETAIL_DATA_EMPTY = 421010;
-
-
 
 }

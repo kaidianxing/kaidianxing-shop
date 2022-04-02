@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 开店星新零售管理系统
  * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
@@ -13,20 +12,25 @@
 
 namespace shopstar\admin\sysset;
 
+use shopstar\bases\KdxAdminApiController;
 use shopstar\constants\log\sysset\PaymentLogConstant;
 use shopstar\exceptions\sysset\PaymentException;
 use shopstar\helpers\RequestHelper;
 use shopstar\models\log\LogModel;
 use shopstar\models\sysset\PaymentModel;
-use shopstar\bases\KdxAdminApiController;
 
 /**
  * 支付模版
  * Class TemplateSetController
- * @package app\controllers\manage\sysset
+ * @package shopstar\admin\sysset
+ * @author 青岛开店星信息技术有限公司
  */
 class PayTemplateSetController extends KdxAdminApiController
 {
+
+    /**
+     * @var array
+     */
     public $configActions = [
         'postActions' => [
             'add',
@@ -34,6 +38,7 @@ class PayTemplateSetController extends KdxAdminApiController
             'delete',
         ]
     ];
+
     /**
      * 支付模板列表
      * @return array|\yii\web\Response
@@ -48,15 +53,15 @@ class PayTemplateSetController extends KdxAdminApiController
             'select' => 'id, title, pay_type',
             'orderBy' => ['id' => SORT_DESC]
         ];
-    
+
         $list = PaymentModel::getColl($params);
-        
+
         return $this->result($list);
     }
-    
+
     /**
      * 详情
-     * @return string
+     * @return array|int[]|\yii\web\Response
      * @throws PaymentException
      * @author 青岛开店星信息技术有限公司
      */
@@ -70,10 +75,10 @@ class PayTemplateSetController extends KdxAdminApiController
         if (empty($detail)) {
             throw new PaymentException(PaymentException::TEMPLATE_SET_DETAIL_TEMPLATE_NOT_EXISTS);
         }
-        
+
         return $this->success($detail);
     }
-    
+
     /**
      * 新增
      * @throws \yii\base\Exception
@@ -84,13 +89,13 @@ class PayTemplateSetController extends KdxAdminApiController
         $data = RequestHelper::post();
         $payment = new PaymentModel();
         $res = $payment->savePayment($data, $this->userId);
-        
         if (is_error($res)) {
             throw new PaymentException(PaymentException::TEMPLATE_ADD_SAVE_FAIL, $res['message']);
         }
+
         return $this->success();
     }
-    
+
     /**
      * 更新
      * @throws PaymentException
@@ -109,7 +114,7 @@ class PayTemplateSetController extends KdxAdminApiController
         }
         return $this->success();
     }
-    
+
     /**
      * 删除/批量删除模板
      * @return array|int[]|\yii\web\Response
@@ -156,11 +161,11 @@ class PayTemplateSetController extends KdxAdminApiController
                 );
             }
         ]);
-        
+
         if (is_error($res)) {
             throw new PaymentException(PaymentException::PAYMENT_DELETE_FAIL);
         }
         return $this->success();
     }
-    
+
 }

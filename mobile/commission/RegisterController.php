@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 开店星新零售管理系统
  * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
@@ -14,30 +13,28 @@
 namespace shopstar\mobile\commission;
 
 use shopstar\components\notice\NoticeComponent;
+use shopstar\constants\commission\CommissionAgentConstant;
+use shopstar\constants\components\notice\NoticeTypeConstant;
 use shopstar\constants\order\OrderStatusConstant;
+use shopstar\exceptions\commission\CommissionAgentException;
 use shopstar\helpers\DateTimeHelper;
- 
 use shopstar\helpers\RequestHelper;
 use shopstar\helpers\ValueHelper;
-use shopstar\models\member\MemberModel;
-use shopstar\models\order\OrderGoodsModel;
-use shopstar\models\order\OrderModel;
-use shopstar\mobile\commission\CommissionClientApiController;
-use shopstar\constants\commission\CommissionAgentConstant;
-use shopstar\exceptions\commission\CommissionAgentException;
 use shopstar\models\commission\CommissionAgentModel;
 use shopstar\models\commission\CommissionAgentTotalModel;
 use shopstar\models\commission\CommissionLevelModel;
 use shopstar\models\commission\CommissionRelationModel;
 use shopstar\models\commission\CommissionSettings;
-use shopstar\constants\form\FormTypeConstant;
-use shopstar\constants\components\notice\NoticeTypeConstant;
+use shopstar\models\member\MemberModel;
+use shopstar\models\order\OrderGoodsModel;
+use shopstar\models\order\OrderModel;
 use yii\helpers\Json;
 
 /**
  * 分销商注册
  * Class RegisterController
- * @package apps\commission\client
+ * @package shopstar\mobile\commission
+ * @author 青岛开店星信息技术有限公司
  */
 class RegisterController extends CommissionClientApiController
 {
@@ -69,7 +66,7 @@ class RegisterController extends CommissionClientApiController
                 return $this->success($data);
             } else if ($agent['status'] == -1) {
                 // 如果拒绝  判断 没有展示过拒绝页面需要展示
-                $key = 'show_reject_' .  '_' . $this->memberId;
+                $key = 'show_reject_' . '_' . $this->memberId;
                 if (!empty(\Yii::$app->redis->get($key))) {
                     \Yii::$app->redis->del($key);
                     $data['show_reject'] = 1;
@@ -101,7 +98,7 @@ class RegisterController extends CommissionClientApiController
         } else if ($set['become_condition'] == CommissionAgentConstant::AGENT_BECOME_CONDITION_BUY_GOODS) {
             // 购买商品
             $data['goods_info']['goods_ids'] = explode(',', $set['become_goods_ids']);
-            $data['goods_info']['member_goods_ids'] = OrderGoodsModel::getMemberOrderGoodsIds($this->memberId,  $status, $data['goods_info']['goods_ids']);
+            $data['goods_info']['member_goods_ids'] = OrderGoodsModel::getMemberOrderGoodsIds($this->memberId, $status, $data['goods_info']['goods_ids']);
 
         } else if ($set['become_condition'] == CommissionAgentConstant::AGENT_BECOME_CONDITION_MONEY_COUNT) {
             // 满足消费金额  实际支付价格 + 余额抵扣 - 维权金额
@@ -216,7 +213,7 @@ class RegisterController extends CommissionClientApiController
                 $result->sendMessage();
             }
         } else {
-            
+
             // 自动成为分销商 更新上级数量
             // 更新上级的下级分销商数量
             CommissionAgentTotalModel::updateAgentChildCount($this->memberId);

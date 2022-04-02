@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 开店星新零售管理系统
  * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
@@ -20,11 +19,12 @@ use shopstar\models\wxapp\WxappUploadLogModel;
  * 小程序码
  * Class QrCodeController
  * @package apps\wxapp\client
+ * @author 青岛开店星信息技术有限公司
  */
 class QrCodeController extends BaseMobileApiController
 {
     public $configActions = [
-         //允许不登录请求的Actions
+        //允许不登录请求的Actions
         'allowActions' => [
             'get',
         ],

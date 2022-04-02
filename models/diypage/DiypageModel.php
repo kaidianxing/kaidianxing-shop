@@ -26,7 +26,7 @@ use yii\helpers\Json;
 
 /**
  * 应用-店铺装修-页面实体类
- * This is the model class for table "{{%app_diypage}}".
+ * This is the model class for table "{{%diypage}}".
  *
  * @property int $id
  * @property int $type 页面类型 0:自定义页面 10:商城首页 11:商品详情 12:会员中心 20:分销首页
@@ -47,7 +47,7 @@ class DiypageModel extends BaseActiveRecord
      */
     public static function tableName()
     {
-        return '{{%app_diypage}}';
+        return '{{%diypage}}';
     }
 
     /**

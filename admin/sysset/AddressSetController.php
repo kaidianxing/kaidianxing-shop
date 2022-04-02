@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 开店星新零售管理系统
  * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
@@ -23,12 +22,17 @@ use yii\db\Exception;
 use yii\helpers\Json;
 
 /**
- * 物流信息配置
- * Class IndexController
- * @package shop\manage\sysset\express
+ * 退货地址
+ * Class AddressSetController
+ * @package shopstar\admin\sysset\express
+ * @author 青岛开店星信息技术有限公司
  */
 class AddressSetController extends KdxAdminApiController
 {
+
+    /**
+     * @var array
+     */
     public $configActions = [
         'postActions' => [
             'update',
@@ -87,4 +91,5 @@ class AddressSetController extends KdxAdminApiController
         }
         return $this->success();
     }
+
 }

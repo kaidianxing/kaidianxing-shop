@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 开店星新零售管理系统
  * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
@@ -13,24 +12,22 @@
 
 namespace shopstar\mobile\commission;
 
-use shopstar\constants\OrderConstant;
-use shopstar\helpers\RequestHelper;
-use shopstar\models\member\MemberModel;
-use shopstar\models\order\OrderModel;
-use shopstar\mobile\commission\CommissionClientApiController;
 use shopstar\constants\commission\CommissionAgentConstant;
+use shopstar\constants\OrderConstant;
 use shopstar\exceptions\commission\CommissionAgentException;
+use shopstar\helpers\RequestHelper;
 use shopstar\models\commission\CommissionAgentModel;
-use shopstar\models\commission\CommissionAgentTotalModel;
 use shopstar\models\commission\CommissionOrderDataModel;
-use shopstar\models\commission\CommissionOrderModel;
 use shopstar\models\commission\CommissionRelationModel;
 use shopstar\models\commission\CommissionSettings;
+use shopstar\models\member\MemberModel;
+use shopstar\models\order\OrderModel;
 
 /**
  * 我的下线
  * Class DownLineController
- * @package apps\commission\client
+ * @package shopstar\mobile\commission
+ * @author 青岛开店星信息技术有限公司
  */
 class DownLineController extends CommissionClientApiController
 {

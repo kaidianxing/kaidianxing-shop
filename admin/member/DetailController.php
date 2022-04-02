@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 开店星新零售管理系统
  * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
@@ -34,10 +33,14 @@ use yii\web\Response;
 /**
  * 会员详情类
  * Class DetailController
- * @package app\controllers\manage\member
+ * @package shopstar\admin\member
  */
 class DetailController extends KdxAdminApiController
 {
+
+    /**
+     * @var array
+     */
     public $configActions = [
         'allowActions' => [
             'get-commission-relation-log',
@@ -50,7 +53,7 @@ class DetailController extends KdxAdminApiController
      * @throws MemberException
      * @author 青岛开店星信息技术有限公司
      */
-    public function actionIndex()
+    public function actionIndex(): Response
     {
         $id = RequestHelper::getInt('id');
         if (empty($id)) {
@@ -97,7 +100,7 @@ class DetailController extends KdxAdminApiController
      * @throws MemberException
      * @author 青岛开店星信息技术有限公司
      */
-    public function actionChangePassword()
+    public function actionChangePassword(): Response
     {
         $memberId = RequestHelper::postInt('id');
         $password = RequestHelper::post('password');
@@ -120,6 +123,7 @@ class DetailController extends KdxAdminApiController
             $member->salt = $salt;
             $member->password = $password;
             $member->save();
+
             // 记录日志
             LogModel::write(
                 $this->userId,
@@ -199,7 +203,7 @@ class DetailController extends KdxAdminApiController
      * @throws MemberException
      * @author 青岛开店星信息技术有限公司
      */
-    public function actionChangeMobile()
+    public function actionChangeMobile(): Response
     {
         $memberId = RequestHelper::postInt('id');
         $mobile = RequestHelper::post('mobile');
@@ -254,7 +258,7 @@ class DetailController extends KdxAdminApiController
      * @throws \Throwable
      * @author 青岛开店星信息技术有限公司
      */
-    public function actionDelete()
+    public function actionDelete(): Response
     {
         $id = RequestHelper::post('id');
         $password = RequestHelper::post('manage_password');
@@ -284,12 +288,14 @@ class DetailController extends KdxAdminApiController
 
     /**
      * @desc 会员分销商关系日志
+     * @throws \shopstar\exceptions\commission\CommissionRelationLogException
      * @author nizengchao
      */
     public function actionGetCommissionRelationLog()
     {
-
         $list = CommissionRelationLogModel::getMemberLog();
+
         return $this->result($list);
     }
+
 }

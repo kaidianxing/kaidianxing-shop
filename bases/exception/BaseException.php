@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 开店星新零售管理系统
  * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
@@ -23,6 +22,7 @@ use yii\base\Exception;
  * @method getMessages($code) static string 获取错误信息
  * @method getMessageWithCode($code) static string 获取错误信息携带code
  * @package shopstar\bases\exception
+ * @author 青岛开店星信息技术有限公司
  */
 class BaseException extends Exception
 {
@@ -40,7 +40,7 @@ class BaseException extends Exception
     {
         if (static::class !== __CLASS__ && is_int($code)) {
 
-            if (is_null($message)){
+            if (is_null($message)) {
                 $message = static::getMessages($code);
             }
 
@@ -49,7 +49,7 @@ class BaseException extends Exception
             }
 
         }
-        
+
         parent::__construct($message, $code, $previous);
     }
 
@@ -58,8 +58,7 @@ class BaseException extends Exception
         $objClass = new \ReflectionClass(static::class);
         $arrConst = $objClass->getConstants();
         $codeArr = [];
-        foreach ($arrConst as $key => $code)
-        {
+        foreach ($arrConst as $key => $code) {
             $message = static::getMessages($code);
             $codeArr[$code] = [
                 'code' => $code,

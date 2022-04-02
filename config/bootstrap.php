@@ -24,6 +24,11 @@ defined('SHOP_STAR_TMP_PATH') or define('SHOP_STAR_TMP_PATH', SHOP_STAR_PATH . '
 defined('SHOP_STAR_PUBLIC_TMP_PATH') or define('SHOP_STAR_PUBLIC_TMP_PATH', SHOP_STAR_PUBLIC_PATH . '/tmp');
 defined('SHOP_STAR_PUBLIC_DATA_PATH') or define('SHOP_STAR_PUBLIC_DATA_PATH', SHOP_STAR_PUBLIC_PATH . '/data');
 
+// 检测vendor包是否存在
+if (!is_dir(SHOP_STAR_VENDOR_PATH)) {
+    exit('请先使用composer安装依赖!');
+}
+
 /**
  * 引入系统版本定义文件
  */
@@ -43,3 +48,6 @@ Yii::setAlias('@modules', SHOP_STAR_PATH . '/modules');
 Yii::setAlias('@apps', SHOP_STAR_PATH . '/apps');
 Yii::setAlias('@custom', SHOP_STAR_PATH . '/custom');
 Yii::setAlias('@static', SHOP_STAR_PUBLIC_PATH . '/static');
+if (!SHOP_STAR_IS_INSTALLED) {
+    Yii::setAlias('@install', SHOP_STAR_PATH . '/install');
+}

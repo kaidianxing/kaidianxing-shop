@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 开店星新零售管理系统
  * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
@@ -13,7 +12,6 @@
 
 namespace shopstar\admin\shoppingReward;
 
-use shopstar\jobs\shoppingReward\AutoStopShoppingRewardJob;
 use shopstar\bases\KdxAdminApiController;
 use shopstar\constants\shoppingReward\ShoppingRewardActivityConstant;
 use shopstar\constants\shoppingReward\ShoppingRewardActivityLogConstant;
@@ -22,6 +20,7 @@ use shopstar\helpers\DateTimeHelper;
 use shopstar\helpers\QueueHelper;
 use shopstar\helpers\RequestHelper;
 use shopstar\helpers\StringHelper;
+use shopstar\jobs\shoppingReward\AutoStopShoppingRewardJob;
 use shopstar\models\goods\category\GoodsCategoryModel;
 use shopstar\models\goods\GoodsModel;
 use shopstar\models\log\LogModel;
@@ -33,8 +32,15 @@ use shopstar\models\shoppingReward\ShoppingRewardActivityMemberRuleModel;
 use shopstar\models\shoppingReward\ShoppingRewardActivityModel;
 use shopstar\services\shoppingReward\ShoppingRewardActivityService;
 
+/**
+ * 活动管理
+ * Class IndexController
+ * @package shopstar\admin\shoppingReward
+ * @author 青岛开店星信息技术有限公司
+ */
 class IndexController extends KdxAdminApiController
 {
+
     /**
      * 活动列表
      * @author 青岛开店星信息技术有限公司
@@ -369,6 +375,7 @@ class IndexController extends KdxAdminApiController
         $logPrimary = array_merge($logPrimary, [
             '领取次数' => $pickTimesText
         ]);
+
         LogModel::write(
             $this->userId,
             ShoppingRewardActivityLogConstant::ACTIVITY_EDIT,
@@ -412,6 +419,7 @@ class IndexController extends KdxAdminApiController
         if (!$detail->save()) {
             throw new ShoppingRewardException(ShoppingRewardException::MANUAL_STOP_ACTIVITY_FAIL);
         }
+
         // 删除任务
         QueueHelper::remove($detail->job_id);
 
@@ -456,7 +464,9 @@ class IndexController extends KdxAdminApiController
         if (!$detail->save()) {
             throw new ShoppingRewardException(ShoppingRewardException::DELETE_FAIL);
         }
+
         QueueHelper::remove($detail->job_id);
+
         // 记录日志
         // 拼装渠道
         $clientTypeArray = array_flip(StringHelper::explode($detail->client_type));
@@ -496,6 +506,7 @@ class IndexController extends KdxAdminApiController
         $logPrimary = array_merge($logPrimary, [
             '参与资格' => ShoppingRewardActivityModel::$memberType[$detail->member_type],
         ]);
+
         // 等级
         $idLevelOrGroup = ShoppingRewardActivityMemberRuleModel::find()->where(['activity_id' => $id])->get();
         $idLevelOrGroup = array_column($idLevelOrGroup, 'level_or_group_id');
@@ -527,6 +538,7 @@ class IndexController extends KdxAdminApiController
             $couponTitle = implode(',', array_column($couponInfo, 'coupon_name'));
         }
         $reward = explode(',', $detail->reward);
+
         foreach ($reward as $item) {
             if ($item == ShoppingRewardActivityConstant::REWARD_COUPON) {
                 $logPrimary = array_merge($logPrimary, [
@@ -544,6 +556,7 @@ class IndexController extends KdxAdminApiController
                 ]);
             }
         }
+
         // 领取次数
         if ($detail->pick_times_type == 0) {
             $pickTimesText = '不限制';
@@ -555,6 +568,7 @@ class IndexController extends KdxAdminApiController
         $logPrimary = array_merge($logPrimary, [
             '领取次数' => $pickTimesText
         ]);
+
         LogModel::write(
             $this->userId,
             ShoppingRewardActivityLogConstant::ACTIVITY_DELETE,

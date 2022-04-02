@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 开店星新零售管理系统
  * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
@@ -11,7 +10,6 @@
  * @warning 未经许可禁止私自删除版权信息
  */
 
-
 namespace shopstar\components\notice;
 
 use shopstar\components\notice\bases\NoticeMakeType;
@@ -20,9 +18,9 @@ use shopstar\components\notice\sends\SendNoticeInterface;
 use shopstar\constants\core\CoreAppTypeConstant;
 use shopstar\helpers\CacheHelper;
 use shopstar\helpers\LogHelper;
-use shopstar\services\core\CoreAppService;
 use shopstar\models\member\MemberModel;
 use shopstar\models\shop\ShopSettings;
+use shopstar\services\core\CoreAppService;
 use Yii;
 use yii\base\Component;
 
@@ -102,10 +100,10 @@ class NoticeComponent extends Component
      * 发送消息提醒
      * @param array | int $memberId 会员id
      * @param array $options
-     * @return array|bool
+     * @return bool
      * @author 青岛开店星信息技术有限公司
      */
-    public function sendMessage($memberId = [], $options = [])
+    public function sendMessage($memberId = [], array $options = []): bool
     {
         $setting = ShopSettings::get('plugin_notice.send')[$this->sceneCode] ?: [];
         //获取需要发送的会员
@@ -172,7 +170,7 @@ class NoticeComponent extends Component
      * @return bool
      * @author 青岛开店星信息技术有限公司
      */
-    public function sendVerifyCode(int $mobile, array $options = [])
+    public function sendVerifyCode(int $mobile, array $options = []): bool
     {
         $options = array_merge([], $options);
 
@@ -226,7 +224,7 @@ class NoticeComponent extends Component
      * @return bool
      * @author 青岛开店星信息技术有限公司
      */
-    public static function checkVerifyCode($key, $mobile, $code)
+    public static function checkVerifyCode($key, $mobile, $code): bool
     {
         $key = '_' . $key . '_' . $mobile;
         if (!$code) {
@@ -240,10 +238,9 @@ class NoticeComponent extends Component
      * 根据发送渠道获取场景值
      * @param string $client
      * @return array
-     * @throws \ReflectionException
      * @author 青岛开店星信息技术有限公司
      */
-    public static function getTypeCodeByClient($client = 'sms')
+    public static function getTypeCodeByClient(string $client = 'sms'): array
     {
         $list = CoreAppService::getAppListNew(CoreAppTypeConstant::TYPE_APP);
         foreach ($list as $item) {
@@ -274,4 +271,5 @@ class NoticeComponent extends Component
 
         return $sceneCode;
     }
+
 }

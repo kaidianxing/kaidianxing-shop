@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 开店星新零售管理系统
  * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
@@ -13,36 +12,39 @@
 
 namespace shopstar\admin\commission;
 
-use shopstar\services\commission\CommissionAgentService;
+use shopstar\bases\KdxAdminApiController;
 use shopstar\components\notice\NoticeComponent;
-use shopstar\helpers\DateTimeHelper;
-use shopstar\helpers\ExcelHelper;
- 
-use shopstar\helpers\RequestHelper;
-use shopstar\models\log\LogModel;
-use shopstar\models\member\MemberLevelModel;
-use shopstar\models\member\MemberModel;
-use shopstar\models\order\OrderModel;
 use shopstar\constants\commission\CommissionAgentConstant;
 use shopstar\constants\commission\CommissionLogConstant;
 use shopstar\constants\commission\CommissionRelationLogConstant;
+use shopstar\constants\components\notice\NoticeTypeConstant;
 use shopstar\exceptions\commission\CommissionAgentException;
+use shopstar\helpers\DateTimeHelper;
+use shopstar\helpers\ExcelHelper;
+use shopstar\helpers\RequestHelper;
 use shopstar\models\commission\CommissionAgentModel;
 use shopstar\models\commission\CommissionAgentTotalModel;
 use shopstar\models\commission\CommissionLevelModel;
 use shopstar\models\commission\CommissionRelationLogModel;
 use shopstar\models\commission\CommissionRelationModel;
 use shopstar\models\commission\CommissionSettings;
-use shopstar\constants\components\notice\NoticeTypeConstant;
-use shopstar\bases\KdxAdminApiController;
+use shopstar\models\log\LogModel;
+use shopstar\models\member\MemberLevelModel;
+use shopstar\models\member\MemberModel;
+use shopstar\models\order\OrderModel;
+use shopstar\services\commission\CommissionAgentService;
 
 /**
  * 分销商管理
  * Class AgentController
- * @package apps\commission\manage
+ * @package shopstar\admin\commission
  */
 class AgentController extends KdxAdminApiController
 {
+
+    /**
+     * @var array
+     */
     public $configActions = [
         'allowHeaderActions' => [
             'index',
@@ -56,11 +58,9 @@ class AgentController extends KdxAdminApiController
         ]
     ];
 
-
-
     /**
      * 分销商列表
-     * @return mixed
+     * @return array|int[]|void|\yii\web\Response
      * @throws CommissionAgentException
      * @author 青岛开店星信息技术有限公司
      */
@@ -85,7 +85,7 @@ class AgentController extends KdxAdminApiController
      * @return array|CommissionAgentModel[]
      * @author 青岛开店星信息技术有限公司
      */
-    private function getList(int $status)
+    private function getList(int $status): array
     {
         $get = RequestHelper::get();
         $where = [];
@@ -107,26 +107,32 @@ class AgentController extends KdxAdminApiController
             'agent.member_id', // 用户id
             'member.level_id', // 会员等级id
         ];
+
         // 成为时间范围查询
         if (!empty($get['become_start_time']) && !empty($get['become_end_time'])) {
             $where[] = ['between', "agent.become_time", $get['become_start_time'], $get['become_end_time']];
         }
+
         // 申请时间范围查询
         if (!empty($get['apply_start_time']) && !empty($get['apply_end_time'])) {
             $where[] = ['between', "agent.apply_time", $get['apply_start_time'], $get['apply_end_time']];
         }
+
         // 注册时间范围查询
         if (!empty($get['create_start_time']) && !empty($get['create_end_time'])) {
             $where[] = ['between', "member.created_at", $get['create_start_time'], $get['create_end_time']];
         }
+
         // 分销商等级
         if (!empty($get['commission_level'])) {
             $where[] = ['level.id' => $get['commission_level']];
         }
+
         // 会员等级等级
         if (!empty($get['member_level'])) {
             $where[] = ['member.level_id' => $get['member_level']];
         }
+
         // 审核状态 只有待审核有这个条件
         if ($get['audit_status'] != '') {
             $where[] = ['agent.status' => $get['audit_status']];
@@ -151,6 +157,7 @@ class AgentController extends KdxAdminApiController
         }
 
         $where[] = ['agent.is_deleted' => 0];
+
         // 排序
         $orderBy = [];
         if (!empty($get['sort'])) {
@@ -190,12 +197,14 @@ class AgentController extends KdxAdminApiController
             'select' => $select,
             'groupBy' => 'member.id',
         ];
+
         // 转换等级
         $levelList = MemberLevelModel::find()
             ->select('id, level_name')
             ->orderBy(['is_default' => SORT_DESC, 'level' => SORT_ASC])
             ->indexBy('id')
             ->get();
+
         // 获取默认会员等级
         $defaultLevelId = MemberLevelModel::getDefaultLevelId();
 
@@ -204,8 +213,8 @@ class AgentController extends KdxAdminApiController
 
         return CommissionAgentModel::getColl($params, [
             'disableSort' => true,
-            'pager' => $get['export'] ? false : true,
-            'onlyList' => $get['export'] ? true : false,
+            'pager' => !$get['export'],
+            'onlyList' => (bool)$get['export'],
             'callable' => function (&$row) use ($setLevel, $status, $defaultLevelId, $levelList) {
                 // 会员等级名称
                 $row['level_name'] = $levelList[$row['level_id']]['level_name'];
@@ -247,7 +256,7 @@ class AgentController extends KdxAdminApiController
                     );
                     foreach ($post['member_id'] as $id) {
                         // 拒绝分销商设置缓存
-                        $key = 'show_reject_' .  '_' . $id;
+                        $key = 'show_reject_' . '_' . $id;
                         \Yii::$app->redis->set($key, DateTimeHelper::now());
                         // 日志
                         LogModel::write(
@@ -341,6 +350,9 @@ class AgentController extends KdxAdminApiController
      * 下线列表
      * @return array|\yii\web\Response
      * @throws CommissionAgentException
+     * @throws \PhpOffice\PhpSpreadsheet\Exception
+     * @throws \PhpOffice\PhpSpreadsheet\Writer\Exception
+     * @throws \yii\base\Exception
      * @author 青岛开店星信息技术有限公司
      */
     public function actionChildList()
@@ -682,7 +694,6 @@ class AgentController extends KdxAdminApiController
      */
     public function actionUnbind()
     {
-
         $agentId = RequestHelper::post('agent_id', '0');
         $memberId = RequestHelper::post('member_id');
         if (empty($memberId) || $agentId == '') {

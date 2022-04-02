@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 开店星新零售管理系统
  * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
@@ -21,6 +20,8 @@ use shopstar\models\core\CoreSettings;
 /**
  * 数据管理
  * Class CrontabController
+ * @package shopstar\admin\system\tools
+ * @author 青岛开店星信息技术有限公司
  */
 class CrontabController extends KdxAdminApiController
 {
@@ -33,10 +34,10 @@ class CrontabController extends KdxAdminApiController
             'set',
         ]
     ];
+
     /**
      * 读取设置
      * @return array|\yii\web\Response
-     * @throws \ReflectionException
      * @author likexin
      */
     public function actionGet()
@@ -76,7 +77,6 @@ class CrontabController extends KdxAdminApiController
      * 保存设置
      * @return array|\yii\web\Response
      * @throws \yii\db\Exception
-     * @throws \ReflectionException
      * @author likexin
      */
     public function actionSet()
@@ -102,4 +102,5 @@ class CrontabController extends KdxAdminApiController
 
         return $this->result();
     }
+
 }

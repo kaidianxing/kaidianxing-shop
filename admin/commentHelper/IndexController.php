@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 开店星新零售管理系统
  * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
@@ -13,12 +12,14 @@
 
 namespace shopstar\admin\commentHelper;
 
-use shopstar\bases\exception\BaseApiException;
+use shopstar\bases\KdxAdminApiController;
 use shopstar\components\notice\NoticeComponent;
+use shopstar\constants\commentHelper\CommentHelperConstant;
+use shopstar\constants\commentHelper\CommentHelperLogConstant;
 use shopstar\constants\components\notice\NoticeTypeConstant;
 use shopstar\constants\member\MemberCreditRecordStatusConstant;
+use shopstar\exceptions\commentHelper\CommentHelperException;
 use shopstar\helpers\DateTimeHelper;
- 
 use shopstar\helpers\RequestHelper;
 use shopstar\models\goods\GoodsModel;
 use shopstar\models\log\LogModel;
@@ -29,21 +30,18 @@ use shopstar\models\order\OrderGoodsCommentModel;
 use shopstar\models\order\OrderModel;
 use shopstar\models\sale\CouponModel;
 use shopstar\models\shop\ShopSettings;
-use shopstar\constants\commentHelper\CommentHelperConstant;
-use shopstar\constants\commentHelper\CommentHelperLogConstant;
-use shopstar\exceptions\commentHelper\CommentHelperException;
 use shopstar\services\commentHelper\CommentGrabService;
 use shopstar\services\commentHelper\CommentService;
-use shopstar\bases\KdxAdminApiController;
 use yii\helpers\Json;
 
 /**
  * 商品助手
  * Class IndexController
- * @package apps\commentHelper\manage
+ * @package shopstar\admin\commentHelper
  */
 class IndexController extends KdxAdminApiController
 {
+
     /**
      * 商品列表
      * @author 青岛开店星信息技术有限公司
@@ -188,12 +186,10 @@ class IndexController extends KdxAdminApiController
 
     /**
      * 奖励
-     * @throws BaseApiException
      * @author 青岛开店星信息技术有限公司
      */
     public function actionReward()
     {
-
         $id = RequestHelper::post('id');
         $memberId = RequestHelper::post('member_id');
         $couponId = RequestHelper::post('coupon_id');
@@ -287,7 +283,7 @@ class IndexController extends KdxAdminApiController
             $rewardContent['red_package'] = $redPackage;
             $logData[] = '红包: ' . $redPackage['money'];
 
-            MemberRedPackageModel::createLog( [
+            MemberRedPackageModel::createLog([
                 'member_id' => $comment->member_id,
                 'scene' => MemberRedPackageModel::SCENE_GOODS_COMMENT,
                 'created_at' => DateTimeHelper::now(),

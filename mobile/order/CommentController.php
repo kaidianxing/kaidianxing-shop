@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 开店星新零售管理系统
  * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
@@ -13,12 +12,10 @@
 
 namespace shopstar\mobile\order;
 
-
 use shopstar\bases\controller\BaseMobileApiController;
 use shopstar\constants\order\OrderStatusConstant;
 use shopstar\constants\RefundConstant;
 use shopstar\exceptions\order\CommentException;
-use shopstar\exceptions\order\OrderException;
 use shopstar\helpers\DateTimeHelper;
 use shopstar\helpers\RequestHelper;
 use shopstar\models\member\MemberLevelModel;
@@ -36,6 +33,10 @@ use yii\helpers\Json;
  */
 class CommentController extends BaseMobileApiController
 {
+
+    /**
+     * @var \string[][]
+     */
     public $configActions = [
         'allowNotLoginActions' => [
             'list'
@@ -48,7 +49,7 @@ class CommentController extends BaseMobileApiController
      * @throws CommentException
      * @author 青岛开店星信息技术有限公司
      */
-    public function actionList()
+    public function actionList(): \yii\web\Response
     {
         $goodsId = RequestHelper::getInt('goods_id');
         if (empty($goodsId)) {
@@ -63,7 +64,7 @@ class CommentController extends BaseMobileApiController
         $defaultLevel = MemberLevelModel::getDefaultLevel();
         // 获取所有等级
         $levelsId = MemberLevelModel::find()->select('id')->column();
-        
+
         // 兼容旧的数据  2021-05-06 做评价助手新增规格标题和会员等级名称字段 不需要重新取了
         $oldComment = [];
         $list = OrderGoodsCommentModel::getColl([
@@ -110,7 +111,7 @@ class CommentController extends BaseMobileApiController
                 }
             }
         ]);
-        
+
         // 旧数据兼容
         if (!empty($oldComment)) {
             // 获取评价商品
@@ -134,16 +135,16 @@ class CommentController extends BaseMobileApiController
                 }
             }
         }
-        
+
         // 获取系统设置
         $isCommentDesensitization = ShopSettings::get('sysset.trade.comment_desensitization');
         // 昵称脱敏
         if ($isCommentDesensitization == 1) {
             foreach ((array)$list['list'] as $key => $item) {
-                $list['list'][$key]['nickname'] = mb_substr($list['list'][$key]['nickname'], 0, 1).'***';
+                $list['list'][$key]['nickname'] = mb_substr($list['list'][$key]['nickname'], 0, 1) . '***';
             }
         }
-        
+
         $list['list'] = array_values($list['list']);
         return $this->success($list);
     }
@@ -153,7 +154,7 @@ class CommentController extends BaseMobileApiController
      * @return \yii\web\Response
      * @author 青岛开店星信息技术有限公司
      */
-    public function actionWaitList()
+    public function actionWaitList(): \yii\web\Response
     {
         $orderId = RequestHelper::getInt('order_id');
         $params = [
@@ -187,7 +188,7 @@ class CommentController extends BaseMobileApiController
         }
 
         $list = OrderGoodsModel::getColl($params);
-        
+
         return $this->success($list);
     }
 
@@ -224,7 +225,7 @@ class CommentController extends BaseMobileApiController
         if (empty($post['order_goods_id']) || $post['level'] < 0 || empty($post['content']) || mb_strlen($post['content']) > 500) {
             throw new CommentException(CommentException::ORDER_GOODS_COMMENT_WRITE_COMMENT_PARAMS_ERROR);
         }
-        
+
         // 查找是否已评价过
         $isExists = OrderGoodsCommentModel::find()->where(['order_goods_id' => $post['order_goods_id'], 'member_id' => $this->memberId])->exists();
         if ($isExists) {

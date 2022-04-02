@@ -27,7 +27,7 @@ use yii\web\Response;
 /**
  * 满额包邮
  * Class EnoughFreeController
- * @package app\controllers\manage\sale\basic
+ * @package shopstar\admin\sale\basic
  */
 class EnoughFreeController extends KdxAdminApiController
 {

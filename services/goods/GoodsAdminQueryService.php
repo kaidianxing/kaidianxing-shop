@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 开店星新零售管理系统
  * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
@@ -11,13 +10,8 @@
  * @warning 未经许可禁止私自删除版权信息
  */
 
-
 namespace shopstar\services\goods;
 
-use apps\creditShop\models\CreditShopGoodsModel;
-use apps\fullReduce\constants\FullReduceGoodsJoinTypeConstant;
-use apps\groups\models\GroupsGoodsModel;
-use apps\presell\models\PresellActivityModel;
 use shopstar\bases\service\BaseService;
 use shopstar\constants\activity\ActivityTypeConstant;
 use shopstar\constants\ClientTypeConstant;
@@ -40,6 +34,9 @@ use shopstar\models\shoppingReward\ShoppingRewardActivityModel;
 use yii\helpers\ArrayHelper as YiiArrayHelper;
 use yii\helpers\Json;
 
+/**
+ * @author 青岛开店星信息技术有限公司
+ */
 class GoodsAdminQueryService extends BaseService
 {
     /**
@@ -94,7 +91,7 @@ class GoodsAdminQueryService extends BaseService
      * @return array
      * @throws GoodsException
      * @throws \yii\base\InvalidConfigException
-     * @author: Terry
+     * @author 青岛开店星信息技术有限公司
      */
     public static function getOne($goodsId, $flag)
     {
@@ -125,9 +122,12 @@ class GoodsAdminQueryService extends BaseService
     /**
      * 后台管理，得到产品列表
      * @param array $options
+     * @return array|int|string|\yii\db\ActiveRecord[]
+     * @throws GoodsException
+     * @throws \Exception
      * @author: Terry
      */
-    public function getGoodsList($options)
+    public function getGoodsList(array $options = [])
     {
         $pager = YiiArrayHelper::getValue($options, 'pager', 0);
         $export = YiiArrayHelper::getValue($options, 'export', 0);
@@ -215,20 +215,12 @@ class GoodsAdminQueryService extends BaseService
             // 查找活动
             if ($showActivity) {
                 $goodsActivityIds = [];
-                $presellActivityIds = [];
                 // 区分预售和其他
                 foreach ($goodsActivity as $item) {
-                    if ($item['activity_type'] == 'presell') {
-                        $presellActivityIds[] = $item['activity_id'];
-                    } else {
-                        $goodsActivityIds[] = $item['activity_id'];
-                    }
+                    $goodsActivityIds[] = $item['activity_id'];
                 }
                 if (!empty($goodsActivityIds)) {
                     $activityList = ShopMarketingModel::find()->select(['id', 'title', 'start_time', 'end_time', 'status', 'type'])->where(['id' => $goodsActivityIds])->indexBy('id')->get();
-                }
-                if (!empty($presellActivityIds)) {
-                    $presellActivity = PresellActivityModel::find()->select(['id', 'title', 'start_time', 'end_time', 'status'])->where(['id' => $presellActivityIds])->indexBy('id')->get();
                 }
             }
 
@@ -247,12 +239,6 @@ class GoodsAdminQueryService extends BaseService
                                     $activity['status'] = 1;
                                 }
                                 $activity['type_text'] = ActivityTypeConstant::getText($activityList[$item['activity_id']]['type']);
-                            } else {
-                                $activity = $presellActivity[$item['activity_id']];
-                                if ($activity['start_time'] < DateTimeHelper::now()) {
-                                    $activity['status'] = 1;
-                                }
-                                $activity['type_text'] = '预售';
                             }
                             $listItem['join_activity'][] = $activity;
                         }
@@ -326,7 +312,7 @@ class GoodsAdminQueryService extends BaseService
 
     /**
      * 获取参数
-     * @return array
+     * @throws \Exception
      * @author 青岛开店星信息技术有限公司
      */
     public function initParams($options)
@@ -449,18 +435,13 @@ class GoodsAdminQueryService extends BaseService
 
         // 判断是否预售活动进入,屏蔽掉虚拟卡密商品 和 预约到店
         if (isset($flag)) {
-            if ($flag == 'presell') {
-                $params['andWhere'][] = ['not in', 'type', [2, 3]];
-            } else if ($flag == 'seckill') {
-                $params['andWhere'][] = ['not in', 'type', [3]];
-            } else if ($flag == 'creditShop') {
+            if ($flag == 'seckill') {
                 $params['andWhere'][] = ['not in', 'type', [3]];
             }
         }
 
         $this->_params = $params;
     }
-
 
     /**
      * 获取活动信息
@@ -474,15 +455,6 @@ class GoodsAdminQueryService extends BaseService
         $activitys = ShopMarketingModel::getActivityInfoById($activityId, $activityType);
         if (is_error($activitys)) {
             return;
-        }
-
-        //如果是拼团，需要查自己的商品
-        if ($activityType == 'groups') {
-            $groupsGoods = GroupsGoodsModel::getAllGoodsOptionInfo($activityId);
-            foreach ($activitys as $k => &$v) {
-                $v['price_range'] = $groupsGoods[$k]['price_range'];
-            }
-            unset($v);
         }
 
         if (!is_error($activitys)) {
@@ -503,7 +475,7 @@ class GoodsAdminQueryService extends BaseService
      * @return array|int|string|\yii\db\ActiveRecord[]
      * @author: Terry
      */
-    public function getActivityGoods($type)
+    public static function getActivityGoods($type)
     {
         $andWhere = [];
         $leftJoins = [];

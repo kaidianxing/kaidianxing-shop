@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 开店星新零售管理系统
  * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
@@ -10,7 +9,6 @@
  * @warning Unauthorized deletion of copyright information is prohibited.
  * @warning 未经许可禁止私自删除版权信息
  */
-
 
 namespace shopstar\services\order;
 
@@ -68,6 +66,9 @@ use shopstar\services\tradeOrder\TradeOrderService;
 use shopstar\structs\order\OrderPaySuccessStruct;
 use yii\helpers\Json;
 
+/**
+ * @author 青岛开店星信息技术有限公司
+ */
 class OrderService extends BaseService
 {
 
@@ -88,7 +89,6 @@ class OrderService extends BaseService
         }
     }
 
-
     /**
      * 关闭订单
      * @param $order
@@ -98,7 +98,7 @@ class OrderService extends BaseService
      * @return bool|array
      * @author 青岛开店星信息技术有限公司
      */
-    public static function closeOrder($order, $closeType, $operator = 0, $options = [])
+    public static function closeOrder($order, $closeType, int $operator = 0, array $options = [])
     {
         $options = array_merge([
             'cancel_reason' => '', //关闭理由
@@ -259,8 +259,7 @@ class OrderService extends BaseService
 
         // 虚拟订单
         if (GoodsService::checkOrderGoodsVirtualType($orderInfo)) {
-            $virtualSendRes = self::virtualShip($orderInfo['id'], $orderInfo['order_type'], ['transaction' => false,]);
-            return $virtualSendRes;
+            return self::virtualShip($orderInfo['id'], $orderInfo['order_type'], ['transaction' => false,]);
         }
 
         $noExpress = (int)$data['no_express'];
@@ -445,6 +444,7 @@ class OrderService extends BaseService
      * 虚拟商品发货
      * @param int $orderId
      * @param int $orderType
+     * @param array $options
      * @return array|bool
      * @author 青岛开店星信息技术有限公司
      */
@@ -463,8 +463,6 @@ class OrderService extends BaseService
             if (OrderModel::getAutoReceive() && $autoReceiveDays > 0) {
                 $orderUpdate['auto_finish_time'] = date('Y-m-d H:i:s', strtotime("+ {$autoReceiveDays} days", time()));
             }
-
-            //TODO 青椒 消息通知
 
             if (!empty($orderUpdate)) {
                 $rs = OrderModel::updateAll($orderUpdate, ['id' => $orderId]);
@@ -487,13 +485,13 @@ class OrderService extends BaseService
 
     /**
      * 取消发货
-     * @param $orderId
+     * @param int $orderId
      * @param $packageId
      * @param string $reason
      * @return array|void
      * @author 青岛开店星信息技术有限公司
      */
-    public static function cancelShip(int $orderId, $packageId, $reason = '')
+    public static function cancelShip(int $orderId, $packageId, string $reason = '')
     {
         //包裹信息查询
         $package = OrderPackageModel::find()
@@ -595,7 +593,7 @@ class OrderService extends BaseService
      * @return array|bool
      * @author 青岛开店星信息技术有限公司
      */
-    public static function complete($orderInfo, int $type = 1, $options = [])
+    public static function complete($orderInfo, int $type = 1, array $options = [])
     {
         $options = array_merge([
             'transaction' => true,
@@ -703,7 +701,7 @@ class OrderService extends BaseService
             $discountRules = $orderInfo['extra_discount_rules_package'];
             // 需要检查是否参与分销的活动
             $checkCommissionActivity = [
-                'presell', // 预售
+                'presell', // 预售 TODO likexin
                 'seckill', // 秒杀
                 'groups',//拼团
             ];

@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 开店星新零售管理系统
  * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
@@ -13,7 +12,7 @@
 
 namespace shopstar\admin\finance;
 
-
+use shopstar\bases\KdxAdminApiController;
 use shopstar\constants\ClientTypeConstant;
 use shopstar\constants\member\MemberCreditRecordStatusConstant;
 use shopstar\constants\member\MemberCreditRecordTypeConstant;
@@ -23,15 +22,18 @@ use shopstar\helpers\RequestHelper;
 use shopstar\models\member\MemberCreditRecordModel;
 use shopstar\models\member\MemberLevelModel;
 use shopstar\models\member\MemberModel;
-use shopstar\bases\KdxAdminApiController;
 
 /**
  * 会员积分、余额类
  * Class CreditRecordController
- * @package shop\manage\member
+ * @package shopstar\admin\member
  */
 class CreditRecordController extends KdxAdminApiController
 {
+
+    /**
+     * @var array
+     */
     public $configActions = [
         'allowHeaderActions' => [
             'integral',
@@ -41,10 +43,12 @@ class CreditRecordController extends KdxAdminApiController
             'label'
         ]
     ];
-    
+
     /**
      * 积分明细
-     * @return array
+     * @throws \PhpOffice\PhpSpreadsheet\Exception
+     * @throws \PhpOffice\PhpSpreadsheet\Writer\Exception
+     * @throws \yii\base\Exception
      * @author 青岛开店星信息技术有限公司
      */
     public function actionIntegral()
@@ -71,7 +75,7 @@ class CreditRecordController extends KdxAdminApiController
      * @throws \yii\base\Exception
      * @author 青岛开店星信息技术有限公司
      */
-    private function exportIntegral($records)
+    private function exportIntegral($records): bool
     {
         ExcelHelper::export($records, [
 
@@ -113,6 +117,9 @@ class CreditRecordController extends KdxAdminApiController
     /**
      * 余额明细
      * @return array
+     * @throws \PhpOffice\PhpSpreadsheet\Exception
+     * @throws \PhpOffice\PhpSpreadsheet\Writer\Exception
+     * @throws \yii\base\Exception
      * @author 青岛开店星信息技术有限公司
      */
     public function actionBalance()
@@ -193,7 +200,7 @@ class CreditRecordController extends KdxAdminApiController
                 ['m.id', 'int', 'member_id']
             ],
             'where' => [
-                'record.type'  => $type,
+                'record.type' => $type,
                 'm.is_deleted' => 0
             ],
             'select' => [
@@ -214,8 +221,8 @@ class CreditRecordController extends KdxAdminApiController
             ],
             'alias' => 'record',
             'leftJoins' => [
-                [MemberModel::tableName().' m', 'record.member_id = m.id'],
-                [MemberLevelModel::tableName().' level', 'm.level_id = level.id'],
+                [MemberModel::tableName() . ' m', 'record.member_id = m.id'],
+                [MemberLevelModel::tableName() . ' level', 'm.level_id = level.id'],
             ],
             'orderBy' => [
                 'record.created_at' => SORT_DESC,
@@ -224,8 +231,8 @@ class CreditRecordController extends KdxAdminApiController
         ];
 
         // 获取列表
-        $records = MemberCreditRecordModel::getColl($params, [
-            'callable' => function(&$row) {
+        return MemberCreditRecordModel::getColl($params, [
+            'callable' => function (&$row) {
                 $row['source_name'] = ClientTypeConstant::getText($row['source']);
                 $row['operator_text'] = $row['operator'] == 0 ? "本人" : "管理员";
                 $row['status_text'] = MemberCreditRecordStatusConstant::getMessage($row['status']);
@@ -233,8 +240,6 @@ class CreditRecordController extends KdxAdminApiController
             'pager' => $export == 0,
             'onlyList' => $export == 1
         ]);
-
-        return $records;
     }
 
     /**
@@ -244,9 +249,9 @@ class CreditRecordController extends KdxAdminApiController
     public function actionLabel()
     {
         $label = [];
-    
-        $label['levels'] =  ArrayHelper::map(MemberLevelModel::find()->select('id, level_name')->get(), 'id', 'level_name');
-    
+
+        $label['levels'] = ArrayHelper::map(MemberLevelModel::find()->select('id, level_name')->get(), 'id', 'level_name');
+
         return $this->result($label);
     }
 

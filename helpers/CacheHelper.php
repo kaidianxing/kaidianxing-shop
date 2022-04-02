@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 开店星新零售管理系统
  * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
@@ -10,7 +9,6 @@
  * @warning Unauthorized deletion of copyright information is prohibited.
  * @warning 未经许可禁止私自删除版权信息
  */
-
 
 namespace shopstar\helpers;
 
@@ -23,17 +21,20 @@ use yii\caching\Dependency;
  * 缓存助手
  * Class Cache
  * @package shopstar\helpers
+ * @author 青岛开店星信息技术有限公司
  */
 class CacheHelper
 {
+
     /**
-     * @var $cache \yii\caching\CacheInterface
+     * @var \yii\caching\CacheInterface $cache
      */
     private static $cache;
 
     /**
      * @param CacheInterface $cache
-     * @return bool
+     * @return void
+     * @author 青岛开店星信息技术有限公司
      */
     public static function setCacheClass(CacheInterface $cache)
     {
@@ -42,6 +43,7 @@ class CacheHelper
 
     /**
      * 删除缓存
+     * @author 青岛开店星信息技术有限公司
      */
     public static function delCacheClass()
     {
@@ -50,9 +52,12 @@ class CacheHelper
 
     /**
      * 循环检测生成
+     * @param string $prefix
+     * @param int $length
+     * @return string
      * @author 青岛开店星信息技术有限公司
      */
-    public static function circular($prefix = '', $length = 12)
+    public static function circular(string $prefix = '', int $length = 12): string
     {
         while (true) {
             $code = StringHelper::random($length, true);
@@ -65,8 +70,9 @@ class CacheHelper
 
     /**
      * @return \yii\caching\CacheInterface
+     * @author 青岛开店星信息技术有限公司
      */
-    public static function getCacheClass()
+    public static function getCacheClass(): CacheInterface
     {
         return self::$cache ?? Yii::$app->cache;
     }
@@ -135,7 +141,7 @@ class CacheHelper
      * a complex data structure consisting of factors representing the key.
      * @return bool true if a value exists in cache, false if the value is not in the cache or expired.
      */
-    public static function exists($key)
+    public static function exists($key): bool
     {
         return static::getCacheClass()->exists($key);
     }
@@ -150,7 +156,7 @@ class CacheHelper
      * is returned in terms of (key, value) pairs.
      * If a value is not cached or expired, the corresponding array value will be false.
      */
-    public static function multiGet($keys)
+    public static function multiGet(array $keys): array
     {
         return static::getCacheClass()->multiGet($keys);
     }
@@ -162,12 +168,12 @@ class CacheHelper
      *
      * @param array $items the items to be cached, as key-value pairs.
      * @param int $duration default number of seconds in which the cached values will expire. 0 means never expire.
-     * @param Dependency $dependency dependency of the cached items. If the dependency changes,
+     * @param Dependency|null $dependency dependency of the cached items. If the dependency changes,
      * the corresponding values in the cache will be invalidated when it is fetched via [[get()]].
      * This parameter is ignored if [[serializer]] is false.
      * @return array array of failed keys
      */
-    public function multiSet($items, $duration = 0, $dependency = null)
+    public function multiSet(array $items, int $duration = 0, Dependency $dependency = null): array
     {
         return static::getCacheClass()->multiSet($items, $duration, $dependency);
     }
@@ -179,12 +185,12 @@ class CacheHelper
      * a complex data structure consisting of factors representing the key.
      * @param mixed $value the value to be cached
      * @param int $duration the number of seconds in which the cached value will expire. 0 means never expire.
-     * @param Dependency $dependency dependency of the cached item. If the dependency changes,
+     * @param Dependency|null $dependency dependency of the cached item. If the dependency changes,
      * the corresponding value in the cache will be invalidated when it is fetched via [[get()]].
      * This parameter is ignored if [[serializer]] is false.
      * @return bool whether the value is successfully stored into cache
      */
-    public static function add($key, $value, $duration = 0, $dependency = null)
+    public static function add($key, $value, int $duration = 0, Dependency $dependency = null): bool
     {
         return static::getCacheClass()->add($key, $value, $duration, $dependency);
     }
@@ -195,12 +201,12 @@ class CacheHelper
      *
      * @param array $items the items to be cached, as key-value pairs.
      * @param int $duration default number of seconds in which the cached values will expire. 0 means never expire.
-     * @param Dependency $dependency dependency of the cached items. If the dependency changes,
+     * @param Dependency|null $dependency dependency of the cached items. If the dependency changes,
      * the corresponding values in the cache will be invalidated when it is fetched via [[get()]].
      * This parameter is ignored if [[serializer]] is false.
      * @return array array of failed keys
      */
-    public static function multiAdd($items, $duration = 0, $dependency = null)
+    public static function multiAdd(array $items, int $duration = 0, Dependency $dependency = null): array
     {
         return static::getCacheClass()->multiAdd($items, $duration, $dependency);
     }
@@ -211,7 +217,7 @@ class CacheHelper
      * a complex data structure consisting of factors representing the key.
      * @return bool if no error happens during deletion
      */
-    public static function delete($key)
+    public static function delete($key): bool
     {
         return static::getCacheClass()->delete($key);
     }
@@ -221,7 +227,7 @@ class CacheHelper
      * Be careful of performing this operation if the cache is shared among multiple applications.
      * @return bool whether the flush operation was successful.
      */
-    public static function flush()
+    public static function flush(): bool
     {
         return static::getCacheClass()->flush();
     }
@@ -257,15 +263,15 @@ class CacheHelper
         return static::getCacheClass()->getOrSet($key, $callable, $duration, $dependency);
     }
 
-
     /**
      * 获取缓存KEY
      * @param $cacheType
      * @param null $params
      * @return string
+     * @throws \Exception
      * @author 青岛开店星信息技术有限公司
      */
-    public static function getKey($cacheType, $params = null)
+    public static function getKey($cacheType, $params = null): string
     {
         self::checkCacheTypeDefined($cacheType);
 
@@ -284,6 +290,7 @@ class CacheHelper
      * 获取缓存时长
      * @param $cacheType
      * @return mixed
+     * @throws \Exception
      * @author 青岛开店星信息技术有限公司
      */
     public static function getExpire($cacheType)
@@ -293,6 +300,11 @@ class CacheHelper
         return CacheTypeConstant::CACHE_DEFINE[$cacheType]['expire'];
     }
 
+    /**
+     * @param $cacheType
+     * @throws \Exception
+     * @author 青岛开店星信息技术有限公司
+     */
     private static function checkCacheTypeDefined($cacheType)
     {
         if (empty(CacheTypeConstant::CACHE_DEFINE[$cacheType])) {

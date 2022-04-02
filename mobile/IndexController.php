@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 开店星新零售管理系统
  * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
@@ -11,29 +10,27 @@
  * @warning 未经许可禁止私自删除版权信息
  */
 
-
 namespace shopstar\mobile;
 
-use apps\article\services\ArticleSettingsService;
 use shopstar\bases\controller\BaseMobileApiController;
 use shopstar\components\amap\AmapClient;
 use shopstar\helpers\ArrayHelper;
 use shopstar\helpers\RequestHelper;
 use shopstar\helpers\ShopUrlHelper;
 use shopstar\models\core\CoreAddressModel;
-use shopstar\services\core\CoreAppService;
 use shopstar\models\core\CoreSettings;
 use shopstar\models\member\MemberSession;
-use shopstar\models\shop\ShopAppModel;
 use shopstar\models\shop\ShopSettings;
 use shopstar\models\statistics\StatisticsPageViewModel;
 use shopstar\models\statistics\StatisticsUniqueViewModel;
 use shopstar\services\core\attachment\CoreAttachmentService;
+use shopstar\services\core\CoreAppService;
 use yii\helpers\Json;
 
 /**
  * Class IndexController
  * @package shop\client
+ * @author 青岛开店星信息技术有限公司
  */
 class IndexController extends BaseMobileApiController
 {
@@ -199,9 +196,6 @@ class IndexController extends BaseMobileApiController
         // 插件列表 用来判断可不可以请插件接
         $set['plugins'] = CoreAppService::getAppEnableList();
 
-        //添加店铺类型
-        $set['shop_type'] = $this->shopType;
-
         // 下单排序设置
         $set['dispatch_sort'] = ShopSettings::get('dispatch.sort');
         $set['dispatch_name'] = ShopSettings::get('dispatch.name');
@@ -327,7 +321,7 @@ class IndexController extends BaseMobileApiController
     {
         $location = RequestHelper::get('location');
 
-        $result = AmapClient::getAddressByLngAndLat($location, $this->shopType);
+        $result = AmapClient::getAddressByLngAndLat($location);
 
         return $this->result($result);
 

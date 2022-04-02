@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 开店星新零售管理系统
  * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
@@ -11,33 +10,32 @@
  * @warning 未经许可禁止私自删除版权信息
  */
 
-
-
 namespace shopstar\admin\expressHelper;
 
-
+use shopstar\bases\KdxAdminApiController;
+use shopstar\constants\expressHelper\ExpressHelperLogConstant;
 use shopstar\helpers\DateTimeHelper;
 use shopstar\helpers\RequestHelper;
-use shopstar\models\log\LogModel;
-use shopstar\constants\expressHelper\ExpressHelperLogConstant;
 use shopstar\models\expressHelper\ExpressHelperConsignerTemplateModel;
-use shopstar\bases\KdxAdminApiController;
+use shopstar\models\log\LogModel;
 
 /**
  * 发货人模板
  * Class ConsignerTemplateController
  * @author 青岛开店星信息技术有限公司
- * @package apps\expressHelper\manage
+ * @package shopstar\admin\expressHelper
  */
 class ConsignerTemplateController extends KdxAdminApiController
 {
 
+    /**
+     * @var array
+     */
     public $configActions = [
         'allowPermActions' => [
             'simple-list'
         ]
     ];
-
 
     /**
      * @return array|int[]|\yii\web\Response
@@ -225,7 +223,6 @@ class ConsignerTemplateController extends KdxAdminApiController
      * 设置默认
      * @return array|int[]|\yii\web\Response
      * @throws \Throwable
-     * @throws \yii\db\StaleObjectException
      */
     public function actionSwitch()
     {

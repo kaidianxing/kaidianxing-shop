@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 开店星新零售管理系统
  * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
@@ -10,7 +9,6 @@
  * @warning Unauthorized deletion of copyright information is prohibited.
  * @warning 未经许可禁止私自删除版权信息
  */
-
 
 namespace shopstar\components\paymentNew\drivers;
 
@@ -46,7 +44,7 @@ class WechatDriver extends BasePaymentNewDriver implements PaymentNewDriverInter
     public function buildConfig(bool $withCert = false): array
     {
         \Yansongda\Pay\Gateways\Wechat\Support::clear();
-        
+
         // 根据渠道不同定义app_id的key值
         $appIdKey = $this->clientType == ClientTypeConstant::CLIENT_WXAPP ? 'miniapp_id' : 'app_id';
 
@@ -84,7 +82,7 @@ class WechatDriver extends BasePaymentNewDriver implements PaymentNewDriverInter
             $config['cert_key'] = self::buildTmpCert($this->paymentModel->wechat_key, 'pem');
             $config['cert_client'] = self::buildTmpCert($this->paymentModel->wechat_cert, 'cert');
         }
-        
+
         return $config;
     }
 
@@ -96,7 +94,7 @@ class WechatDriver extends BasePaymentNewDriver implements PaymentNewDriverInter
     public function buildOrderParams(): array
     {
         $openid = $this->isServiceMode ? 'sub_openid' : 'openid';
-        
+
         return [
             'out_trade_no' => $this->tradeNo,
             'body' => $this->subject,
@@ -140,9 +138,7 @@ class WechatDriver extends BasePaymentNewDriver implements PaymentNewDriverInter
             } else {
                 $pay = Pay::wechat($this->buildConfig())->$method($this->buildOrderParams())->toArray();
             }
-        } catch (InvalidArgumentException $exception) {
-            return error($exception->getMessage());
-        } catch (GatewayException $exception) {
+        } catch (InvalidArgumentException | GatewayException $exception) {
             return error($exception->getMessage());
         } finally {
             // 清理证书
@@ -160,11 +156,7 @@ class WechatDriver extends BasePaymentNewDriver implements PaymentNewDriverInter
     {
         try {
             $pay = Pay::wechat($this->buildConfig())->close($this->tradeNo)->toArray();
-        } catch (InvalidArgumentException $exception) {
-            return error($exception->getMessage());
-        } catch (InvalidSignException $exception) {
-            return error($exception->getMessage());
-        } catch (GatewayException $exception) {
+        } catch (InvalidArgumentException | GatewayException | InvalidSignException $exception) {
             return error($exception->getMessage());
         } finally {
             // 清理证书
@@ -173,7 +165,7 @@ class WechatDriver extends BasePaymentNewDriver implements PaymentNewDriverInter
 
         return $pay;
     }
-    
+
     /**
      * 退款
      * @param float $orderPrice 订单总金额
@@ -193,11 +185,7 @@ class WechatDriver extends BasePaymentNewDriver implements PaymentNewDriverInter
                 'total_fee' => $orderPrice * 100,
                 'refund_fee' => $refundPrice * 100,
             ]);
-        } catch (GatewayException $exception) {
-            return error($exception->getMessage());
-        } catch (InvalidConfigException $exception) {
-            return error($exception->getMessage());
-        } catch (InvalidSignException $exception) {
+        } catch (GatewayException | InvalidConfigException | InvalidSignException $exception) {
             return error($exception->getMessage());
         } finally {
             // 清理证书
@@ -206,8 +194,8 @@ class WechatDriver extends BasePaymentNewDriver implements PaymentNewDriverInter
 
         return success();
     }
-    
-    
+
+
     /**
      * 验签
      * @param $data
@@ -219,9 +207,7 @@ class WechatDriver extends BasePaymentNewDriver implements PaymentNewDriverInter
     {
         try {
             Pay::wechat($this->buildConfig())->verify($data);
-        } catch (InvalidConfigException $exception) {
-            return error($exception->getMessage());
-        } catch (InvalidSignException $exception) {
+        } catch (InvalidConfigException | InvalidSignException $exception) {
             return error($exception->getMessage());
         }
 

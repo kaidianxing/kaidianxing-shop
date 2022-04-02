@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 开店星新零售管理系统
  * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
@@ -15,8 +14,6 @@ namespace shopstar\components\response;
 
 use shopstar\components\response\bases\ResponseChannelConstant;
 use shopstar\components\response\bases\ResponseChannelInterface;
-use shopstar\helpers\LogHelper;
-use shopstar\models\core\CoreRuleModel;
 use shopstar\models\wechat\WechatRuleKeywordModel;
 use shopstar\models\wechat\WechatRuleModel;
 use Yii;
@@ -26,6 +23,7 @@ use yii\base\Component;
  * 智能应答组件
  * Class ResponseComponent
  * @package shopstar\components
+ * @author 青岛开店星信息技术有限公司
  */
 class ResponseComponent extends Component
 {

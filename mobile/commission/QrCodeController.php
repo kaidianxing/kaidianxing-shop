@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 开店星新零售管理系统
  * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
@@ -17,12 +16,12 @@ use shopstar\components\wechat\helpers\MiniProgramACodeHelper;
 use shopstar\constants\ClientTypeConstant;
 use shopstar\helpers\ShopUrlHelper;
 use shopstar\models\member\MemberModel;
-use shopstar\mobile\commission\CommissionClientApiController;
 
 /**
  * 推广二维码
  * Class QrCodeController
- * @package apps\commission\client
+ * @package shopstar\mobile\commission
+ * @author 青岛开店星信息技术有限公司
  */
 class QrCodeController extends CommissionClientApiController
 {
@@ -42,12 +41,12 @@ class QrCodeController extends CommissionClientApiController
             if (!is_dir($fileDir)) {
                 mkdir($fileDir);
             }
-            $avatar = $fileDir .  '_' . $this->member['id'] . '.png';
+            $avatar = $fileDir . '_' . $this->member['id'] . '.png';
             // 下载头像
             if (!is_file($avatar)) {
                 file_put_contents($avatar, file_get_contents($this->member['avatar']));
             }
-            $avatar =  ShopUrlHelper::build('tmp/wxapp_avatar/' .  '_' . $this->member['id'] . '.png', [], true);
+            $avatar = ShopUrlHelper::build('tmp/wxapp_avatar/' . '_' . $this->member['id'] . '.png', [], true);
         }
         $data = [
             'id' => $this->memberId,
@@ -69,7 +68,7 @@ class QrCodeController extends CommissionClientApiController
     public function actionGetWxapp()
     {
         //文件名
-        $fileName = md5('commission_' .  '_' . $this->memberId) . '.jpg';
+        $fileName = md5('commission_' . '_' . $this->memberId) . '.jpg';
         //保存地址文件夹
         $savePatchDir = SHOP_STAR_PUBLIC_TMP_PATH . '/wxapp_qrcode/';
         //保存地址

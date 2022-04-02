@@ -1,17 +1,25 @@
 {
   "name": "kaidianxing/kaidianxing",
-  "description": "renren shop v5",
+  "description": "基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开",
   "homepage": "https://www.kaidianxing.com",
   "type": "project",
-  "keywords": [
-    ""
-  ],
-  "license": "",
+  "license": "GPL-3.0",
   "authors": [
     {
       "name": "青岛开店星信息技术有限公司",
       "email": "4630532@qq.com"
+    },
+    {
+      "name": "likexin",
+      "email": "595959518@qq.com"
     }
+  ],
+  "keywords": [
+    "开店",
+    "分销商城",
+    "O2O",
+    "小程序商城",
+    "二开"
   ],
   "support": {
     "forum": "https://q.kaidianxing.com",
@@ -19,46 +27,43 @@
   },
   "minimum-stability": "stable",
   "require": {
-    "php": "~7.1.0",
+    "php": "~7.4",
     "yiisoft/yii2": "^2.0",
     "yiisoft/yii2-redis": "^2.0",
-    "yiisoft/yii2-queue": "^2.3.1",
-    "yiisoft/yii2-swiftmailer": "~2.1.2",
-    "egorov/yii2-annotations": "^1.1.0",
-    "yansongda/pay": "^2.10.2",
-    "overtrue/easy-sms": "^1.3.2",
-    "aliyuncs/oss-sdk-php": "^2.4.1",
-    "qiniu/php-sdk": "^7.3.0",
-    "qcloud/cos-sdk-v5": "^2.1.1",
-    "phpoffice/phpspreadsheet": "^1.10",
-    "symfony/var-dumper": "v4.4.0",
+    "yiisoft/yii2-queue": "^2.3",
+    "yiisoft/yii2-swiftmailer": "^2.1",
+    "yansongda/pay": "^3.1",
+    "overtrue/wechat": "^4.5",
+    "overtrue/easy-sms": "^2.1",
+    "phpoffice/phpspreadsheet": "^1.22",
+    "symfony/yaml": "^5.4",
+    "endroid/qr-code": "^4.4",
+    "symfony/var-dumper": "^5.4",
+    "aliyuncs/oss-sdk-php": "^2.4",
+    "qcloud/cos-sdk-v5": "^2.5",
+    "qiniu/php-sdk": "^7.4",
+    "moonpie/macro": "^1.0",
     "ext-json": "*",
     "ext-gd": "*",
-    "ext-libxml": "*",
-    "ext-simplexml": "*",
-    "overtrue/wechat": "^5.17",
-    "symfony/yaml": "^4.4",
-    "endroid/qr-code": "^3.5",
-    "ext-curl": "*"
+    "ext-curl": "*",
+    "ext-bcmath": "*",
+    "ext-zip": "*",
+    "ext-fileinfo": "*"
   },
   "require-dev": {
-    "yiisoft/yii2-debug": "~2.1.0",
-    "yiisoft/yii2-gii": "~2.1.0"
-  },
-  "config": {
-    "process-timeout": 1800,
-    "fxp-asset": {
-      "enabled": false
-    },
-    "allow-plugins": {
-      "yiisoft/yii2-composer": true,
-      "easywechat-composer/easywechat-composer": true
-    }
+    "yiisoft/yii2-debug": "^2.1",
+    "yiisoft/yii2-gii": "^2.2"
   },
   "repositories": [
     {
       "type": "composer",
       "url": "https://asset-packagist.org"
     }
-  ]
+  ],
+  "config": {
+    "allow-plugins": {
+      "yiisoft/yii2-composer": true,
+      "easywechat-composer/easywechat-composer": true
+    }
+  }
 }

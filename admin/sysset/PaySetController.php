@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 开店星新零售管理系统
  * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
@@ -13,22 +12,24 @@
 
 namespace shopstar\admin\sysset;
 
+use shopstar\bases\KdxAdminApiController;
 use shopstar\constants\log\sysset\PaymentLogConstant;
 use shopstar\exceptions\sysset\PaymentException;
 use shopstar\helpers\RequestHelper;
 use shopstar\models\log\LogModel;
 use shopstar\models\shop\ShopSettings;
 use shopstar\models\sysset\PaymentModel;
-use shopstar\bases\KdxAdminApiController;
 use yii\db\Exception;
 
 /**
  * 打款设置
  * Class PaySetController
- * @package app\controllers\manage\sysset
+ * @package shopstar\admin\sysset
+ * @author 青岛开店星信息技术有限公司
  */
 class PaySetController extends KdxAdminApiController
 {
+
     /**
      * 获取打款设置
      * @author 青岛开店星信息技术有限公司
@@ -36,6 +37,7 @@ class PaySetController extends KdxAdminApiController
     public function actionGetInfo()
     {
         $set = ShopSettings::get('sysset.payment.payset');
+
         // 微信支付模板
         $set['wechat_template'] = PaymentModel::find()
             ->select('id, title')
@@ -44,6 +46,7 @@ class PaySetController extends KdxAdminApiController
                 ['between', 'pay_type', 10, 19],
                 ['is_deleted' => 0]
             ])->get();
+
         // 支付宝支付模板
         $set['alipay_template'] = PaymentModel::find()
             ->select('id, title')
@@ -52,16 +55,17 @@ class PaySetController extends KdxAdminApiController
                 ['between', 'pay_type', 20, 29],
                 ['is_deleted' => 0]
             ])->get();
+
         return $this->success($set);
     }
-    
+
     /**
      * 修改打款设置
      * @return \yii\web\Response
      * @throws PaymentException
      * @author 青岛开店星信息技术有限公司
      */
-    public function actionUpdate()
+    public function actionUpdate(): \yii\web\Response
     {
         $post = RequestHelper::post();
         $data = [
@@ -81,7 +85,7 @@ class PaySetController extends KdxAdminApiController
             'pay_type_commission' => $post['pay_type_commission'],
             'pay_type_withdraw' => $post['pay_type_withdraw'],
             'pay_red_pack_money' => $post['pay_red_pack_money'],
-            
+
         ];
         try {
             ShopSettings::set('sysset.payment.payset', $data);
@@ -115,4 +119,5 @@ class PaySetController extends KdxAdminApiController
         }
         return $this->success();
     }
+
 }

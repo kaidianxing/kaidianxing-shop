@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 开店星新零售管理系统
  * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
@@ -19,6 +18,7 @@ use shopstar\bases\constant\BaseConstant;
  * 新人送礼日志
  * Class CommissionLogConstant
  * @package shopstar\constants\commission
+ * @author 青岛开店星信息技术有限公司
  */
 class NewGiftsLogConstant extends BaseConstant
 {
@@ -26,21 +26,21 @@ class NewGiftsLogConstant extends BaseConstant
      * @Text("新人送礼-活动-新增")
      */
     public const NEW_GIFTS_ADD = 370100;
-    
+
     /**
      * @Text("新人送礼-活动-修改")
      */
     public const NEW_GIFTS_EDIT = 370101;
-    
+
     /**
      * @Text("新人送礼-活动-手动停止")
      */
     public const NEW_GIFTS_MANUAL_STOP = 370102;
-    
+
     /**
      * @Text("新人送礼-活动-删除")
      */
     public const NEW_GIFTS_DELETE = 370103;
-    
-    
+
+
 }

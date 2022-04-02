@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 开店星新零售管理系统
  * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
@@ -11,25 +10,30 @@
  * @warning 未经许可禁止私自删除版权信息
  */
 
-
 namespace shopstar\admin\goods;
 
-
+use shopstar\bases\KdxAdminApiController;
 use shopstar\constants\log\goods\GoodsLogConstant;
-
 use shopstar\exceptions\goods\GoodsException;
 use shopstar\helpers\DateTimeHelper;
- 
 use shopstar\helpers\RequestHelper;
 use shopstar\models\goods\category\GoodsCategoryMapModel;
 use shopstar\models\goods\category\GoodsCategoryModel;
 use shopstar\models\log\LogModel;
 use shopstar\models\shop\ShopSettings;
-use shopstar\bases\KdxAdminApiController;
 use yii\helpers\Json;
 
+/**
+ * 商品分类
+ * Class CategoryController
+ * @package shopstar\admin\goods
+ */
 class CategoryController extends KdxAdminApiController
 {
+
+    /**
+     * @var array
+     */
     public $configActions = [
         'postActions' => [
             'create',
@@ -46,10 +50,11 @@ class CategoryController extends KdxAdminApiController
      * @return \yii\web\Response
      * @author 青岛开店星信息技术有限公司
      */
-    public function actionGetList()
+    public function actionGetList(): \yii\web\Response
     {
         $list = GoodsCategoryModel::search('');
         $list['level'] = ShopSettings::get('goods_category')['level'];
+
         return $this->success($list);
     }
 
@@ -59,7 +64,7 @@ class CategoryController extends KdxAdminApiController
      * @throws GoodsException
      * @author 青岛开店星信息技术有限公司
      */
-    public function actionGetOne()
+    public function actionGetOne(): \yii\web\Response
     {
         $id = RequestHelper::getInt('id');
         if (empty($id)) {
@@ -75,25 +80,13 @@ class CategoryController extends KdxAdminApiController
     }
 
 
-//    /**
-//     * 创建分类
-//     * @return \yii\web\Response
-//     * @throws GoodsException
-//     * @author 青岛开店星信息技术有限公司
-//     */
-//    public function actionCreate()
-//    {
-//        return $this->actionUpdate();
-//    }
-
-
     /**
      * 编辑商品分类
      * @return \yii\web\Response
      * @throws GoodsException
      * @author 青岛开店星信息技术有限公司
      */
-    public function actionUpdate()
+    public function actionUpdate(): \yii\web\Response
     {
         $post = RequestHelper::post();
 
@@ -127,7 +120,6 @@ class CategoryController extends KdxAdminApiController
         }
 
         return $this->success();
-
     }
 
     /**
@@ -135,7 +127,7 @@ class CategoryController extends KdxAdminApiController
      * @return \yii\web\Response
      * @author 青岛开店星信息技术有限公司
      */
-    public function actionSave()
+    public function actionSave(): \yii\web\Response
     {
         $post = RequestHelper::post('data');
 
@@ -160,7 +152,7 @@ class CategoryController extends KdxAdminApiController
                         //三级分类
                         if (!empty($childrensShildrens)) {
                             foreach ($childrensShildrens as $threeIndex => $threeLevel) {
-                                $threeResult = GoodsCategoryModel::saveData( $this->userId, $threeLevel, $twoResult, 3);
+                                $threeResult = GoodsCategoryModel::saveData($this->userId, $threeLevel, $twoResult, 3);
                                 if (!$threeResult) {
                                     continue;
                                 }
@@ -178,9 +170,11 @@ class CategoryController extends KdxAdminApiController
      * 永久删除商品分类
      * @return \yii\web\Response
      * @throws GoodsException
+     * @throws \Throwable
+     * @throws \yii\db\StaleObjectException
      * @author 青岛开店星信息技术有限公司
      */
-    public function actionForeverDelete()
+    public function actionForeverDelete(): \yii\web\Response
     {
         $id = RequestHelper::post('id');
         if (empty($id)) {
@@ -214,7 +208,6 @@ class CategoryController extends KdxAdminApiController
     /**
      * 分类设置
      * @throws GoodsException
-     * @throws \yii\db\Exception
      * @author 青岛开店星信息技术有限公司
      */
     public function actionSetSetting()
@@ -268,7 +261,7 @@ class CategoryController extends KdxAdminApiController
      * @throws GoodsException
      * @author 青岛开店星信息技术有限公司
      */
-    public function actionSwitch()
+    public function actionSwitch(): \yii\web\Response
     {
         $id = RequestHelper::postInt('id');
         if (empty($id)) {

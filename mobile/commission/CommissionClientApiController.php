@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 开店星新零售管理系统
  * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
@@ -12,22 +11,20 @@
  */
 
 namespace shopstar\mobile\commission;
-;
 
+use shopstar\bases\controller\BaseMobileApiController;
 use shopstar\exceptions\commission\CommissionAgentException;
 use shopstar\exceptions\commission\CommissionSetException;
 use shopstar\models\commission\CommissionAgentModel;
 use shopstar\models\commission\CommissionSettings;
-use shopstar\bases\controller\PluginClientApiController;
-use shopstar\bases\exception\BaseApiException;
- 
 
 /**
  * 分销应用客户端接口基类
  * Class CommissionClientApiController
- * @package apps\commission\bases
+ * @package shopstar\mobile\commission
+ * @author 青岛开店星信息技术有限公司
  */
-class CommissionClientApiController extends PluginClientApiController
+class CommissionClientApiController extends BaseMobileApiController
 {
 
     /**
@@ -44,11 +41,12 @@ class CommissionClientApiController extends PluginClientApiController
      * @param $action
      * @return bool|void
      * @throws CommissionAgentException
-     * @throws \ReflectionException
-     * @throws \shopstar\bases\exception\BaseApiException
-     * @throws \yii\web\BadRequestHttpException
      * @throws CommissionSetException
-     * @throws \Throwable
+     * @throws \shopstar\bases\exception\BaseApiException
+     * @throws \shopstar\exceptions\ChannelException
+     * @throws \shopstar\exceptions\member\MemberException
+     * @throws \yii\db\Exception
+     * @throws \yii\web\BadRequestHttpException
      * @author likexin
      */
     public function beforeAction($action)

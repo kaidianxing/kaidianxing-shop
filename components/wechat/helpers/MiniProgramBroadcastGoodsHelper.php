@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 开店星新零售管理系统
  * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
@@ -11,10 +10,7 @@
  * @warning 未经许可禁止私自删除版权信息
  */
 
-
-
 namespace shopstar\components\wechat\helpers;
-
 
 use shopstar\components\platform\Wechat;
 use shopstar\components\wechat\bases\WechatChannelConstant;
@@ -108,7 +104,7 @@ class MiniProgramBroadcastGoodsHelper
     {
         try {
             $token = WechatComponent::getInstance(WechatChannelConstant::CHANNEL_MINI_PROGRAM, [])->factory->access_token->getToken();
-            $result = HttpHelper::postJson('https://api.weixin.qq.com/wxaapi/broadcast/goods/resetaudit?access_token=' . $token['access_token'], Json::encode($data),[
+            $result = HttpHelper::postJson('https://api.weixin.qq.com/wxaapi/broadcast/goods/resetaudit?access_token=' . $token['access_token'], Json::encode($data), [
                 'headers' => [
                     'Content-Type' => 'application/json'
                 ]
@@ -131,7 +127,7 @@ class MiniProgramBroadcastGoodsHelper
     {
         try {
             $token = WechatComponent::getInstance(WechatChannelConstant::CHANNEL_MINI_PROGRAM, [])->factory->access_token->getToken();
-            $result = HttpHelper::postJson('https://api.weixin.qq.com/wxaapi/broadcast/goods/audit?access_token=' . $token['access_token'], Json::encode($data),[
+            $result = HttpHelper::postJson('https://api.weixin.qq.com/wxaapi/broadcast/goods/audit?access_token=' . $token['access_token'], Json::encode($data), [
                 'headers' => [
                     'Content-Type' => 'application/json'
                 ]
@@ -154,7 +150,7 @@ class MiniProgramBroadcastGoodsHelper
     {
         try {
             $token = WechatComponent::getInstance(WechatChannelConstant::CHANNEL_MINI_PROGRAM, [])->factory->access_token->getToken();
-            $result = HttpHelper::postJson('https://api.weixin.qq.com/wxaapi/broadcast/goods/delete?access_token=' . $token['access_token'], Json::encode($data),[
+            $result = HttpHelper::postJson('https://api.weixin.qq.com/wxaapi/broadcast/goods/delete?access_token=' . $token['access_token'], Json::encode($data), [
                 'headers' => [
                     'Content-Type' => 'application/json'
                 ]
@@ -177,7 +173,7 @@ class MiniProgramBroadcastGoodsHelper
     {
         try {
             $token = WechatComponent::getInstance(WechatChannelConstant::CHANNEL_MINI_PROGRAM, [])->factory->access_token->getToken();
-            $result = HttpHelper::postJson('https://api.weixin.qq.com/wxaapi/broadcast/goods/update?access_token=' . $token['access_token'], Json::encode($data),[
+            $result = HttpHelper::postJson('https://api.weixin.qq.com/wxaapi/broadcast/goods/update?access_token=' . $token['access_token'], Json::encode($data), [
                 'headers' => [
                     'Content-Type' => 'application/json'
                 ]
@@ -200,7 +196,7 @@ class MiniProgramBroadcastGoodsHelper
     {
         try {
             $token = WechatComponent::getInstance(WechatChannelConstant::CHANNEL_MINI_PROGRAM, [])->factory->access_token->getToken();
-            $result = HttpHelper::postJson('https://api.weixin.qq.com/wxa/business/getgoodswarehouse?access_token=' . $token['access_token'], Json::encode($data),[
+            $result = HttpHelper::postJson('https://api.weixin.qq.com/wxa/business/getgoodswarehouse?access_token=' . $token['access_token'], Json::encode($data), [
                 'headers' => [
                     'Content-Type' => 'application/json'
                 ]
@@ -223,7 +219,7 @@ class MiniProgramBroadcastGoodsHelper
     {
         try {
             $token = WechatComponent::getInstance(WechatChannelConstant::CHANNEL_MINI_PROGRAM, [])->factory->access_token->getToken();
-            $result = HttpHelper::getJson('https://api.weixin.qq.com/wxaapi/broadcast/goods/getapproved?access_token=' . $token['access_token'].'&'.http_build_query($data),[
+            $result = HttpHelper::getJson('https://api.weixin.qq.com/wxaapi/broadcast/goods/getapproved?access_token=' . $token['access_token'] . '&' . http_build_query($data), [
                 'headers' => [
                     'Content-Type' => 'application/json'
                 ]

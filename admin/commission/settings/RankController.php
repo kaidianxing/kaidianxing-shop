@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 开店星新零售管理系统
  * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
@@ -13,16 +12,16 @@
 
 namespace shopstar\admin\commission\settings;
 
-use shopstar\helpers\RequestHelper;
-use shopstar\models\log\LogModel;
-use shopstar\constants\commission\CommissionLogConstant;
-use shopstar\models\commission\CommissionSettings;
 use shopstar\bases\KdxAdminApiController;
+use shopstar\constants\commission\CommissionLogConstant;
+use shopstar\helpers\RequestHelper;
+use shopstar\models\commission\CommissionSettings;
+use shopstar\models\log\LogModel;
 
 /**
  * 排行设置
  * Class RankController
- * @package apps\commission\manage\settings
+ * @package shopstar\admin\commission\settings
  */
 class RankController extends KdxAdminApiController
 {
@@ -30,13 +29,11 @@ class RankController extends KdxAdminApiController
     /**
      * @var array 需要POST的Action
      */
-
     public $configActions = [
         'postActions' => [
             'set',
         ]
     ];
-
 
     /**
      * 获取设置
@@ -63,7 +60,9 @@ class RankController extends KdxAdminApiController
             'commission_type' => RequestHelper::postInt('commission_type'),    // 佣金排行类型 0:累计佣金 1:已提现佣金
             'show_total' => RequestHelper::postInt('show_total'),  // 排行榜显示数量
         ];
+
         CommissionSettings::set('rank', $data);
+
         // 日志
         LogModel::write(
             $this->userId,
@@ -82,7 +81,7 @@ class RankController extends KdxAdminApiController
                 ]
             ]
         );
-        
+
         return $this->success();
     }
 

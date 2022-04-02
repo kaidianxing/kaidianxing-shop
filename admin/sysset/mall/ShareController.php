@@ -26,7 +26,7 @@ use yii\web\Response;
 /**
  * 分享设置
  * Class ShareController
- * @package shop\manage\sysset
+ * @package shopstar\admin\sysset
  */
 class ShareController extends KdxAdminApiController
 {

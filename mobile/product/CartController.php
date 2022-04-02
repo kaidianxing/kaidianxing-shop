@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 开店星新零售管理系统
  * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
@@ -11,30 +10,28 @@
  * @warning 未经许可禁止私自删除版权信息
  */
 
-
-
 namespace shopstar\mobile\product;
 
-
 use shopstar\bases\controller\BaseMobileApiController;
-
+use shopstar\exceptions\form\FormException;
 use shopstar\exceptions\goods\GoodsException;
- 
 use shopstar\helpers\RequestHelper;
+use shopstar\models\form\FormModel;
+use shopstar\models\form\FormTempModel;
 use shopstar\models\goods\GoodsActivityModel;
 use shopstar\models\goods\GoodsCartModel;
 use shopstar\models\goods\GoodsModel;
 use shopstar\models\goods\GoodsOptionModel;
 use shopstar\models\member\MemberFavoriteModel;
 use shopstar\models\shop\ShopSettings;
-use shopstar\exceptions\form\FormException;
-use shopstar\models\form\FormModel;
-use shopstar\models\form\FormTempModel;
 use shopstar\services\goods\GoodsActivityService;
 use shopstar\services\goods\GoodsCartService;
 use shopstar\services\goods\GoodsService;
 use yii\helpers\Json;
 
+/**
+ * @author 青岛开店星信息技术有限公司
+ */
 class CartController extends BaseMobileApiController
 {
     public $configActions = [
@@ -51,10 +48,10 @@ class CartController extends BaseMobileApiController
      * @return array
      * @author 青岛开店星信息技术有限公司
      */
-    public function actionGetList()
+    public function actionGetList(): array
     {
         // 有效列表
-        $list = GoodsCartService::getGoods($this->memberId, ['shop_type' => $this->shopType]);
+        $list = GoodsCartService::getGoods($this->memberId);
         $totalPrice = 0;
         $selectedNum = 0;
         $selectedGoods = 0;
@@ -307,7 +304,7 @@ class CartController extends BaseMobileApiController
      * @throws GoodsException|\yii\db\Exception
      * @author 青岛开店星信息技术有限公司
      */
-    public function actionDelete()
+    public function actionDelete(): \yii\web\Response
     {
 
         $post = RequestHelper::post();
@@ -342,12 +339,12 @@ class CartController extends BaseMobileApiController
      * @return \yii\web\Response
      * @throws GoodsException
      */
-    public function actionSelect()
+    public function actionSelect(): \yii\web\Response
     {
         $post = RequestHelper::post();
 
         //组装初始条件
-        $where = ['member_id' => $this->memberId,  'is_lose_efficacy' => 0, 'is_reelect' => 0];
+        $where = ['member_id' => $this->memberId, 'is_lose_efficacy' => 0, 'is_reelect' => 0];
         if ($post['select_all'] == 0) {
             $where['id'] = $post['id'];
         }
@@ -421,10 +418,10 @@ class CartController extends BaseMobileApiController
 
         // 获取商品信息
         if ($isPop) {
-            $goods = GoodsCartService::getGoods( $this->memberId, ['goods_id' => $goodsId, 'shop_type' => $this->shopType]);
+            $goods = GoodsCartService::getGoods($this->memberId, ['goods_id' => $goodsId]);
         } else {
             // 购物车选中的
-            $goods = GoodsCartService::getGoods($this->memberId, ['is_selected' => 1, 'shop_type' => $this->shopType]);
+            $goods = GoodsCartService::getGoods($this->memberId, ['is_selected' => 1]);
         }
 
         if (empty($goods)) {
@@ -533,7 +530,7 @@ class CartController extends BaseMobileApiController
             return $this->result(['count' => 0]);
         }
 
-        $result = GoodsCartService::goodsCount($this->memberId, ['shop_type' => $this->shopType]);
+        $result = GoodsCartService::goodsCount($this->memberId);
 
         return $this->result(['count' => $result]);
     }

@@ -9,8 +9,8 @@
  * @warning Unauthorized deletion of copyright information is prohibited.
  * @warning 未经许可禁止私自删除版权信息
  */
-namespace shopstar\config\apps\notice\noticeMakes;
 
+namespace shopstar\config\apps\notice\noticeMakes;
 
 use shopstar\components\notice\bases\BaseMake;
 

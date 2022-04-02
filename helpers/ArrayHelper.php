@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 开店星新零售管理系统
  * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
@@ -20,6 +19,7 @@ use yii\helpers\Json;
  * 数组助手类
  * Class ArrayHelper
  * @package shopstar\helpers
+ * @author 青岛开店星信息技术有限公司
  */
 class ArrayHelper extends BaseArrayHelper
 {
@@ -29,8 +29,9 @@ class ArrayHelper extends BaseArrayHelper
      * @param array $array 数组
      * @param string $key 键值
      * @return bool
+     * @author 青岛开店星信息技术有限公司
      */
-    public static function keyEmpty(array $array, $key)
+    public static function keyEmpty(array $array, $key): bool
     {
         return !is_array($array) || !isset($array[$key]) || $array[$key] === '' || $array[$key] === NULL;
     }
@@ -41,8 +42,9 @@ class ArrayHelper extends BaseArrayHelper
      * @param array $array
      * @param int $level
      * @return null|string|string[]
+     * @author 青岛开店星信息技术有限公司
      */
-    static function toXML(array $array, $level = 1)
+    static function toXML(array $array, int $level = 1)
     {
         $s = $level == 1 ? "<xml>" : '';
         foreach ($array as $tagname => $value) {
@@ -65,16 +67,17 @@ class ArrayHelper extends BaseArrayHelper
      * XML 转换成数组
      * @param string $xml XML字符串
      * @return array|mixed 返回数组或者错误信息
+     * @author 青岛开店星信息技术有限公司
      */
-    static function fromXML($xml)
+    static function fromXML(string $xml)
     {
         if (empty($xml)) {
             return [];
         }
         $result = [];
-        $xmlobj = XmlHelper::fromString($xml, 'SimpleXMLElement', LIBXML_NOCDATA);
-        if ($xmlobj instanceof \SimpleXMLElement) {
-            $result = Json::decode(Json::encode($xmlobj));
+        $xmlObj = XmlHelper::fromString($xml, 'SimpleXMLElement', LIBXML_NOCDATA);
+        if ($xmlObj instanceof \SimpleXMLElement) {
+            $result = Json::decode(Json::encode($xmlObj));
             if (is_array($result)) {
                 return $result;
             }
@@ -86,8 +89,9 @@ class ArrayHelper extends BaseArrayHelper
      * trim数组，将数组中的值 trim,支持k-v的数组
      * @param array $array 数组
      * @return array 返回处理后的数组
+     * @author 青岛开店星信息技术有限公司
      */
-    static function trim(array $array)
+    public static function trim(array $array): array
     {
         foreach ($array as $key => &$value) {
             if (is_array($value)) {
@@ -101,14 +105,14 @@ class ArrayHelper extends BaseArrayHelper
         return $array;
     }
 
-
     /**
      * Json数据格式化
      * @param array $data 数组
      * @param bool $html 是否输入html格式
-     * @return JSON
+     * @return string
+     * @author 青岛开店星信息技术有限公司
      */
-    static function jsonFormat(array $data, $html = true)
+    static function jsonFormat(array $data, bool $html = true): string
     {
         $json = $data;
         if (is_array($json)) {
@@ -162,13 +166,14 @@ class ArrayHelper extends BaseArrayHelper
     /**
      * 截取数组记录
      * @param array $array
-     * @param int $pindex
-     * @param int $psize
+     * @param int $pIndex
+     * @param int $pSize
      * @return array
+     * @author 青岛开店星信息技术有限公司
      */
-    public static function subArray(array $array, $pindex = 0, $psize = 100)
+    public static function subArray(array $array, int $pIndex = 0, int $pSize = 100): array
     {
-        return array_slice($array, ($pindex - 1) * $psize, $psize);
+        return array_slice($array, ($pIndex - 1) * $pSize, $psize);
     }
 
     /**
@@ -176,8 +181,9 @@ class ArrayHelper extends BaseArrayHelper
      * @param string $delimiter 分隔符
      * @param string $string 字符串
      * @return array
+     * @author 青岛开店星信息技术有限公司
      */
-    public static function explode($delimiter, $string = '')
+    public static function explode(string $delimiter, string $string = ''): array
     {
         return array_values(array_filter(explode($delimiter, $string)));
     }
@@ -187,8 +193,9 @@ class ArrayHelper extends BaseArrayHelper
      * @param array $array
      * @param null $fieIds
      * @return array
+     * @author 青岛开店星信息技术有限公司
      */
-    public static function filterFields(array $array, $fieIds = null)
+    public static function filterFields(array $array, $fieIds = null): array
     {
         if (empty($fieIds)) {
             return $array;
@@ -219,23 +226,24 @@ class ArrayHelper extends BaseArrayHelper
 
     /**
      * 返回数组中的重复元素
-     * @param $array
+     * @param array $array
      * @return array
+     * @author 青岛开店星信息技术有限公司
      */
-    public static function getRepeat(array $array)
+    public static function getRepeat(array $array): array
     {
         // 获取去掉重复数据的数组
-        $unique_arr = array_unique($array);
+        $uniqueArr = array_unique($array);
         // 获取重复数据的数组
-        $repeat_arr = array_diff_assoc($array, $unique_arr);
-        return $repeat_arr;
+        return array_diff_assoc($array, $uniqueArr);
     }
 
     /**
      * 键值的总和
      * @param array $array
-     * @return int|mixed
+     * @return float|int
      * @author likexin
+     * @author 青岛开店星信息技术有限公司
      */
     public static function valueSum(array $array)
     {
@@ -254,7 +262,7 @@ class ArrayHelper extends BaseArrayHelper
      * @return float|int
      * @author likexin
      */
-    public static function columnSum(array $array, $column, $toArray = false)
+    public static function columnSum(array $array, string $column, bool $toArray = false)
     {
         $sum = 0;
         foreach ($array as $row) {
@@ -276,7 +284,7 @@ class ArrayHelper extends BaseArrayHelper
      * @return array
      * @author 青岛开店星信息技术有限公司
      */
-    public static function Intercept(array $data, array $keys)
+    public static function Intercept(array $data, array $keys): array
     {
         $newData = [];
         foreach ($data as $key => $value) {
@@ -291,15 +299,16 @@ class ArrayHelper extends BaseArrayHelper
     /**
      * 按照KEY 在第一个插入
      * @param $arr
-     * @param $ins_array
+     * @param $insArray
      * @return array
+     * @author 青岛开店星信息技术有限公司
      */
-    function array_unshift_assoc(&$arr, $ins_array)
+    function arrayUnshiftAssoc(&$arr, $insArray): array
     {
         if (!empty($arr)) {
             $arr = array_reverse($arr, true);
-            $ins_array = array_reverse($ins_array, true);
-            foreach ($ins_array as $key => $val) {
+            $ins_array = array_reverse($insArray, true);
+            foreach ($insArray as $key => $val) {
                 $arr[$key] = $val;
             }
             $arr = array_reverse($arr, true);
@@ -309,10 +318,10 @@ class ArrayHelper extends BaseArrayHelper
     }
 
     /**
-     * @name is_array2
      * @description  判断是否是二维数组
      * @param $array array
      * @return bool
+     * @author 青岛开店星信息技术有限公司
      */
     public static function is_array2(array $array): bool
     {
@@ -373,7 +382,7 @@ class ArrayHelper extends BaseArrayHelper
      * @return array
      * @author 青岛开店星信息技术有限公司
      */
-    public static function arrayFilterEmpty(array $array)
+    public static function arrayFilterEmpty(array $array): array
     {
         $tmp = [];
         foreach ($array as $key => $value) {
@@ -386,14 +395,14 @@ class ArrayHelper extends BaseArrayHelper
 
     /**
      * 递归处理数据
-     * @param $data
+     * @param array $data
      * @param int $pid
      * @param string $field
      * @param string $childNode
      * @return array
-     * @author Vencenty
+     * @author 青岛开店星信息技术有限公司
      */
-    public static function unlimitedSort(array $data, $pid = 0, $field = 'parent_id', $childNode = 'children')
+    public static function unlimitedSort(array $data, int $pid = 0, string $field = 'parent_id', string $childNode = 'children'): array
     {
         $tree = [];
         foreach ($data as $item) {
@@ -418,7 +427,7 @@ class ArrayHelper extends BaseArrayHelper
      * @return array
      * @author likexin
      */
-    public static function unlimitedField(array $data, $field = 'name', $childNode = 'children', bool $filterEmpty = false)
+    public static function unlimitedField(array $data, string $field = 'name', string $childNode = 'children', bool $filterEmpty = false): array
     {
         static $values = [];
         foreach ($data as $row) {
@@ -435,7 +444,7 @@ class ArrayHelper extends BaseArrayHelper
         }
         return $values;
     }
-    
+
     /**
      * 根据值删除
      * @param array $data 数组
@@ -443,7 +452,7 @@ class ArrayHelper extends BaseArrayHelper
      * @return array
      * @author 青岛开店星信息技术有限公司
      */
-    public static function deleteByValue(array $data, $value)
+    public static function deleteByValue(array $data, $value): array
     {
         foreach ($data as $index => $item) {
             if ($item == $value) {
@@ -456,16 +465,17 @@ class ArrayHelper extends BaseArrayHelper
     /**
      * 根据key找出数组中指定的列
      * @param array $arr 数组
-     * @param string $keys 要提取的key
+     * @param array $keys 要提取的key
      * @return array
      * @author 青岛开店星信息技术有限公司
      */
-    public static function getColumns($arr, $keys){
+    public static function getColumns(array $arr, array $keys): array
+    {
         $result = [];
-        $keys =array_flip($keys);
-        foreach($arr as $k=>$v){
+        $keys = array_flip($keys);
+        foreach ($arr as $k => $v) {
 
-            $result[]=array_intersect_key($v,$keys);
+            $result[] = array_intersect_key($v, $keys);
         }
         return $result;
     }

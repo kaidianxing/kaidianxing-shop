@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 开店星新零售管理系统
  * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
@@ -19,6 +18,7 @@ use shopstar\bases\constant\BaseConstant;
  * 退款记录
  * Class RefundLogConstant
  * @package shopstar\constants\finance
+ * @author 青岛开店星信息技术有限公司
  */
 class RefundLogConstant extends BaseConstant
 {
@@ -26,7 +26,7 @@ class RefundLogConstant extends BaseConstant
      * @Text("商家退款")
      */
     const TYPE_ORDER_SELLER_REFUND = 10;
-    
+
     /**
      * @Text("维权退款")
      */
@@ -36,5 +36,5 @@ class RefundLogConstant extends BaseConstant
      * @Text("订单状态异常退款")
      */
     const TYPE_ORDER_STATUS_EXCEPTION = 50;
-    
+
 }

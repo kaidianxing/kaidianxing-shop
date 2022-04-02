@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 开店星新零售管理系统
  * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
@@ -19,6 +18,7 @@ use shopstar\bases\constant\BaseConstant;
  * 活动常量
  * Class ActivityConstant
  * @package shopstar\constants\newGifts
+ * @author 青岛开店星信息技术有限公司
  */
 class ActivityConstant extends BaseConstant
 {
@@ -26,15 +26,15 @@ class ActivityConstant extends BaseConstant
      * @Text("优惠券")
      */
     const ACTIVITY_SEND_COUPON = 1;
-    
+
     /**
      * @Text("积分")
      */
     const ACTIVITY_SEND_CREDIT = 2;
-    
+
     /**
      * @Text("余额")
      */
     const ACTIVITY_SEND_BALANCE = 3;
-    
+
 }

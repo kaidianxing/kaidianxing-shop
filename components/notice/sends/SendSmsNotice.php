@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 开店星新零售管理系统
  * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
@@ -11,7 +10,6 @@
  * @warning 未经许可禁止私自删除版权信息
  */
 
-
 namespace shopstar\components\notice\sends;
 
 use shopstar\components\notice\bases\SendBase;
@@ -19,8 +17,6 @@ use shopstar\components\notice\config\SmsConfig;
 use shopstar\helpers\QueueHelper;
 use shopstar\jobs\components\noticeComponents\SmsMessageJob;
 use shopstar\models\member\MemberModel;
-use shopstar\models\shop\ShopSettings;
-use shopstar\models\commission\CommissionOrderModel;
 use shopstar\models\notice\NoticeSmsTemplateModel;
 use yii\helpers\Json;
 
@@ -72,6 +68,9 @@ class SendSmsNotice extends SendBase implements SendNoticeInterface
      */
     public $config;
 
+    /**
+     * @throws \Exception
+     */
     public function sendBefore(): bool
     {
         $this->sms = NoticeSmsTemplateModel::find()->where(['id' => $this->templateId])->one();
@@ -96,7 +95,7 @@ class SendSmsNotice extends SendBase implements SendNoticeInterface
 
     /**
      * 组成模板所需字段
-     * @return mixed
+     * @return bool
      * @author 青岛开店星信息技术有限公司
      */
     public function makeTemplateField()
@@ -109,7 +108,7 @@ class SendSmsNotice extends SendBase implements SendNoticeInterface
 
         $this->messageData = $this->makeTpl(Json::encode($content), $this->messageData);
         foreach ($this->messageData as &$item) {
-            if(mb_strlen($item) > 19){
+            if (mb_strlen($item) > 19) {
                 $item = mb_substr($item, 0, 17) . '...';
             }
         }
@@ -121,7 +120,7 @@ class SendSmsNotice extends SendBase implements SendNoticeInterface
      * 组成发送会员
      * @param array $toUser
      * @param bool $appointTemplateMember
-     * @return mixed
+     * @return bool
      * @author 青岛开店星信息技术有限公司
      */
     public function makeToUser(array $toUser, bool $appointTemplateMember)
@@ -171,7 +170,7 @@ class SendSmsNotice extends SendBase implements SendNoticeInterface
 
     /**
      * 消息发送
-     * @return mixed|void
+     * @return void
      * @author 青岛开店星信息技术有限公司
      */
     public function sendMessage()
@@ -189,8 +188,5 @@ class SendSmsNotice extends SendBase implements SendNoticeInterface
                 ]
             ]));
         }
-
-
-        return;
     }
 }

@@ -21,7 +21,7 @@ use shopstar\models\printer\handle\TemplateContentHandle;
 use yii\helpers\Json;
 
 /**
- * This is the model class for table "{{%app_printer_task}}".
+ * This is the model class for table "{{%printer_task}}".
  *
  * @property int $id auto increment
  * @property string $name 任务名称
@@ -45,7 +45,7 @@ class PrinterTaskModel extends BaseActiveRecord
      */
     public static function tableName()
     {
-        return '{{%app_printer_task}}';
+        return '{{%printer_task}}';
     }
 
     /**

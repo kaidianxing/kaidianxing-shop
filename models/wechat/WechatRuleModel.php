@@ -17,7 +17,7 @@ use shopstar\helpers\DateTimeHelper;
 use shopstar\exceptions\wechat\WechatException;
 
 /**
- * This is the model class for table "{{%app_wechat_rule}}".
+ * This is the model class for table "{{%wechat_rule}}".
  *
  * @property int $id
  * @property int $unionid 绑定开放平台的
@@ -38,7 +38,7 @@ class WechatRuleModel extends BaseActiveRecord
      */
     public static function tableName()
     {
-        return '{{%app_wechat_rule}}';
+        return '{{%wechat_rule}}';
     }
 
     /**

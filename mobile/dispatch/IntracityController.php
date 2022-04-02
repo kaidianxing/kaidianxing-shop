@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 开店星新零售管理系统
  * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
@@ -14,13 +13,15 @@
 namespace shopstar\mobile\dispatch;
 
 use shopstar\bases\controller\BaseMobileApiController;
-use shopstar\components\dispatch\bases\DispatchDriverConstant;
 use shopstar\constants\order\OrderPackageCityDistributionTypeConstant;
 use shopstar\exceptions\order\DispatchException;
 use shopstar\helpers\RequestHelper;
-use shopstar\services\shop\ShopSettingIntracityLogic;
 use shopstar\models\shop\ShopSettings;
+use shopstar\services\shop\ShopSettingIntracityLogic;
 
+/**
+ * @author 青岛开店星信息技术有限公司
+ */
 class IntracityController extends BaseMobileApiController
 {
 
@@ -29,7 +30,7 @@ class IntracityController extends BaseMobileApiController
      * @return array|\yii\web\Response
      * @author 青岛开店星信息技术有限公司
      */
-    public function actionGetDispatchArea ()
+    public function actionGetDispatchArea()
     {
         $dispatchArea = ShopSettingIntracityLogic::getDispatchArea();
 

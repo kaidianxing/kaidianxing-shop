@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 开店星新零售管理系统
  * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
@@ -19,6 +18,7 @@ use yii\web\Controller;
  * 控制器最底层基类，一般不在此层级写逻辑
  * Class BaseController
  * @package shopstar\bases\controller
+ * @author 青岛开店星信息技术有限公司
  */
 class BaseController extends Controller
 {
@@ -49,7 +49,7 @@ class BaseController extends Controller
      * @return string
      * @author likexin
      */
-    public function render($view = '', $params = [])
+    public function render($view = '', $params = []): string
     {
         if (is_array($view) || empty($view)) {
             if (is_array($view)) {

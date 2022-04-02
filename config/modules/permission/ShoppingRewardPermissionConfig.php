@@ -14,11 +14,11 @@ namespace shopstar\config\modules\permission;
 
 use shopstar\components\permission\BasePermissionConfig;
 
-
 /**
  * 购物奖励
  * Class PermissionConfig
- * @package apps\shoppingReward\config
+ * @package shopstar\config\modules\permission
+ * @author 青岛开店星信息技术有限公司
  */
 class ShoppingRewardPermissionConfig extends BasePermissionConfig
 {

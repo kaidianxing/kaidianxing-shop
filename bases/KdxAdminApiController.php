@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 开店星新零售管理系统
  * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
@@ -15,23 +14,17 @@ namespace shopstar\bases;
 
 use shopstar\bases\controller\BaseApiController;
 use shopstar\bases\exception\BaseApiException;
-use shopstar\constants\ClientTypeConstant;
- 
-use shopstar\traits\PermTrait;
+use shopstar\components\permission\Permission;
 use shopstar\traits\UserTrait;
 
 /**
  * 业务端接口
  * Class KdxAdminApiController
- * @package shop\bases
+ * @package shopstar\bases
+ * @author 青岛开店星信息技术有限公司
  */
 class KdxAdminApiController extends BaseApiController
 {
-    /**
-     * @var int 店铺类型
-     * @author 青岛开店星信息技术有限公司
-     */
-    public $shopType = 0;
 
     /**
      * @var array|null 当前店铺的基础信息
@@ -41,15 +34,40 @@ class KdxAdminApiController extends BaseApiController
     /**
      * 引用Trait
      */
-    use UserTrait, PermTrait;
+    use UserTrait;
+
+    /**
+     * 检测用户权限
+     * @throws BaseApiException
+     * @author likexin
+     */
+    public function checkPerm()
+    {
+        // 如果是店铺超管，直接跳过
+        if ($this->user['is_root']) {
+            return;
+        }
+
+        // 不验权
+        if (isset($this->configActions['allowPermActions']) && is_array($this->configActions['allowPermActions'])) {
+            if (in_array('*', $this->configActions['allowPermActions']) || in_array($this->action->id, $this->configActions['allowPermActions'])) {
+                return;
+            }
+        }
+
+        // 检测权限
+        if (!Permission::check($this)) {
+            throw new BaseApiException(-1, "未授权");
+
+        }
+    }
 
     /**
      * @param \yii\base\Action $action
      * @return bool
-     * @throws \ReflectionException
-     * @throws \yii\web\BadRequestHttpException
-     * @throws \shopstar\bases\exception\BaseApiException
+     * @throws BaseApiException
      * @throws \shopstar\exceptions\UserException
+     * @throws \yii\web\BadRequestHttpException
      * @author likexin
      */
     public function beforeAction($action)
@@ -71,7 +89,6 @@ class KdxAdminApiController extends BaseApiController
         ) {
             $this->checkSession();
         }
-        
 
         // 检测访问状态
         $this->checkAccess($action, function () {

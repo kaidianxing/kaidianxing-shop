@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 开店星新零售管理系统
  * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
@@ -11,22 +10,19 @@
  * @warning 未经许可禁止私自删除版权信息
  */
 
-
-
 namespace shopstar\admin\sysset;
 
-
+use shopstar\bases\KdxAdminApiController;
 use shopstar\helpers\RequestHelper;
 use shopstar\models\log\LogModel;
 use shopstar\models\user\UserModel;
-use shopstar\bases\KdxAdminApiController;
 use yii\helpers\Json;
 
 /**
  * 操作日志
  * Class LogController
+ * @package shopstar\admin\sysset
  * @author 青岛开店星信息技术有限公司
- * @package shop\manage\sysset
  */
 class LogController extends KdxAdminApiController
 {
@@ -35,7 +31,7 @@ class LogController extends KdxAdminApiController
      * @return \yii\web\Response
      * @author 青岛开店星信息技术有限公司
      */
-    public function actionList()
+    public function actionList(): \yii\web\Response
     {
         $list = LogModel::getColl([
             'alias' => 'log',
@@ -79,4 +75,5 @@ class LogController extends KdxAdminApiController
 
         return $this->success($data);
     }
+
 }

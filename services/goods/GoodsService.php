@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 开店星新零售管理系统
  * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
@@ -11,16 +10,13 @@
  * @warning 未经许可禁止私自删除版权信息
  */
 
-
 namespace shopstar\services\goods;
 
-use apps\verify\models\VerifyPointGoodsMapModel;
 use shopstar\bases\service\BaseService;
 use shopstar\constants\goods\GoodsBuyButtonConstant;
 use shopstar\constants\goods\GoodsReductionTypeConstant;
 use shopstar\constants\goods\GoodsTypeConstant;
 use shopstar\constants\log\goods\GoodsLogConstant;
-use shopstar\constants\order\OrderActivityTypeConstant;
 use shopstar\constants\order\OrderTypeConstant;
 use shopstar\exceptions\goods\GoodsException;
 use shopstar\helpers\DateTimeHelper;
@@ -45,6 +41,9 @@ use shopstar\services\core\attachment\CoreAttachmentService;
 use yii\db\Expression;
 use yii\helpers\Json;
 
+/**
+ * @author 青岛开店星信息技术有限公司
+ */
 class GoodsService extends BaseService
 {
     private static $goodsField = [
@@ -126,7 +125,7 @@ class GoodsService extends BaseService
      * @throws \yii\base\InvalidConfigException
      * @author terry
      */
-    public static function getGoods(int $goodsId, $options = []): array
+    public static function getGoods(int $goodsId, array $options = []): array
     {
         $options = array_merge([
             'where' => [],
@@ -248,11 +247,11 @@ class GoodsService extends BaseService
      * @param $userId
      * @param $goodsId
      * @param $type
-     * @return false|int
+     * @return bool
      * @throws GoodsException
      * @author terry
      */
-    public static function deleteGoods($userId, $goodsId, $type)
+    public static function deleteGoods($userId, $goodsId, $type): bool
     {
         $model = GoodsModel::find()
             ->where(['id' => $goodsId])
@@ -354,11 +353,12 @@ class GoodsService extends BaseService
      * 永久删除商品
      * @param int $userId
      * @param $goodsId
+     * @param $type
      * @return bool
      * @throws GoodsException
      * @author 青岛开店星信息技术有限公司
      */
-    public static function foreverRemove(int $userId, $goodsId, $type)
+    public static function foreverRemove(int $userId, $goodsId, $type): bool
     {
         $model = GoodsModel::find()
             ->where(['id' => $goodsId])
@@ -562,37 +562,34 @@ class GoodsService extends BaseService
         }
     }
 
-
     /**
      *价格面议, 电话走商城配置时的获取电话
      * @param int $buyButtonType
      * @param array $buyButtonSettings
-     * @param int $shopType
      * @return array|mixed|string
      * @throws GoodsException
      * @author nizengchao
      */
-    public static function getBuyButtonTelephone($buyButtonType = 0, $buyButtonSettings = [], $shopType = 0)
+    public static function getBuyButtonTelephone(int $buyButtonType = 0, array $buyButtonSettings = [])
     {
         $telephone = '';
         if (!$buyButtonType || !$buyButtonSettings) {
             return $telephone;
         }
         if ($buyButtonType == GoodsBuyButtonConstant::GOODS_BUY_BUTTON_TYPE_CUSTOM && $buyButtonSettings['click_type'] == GoodsBuyButtonConstant::GOODS_BUY_BUTTON_CLICK_TYPE_CUSTOM && $buyButtonSettings['click_style'] == GoodsBuyButtonConstant::GOODS_BUY_BUTTON_CLICK_STYLE_PHONE && $buyButtonSettings['click_telephone_type'] == GoodsBuyButtonConstant::GOODS_BUY_BUTTON_CLICK_TELEPHONE_TYPE_DEFAULT) {
-            $telephone = self::getShopDefaultTel($shopType);
+            $telephone = self::getShopDefaultTel();
         }
         return $telephone;
     }
 
     /**
      * 获取商城配置的默认电话
-     * @param int $shopType
      * @param false $error
      * @return array|mixed|string
      * @throws GoodsException
      * @author nizengchao
      */
-    public static function getShopDefaultTel($shopType = 0, $error = false)
+    public static function getShopDefaultTel(bool $error = false)
     {
         // 获取商城配置
         $tel1 = ShopSettings::get('contact.tel1');

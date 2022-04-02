@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 开店星新零售管理系统
  * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
@@ -11,21 +10,16 @@
  * @warning 未经许可禁止私自删除版权信息
  */
 
-
 namespace shopstar\services\goods;
 
 use shopstar\bases\service\BaseService;
-use shopstar\constants\ClientTypeConstant;
 use shopstar\constants\goods\GoodsCheckedConstant;
-
 use shopstar\exceptions\goods\GoodsException;
 use shopstar\helpers\ArrayHelper;
 use shopstar\helpers\DateTimeHelper;
- 
 use shopstar\helpers\RequestHelper;
 use shopstar\models\goods\category\GoodsCategoryMapModel;
 use shopstar\models\goods\GoodsActivityModel;
-use shopstar\services\goods\GoodsListActivityHandler;
 use shopstar\models\goods\GoodsModel;
 use shopstar\models\goods\GoodsPermMapModel;
 use shopstar\models\goods\group\GoodsGroupMapModel;
@@ -34,6 +28,9 @@ use shopstar\models\member\group\MemberGroupMapModel;
 use yii\helpers\ArrayHelper as YiiArrayHelper;
 use yii\helpers\Json;
 
+/**
+ * @author 青岛开店星信息技术有限公司
+ */
 class GoodsMobileQueryService extends BaseService
 {
     /**
@@ -44,7 +41,6 @@ class GoodsMobileQueryService extends BaseService
         2 => 'virtualAccount',
     ];
 
-    protected $shopType;
     protected $memberId;
     protected $member;
     protected $clientType;
@@ -100,11 +96,12 @@ class GoodsMobileQueryService extends BaseService
 
     /**
      * @param array $get
+     * @param $options
+     * @throws \Exception
      * @author: Terry
      */
-    public function initParams($get, $options)
+    public function initParams(array $get, $options)
     {
-        $this->shopType = YiiArrayHelper::getValue($options, 'shopType', '');
         $this->memberId = YiiArrayHelper::getValue($options, 'memberId', '');
         $this->member = YiiArrayHelper::getValue($options, 'member', '');
         $this->clientType = YiiArrayHelper::getValue($options, 'clientType', '');

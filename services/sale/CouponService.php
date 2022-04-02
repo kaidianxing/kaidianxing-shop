@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 开店星新零售管理系统
  * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
@@ -11,22 +10,20 @@
  * @warning 未经许可禁止私自删除版权信息
  */
 
-
 namespace shopstar\services\sale;
 
-use shopstar\models\commission\CommissionAgentModel;
-use shopstar\models\commission\CommissionLevelModel;
 use shopstar\bases\service\BaseService;
 use shopstar\constants\coupon\CouponConstant;
 use shopstar\constants\coupon\CouponTimeLimitConstant;
 use shopstar\constants\log\sale\CouponLogConstant;
 use shopstar\helpers\ArrayHelper;
 use shopstar\helpers\DateTimeHelper;
- 
 use shopstar\helpers\QueueHelper;
 use shopstar\helpers\RequestHelper;
 use shopstar\helpers\ValueHelper;
 use shopstar\jobs\sale\CouponExpireJob;
+use shopstar\models\commission\CommissionAgentModel;
+use shopstar\models\commission\CommissionLevelModel;
 use shopstar\models\goods\category\GoodsCategoryModel;
 use shopstar\models\goods\GoodsModel;
 use shopstar\models\log\LogModel;
@@ -37,6 +34,9 @@ use shopstar\models\sale\CouponMemberModel;
 use shopstar\models\sale\CouponModel;
 use shopstar\models\sale\CouponRuleModel;
 
+/**
+ * @author 青岛开店星信息技术有限公司
+ */
 class CouponService extends BaseService
 {
 
@@ -162,7 +162,6 @@ class CouponService extends BaseService
         }
 
 
-
         if ($coupon->coupon_sale_type == CouponConstant::COUPON_SALE_TYPE_SUB) {
             $content = '满' . ValueHelper::delZero($coupon->enough) . '减' . ValueHelper::delZero($coupon->discount_price);
         } else {
@@ -248,7 +247,6 @@ class CouponService extends BaseService
     }
 
 
-
     /**
      * 检查是否可以领取优惠券
      * @param int $memberId
@@ -256,7 +254,7 @@ class CouponService extends BaseService
      * @return array|null
      * @author 青岛开店星信息技术有限公司
      */
-    public static function checkReceive(int $memberId, int $couponId)
+    public static function checkReceive(int $memberId, int $couponId): ?array
     {
         $coupon = CouponModel::find()->where(['id' => $couponId])->first();
         if ($coupon['state'] == 0) {
@@ -271,7 +269,7 @@ class CouponService extends BaseService
         if ($coupon['get_max_type'] != CouponConstant::COUPON_GET_MAX_TYPE_NOT_LIMIT && $coupon['pick_type'] != CouponConstant::COUPON_PICK_TYPE_ACTIVITY) {
             // 后台会员详情中赠送的优惠券 不计入张数统计
             $couponCount = CouponMemberModel::find()
-                ->where(['member_id' => $memberId, 'coupon_id' => $couponId ,'send_type' => 0 ])
+                ->where(['member_id' => $memberId, 'coupon_id' => $couponId, 'send_type' => 0])
                 ->count();
             if ($couponCount >= $coupon['get_max']) {
                 return error('您的领取张数已达到上限');

@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 开店星新零售管理系统
  * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
@@ -23,7 +22,8 @@ use shopstar\models\shop\ShopSettings;
 /**
  * 积分记录
  * Class CreditController
- * @package shop\client\member
+ * @package shopstar\mobile\member
+ * @author 青岛开店星信息技术有限公司
  */
 class CreditController extends BaseMobileApiController
 {
@@ -35,9 +35,9 @@ class CreditController extends BaseMobileApiController
     {
         // 列表类型
         $type = RequestHelper::get('type');
-        
+
         $andWhere = [];
-        
+
         switch ($type) {
             case 1: // 获得
                 $andWhere[] = ['record.status' => MemberCreditRecordModel::$creditGet];
@@ -49,7 +49,7 @@ class CreditController extends BaseMobileApiController
                 $andWhere[] = ['record.status' => MemberCreditRecordModel::$creditPay];
                 break;
         }
-    
+
         $params = [
             'select' => 'record.id, record.num, record.created_at, record.remark, record.status,record.order_id,order.order_no,order.user_delete',
             'where' => [
@@ -60,19 +60,19 @@ class CreditController extends BaseMobileApiController
             'orderBy' => 'record.created_at desc',
             'alias' => 'record',
             'leftJoins' => [
-                [OrderModel::tableName().' order','order.id = record.order_id']
+                [OrderModel::tableName() . ' order', 'order.id = record.order_id']
             ]
         ];
-    
+
         // 积分设置
         $creditSet = ShopSettings::get('sysset.credit');
-    
+
         $list = MemberCreditRecordModel::getColl($params, [
-            'callable' => function (&$row) use($creditSet) {
+            'callable' => function (&$row) use ($creditSet) {
                 $row['status_text'] = str_replace('积分', $creditSet['credit_text'], MemberCreditRecordStatusConstant::getMessage($row['status']));
             }
         ]);
-    
+
         return $this->result(['data' => $list]);
     }
 }
