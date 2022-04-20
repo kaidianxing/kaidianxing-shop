@@ -76,11 +76,6 @@ class BaseApiController extends BaseController
             throw new BaseApiException(BaseApiException::REQUEST_MUST_POST);
         }
 
-        // 判断是否已经安装
-        if (!StringHelper::exists($this->route, 'install/index')) {
-            LiYangHelper::checkInstall(false);
-        }
-
         return parent::beforeAction($action);
     }
 

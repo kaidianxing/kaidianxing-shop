@@ -9,13 +9,13 @@
  * @warning 未经许可禁止私自删除版权信息
  */
 var config = {
-	base_url: '',
-	attachment_url: '',
-	public_url: '',
-	wap_dist_url: '',
-	wap_url: '',
-	with_live:false, //直播
-	with_recharge:false// 个人中心 支付入口
+    base_url: 'https://demo-free.kaidianxing.com/h5/api',
+    attachment_url: 'https://demo-free.kaidianxing.com/data/attachment/',
+    public_url: 'https://demo-free.kaidianxing.com/',
+    wap_dist_url: 'https://demo-free.kaidianxing.com/static/dist/shop/kdx_wap/',
+    wap_url: 'https://demo-free.kaidianxing.com/h5',
+    with_live: false, //直播
+    with_recharge: false// 个人中心 支付入口
 };
 
 // window.wxDebug = false;
@@ -31,13 +31,15 @@ console.log(config);
 
 //#ifdef H5
 try {
-	if (window) {
-		window.config = window.config ? window.config : config;
-		config = window.config;
-	}
-} catch (e) {}
+    if (window) {
+        window.config = window.config ? window.config : config;
+        config = window.config;
+    }
+} catch (e) {
+}
 
 //#endif
 try {
-	exports.config = config;
-} catch (e) {}
+    exports.config = config;
+} catch (e) {
+}

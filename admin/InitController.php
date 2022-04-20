@@ -58,12 +58,6 @@ class InitController extends KdxAdminApiController
 
             'perms' => ManagerModel::getPerms($this->userId, $this->user['is_root'] > 0)
         ];
-        // 如果是超管返回管理端入口
-        if ($result['user']['is_root'] == 1) {
-            $result['admin'] = [
-                'enter' => \Yii::$app->params['adminEnter'] ?? 'admin',
-            ];
-        }
 
         // 手机端首页URL
         $result['wap_url'] = ShopUrlHelper::wap('/', [], true);

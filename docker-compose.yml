@@ -1,0 +1,34 @@
+version: '3'
+
+services:
+  kaidianxing:
+    container_name: kdx
+    build: .
+    restart: always
+    ports:
+      - "80:80"
+    depends_on:
+      - redis
+      - mysql
+    links:
+      - redis
+      - mysql
+  redis:
+    container_name: kdx-redis
+    image: redis:6.2.6-alpine3.15
+    restart: always
+    volumes:
+      - kdx-redis-data:/data
+  mysql:
+    container_name: kdx-mysql
+    image: mysql:5.7
+    command: --sql-mode=""
+    restart: always
+    volumes:
+      - kdx-mysql-data:/var/lib/mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=123456
+      - MYSQL_DATABASE=kaidianxing
+volumes:
+  kdx-redis-data:
+  kdx-mysql-data:

@@ -12,9 +12,6 @@
 
 namespace shopstar\bases\controller;
 
-use shopstar\helpers\LiYangHelper;
-use shopstar\helpers\StringHelper;
-
 /**
  * 视图控制器基类
  * Class BaseViewController
@@ -23,21 +20,5 @@ use shopstar\helpers\StringHelper;
  */
 class BaseViewController extends BaseController
 {
-
-    /**
-     * @param \yii\base\Action $action
-     * @return bool
-     * @throws \yii\web\BadRequestHttpException
-     * @throws \shopstar\bases\exception\BaseApiException
-     * @author likexin
-     */
-    public function beforeAction($action)
-    {
-        if (!StringHelper::exists($this->route, 'admin/index/index')) {
-            LiYangHelper::checkInstall(true);
-        }
-
-        return parent::beforeAction($action);
-    }
 
 }

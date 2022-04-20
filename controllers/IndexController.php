@@ -13,6 +13,7 @@
 namespace shopstar\controllers;
 
 use yii\web\Controller;
+use yii\web\Response;
 
 /**
  * 控制器首页
@@ -29,17 +30,12 @@ class IndexController extends Controller
     public $layout = false;
 
     /**
+     * @return Response
      * @author likexin
-     * @return string|\yii\web\Response
      */
-    public function actionIndex()
+    public function actionIndex(): Response
     {
         if (!SHOP_STAR_IS_INSTALLED) {
-            // 判断安装模块是否存在
-            if (!is_file(SHOP_STAR_PATH . '/install/Module.php')) {
-                return $this->render('install');
-            }
-
             return $this->redirect('/install');
         }
 
