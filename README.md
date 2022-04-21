@@ -1,4 +1,4 @@
-![](_readme/gitte-banner_1647592828084.png)
+![](_readme/gitte-banner_1647592828084.png?v=2)
 
 &nbsp;
 
@@ -14,19 +14,19 @@
 
 &nbsp;
 
-![](_readme/001_1647593246850.png)
+![](_readme/001_1647593246850.png?v=2)
 
 &nbsp;
 
-![](_readme/004.png)
+![](_readme/004.png?v=2)
 
 &nbsp;
 
-![](_readme/003.png)
+![](_readme/003.png?v=2)
 
 &nbsp;
 
-![](_readme/002_1647593027929.png)
+![](_readme/002_1647593027929.png?v=2)
 
 &nbsp;
 
@@ -41,7 +41,7 @@
 
 ## **官方技术交流群**：
 
-![](_readme/gitte-banner备份.png)
+![](_readme/gitte-banner备份.png?v=2)
 
 
 &nbsp;
@@ -58,7 +58,7 @@
 
 *   gitee仓库——[https://gitee.com/kaidianxing/kaidianxing](https://gitee.com/kaidianxing/kaidianxing)
 
-![](_readme/gitte-banner备份2.png)
+![](_readme/gitte-banner备份2.png?v=2)
 
 &nbsp;
 ## **核心技术**：
@@ -66,7 +66,7 @@
 *   前端技术栈 ES6、vue、vuex、vue-router、vue-cli、axios、uni-app、 iView、echarts、vant
 * 后端技术栈：PHP，Yii2，Mysql，Redis
 
-![](_readme/编组6备份.png)
+![](_readme/编组6备份.png?v=2)
 
 &nbsp;
 
@@ -124,27 +124,27 @@
 
 
 ## **功能列表：**
-![](_readme/编组6.png)
+![](_readme/编组6.png?v=2)
 
 &nbsp;
 
 ## **页面展示：**
 
-![](_readme/登录页.png)
+![](_readme/登录页.png?v=2)
 
-![](_readme/运营_1647593389001.png)
+![](_readme/运营_1647593389001.png?v=2)
 
-![](_readme/装修_1647593407866.png)
+![](_readme/装修_1647593407866.png?v=2)
 
-![](_readme/商品_1647593421217.png)
+![](_readme/商品_1647593421217.png?v=2)
 
-![](_readme/会员_1647593431727.png)
+![](_readme/会员_1647593431727.png?v=2)
 
-![](_readme/优惠券.png)
+![](_readme/优惠券.png?v=2)
 
-![](_readme/应用_1647593452217.png)
+![](_readme/应用_1647593452217.png?v=2)
 
-![](_readme/设置_1647593461498.png)
+![](_readme/设置_1647593461498.png?v=2)
 
 
 
