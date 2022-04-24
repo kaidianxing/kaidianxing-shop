@@ -12,6 +12,7 @@ namespace install\controllers\api;
 
 use install\bases\BaseController;
 use install\services\InstallService;
+use shopstar\config\modules\KdxInitialize;
 use yii\web\Response;
 
 /**
@@ -53,6 +54,11 @@ class InstallController extends BaseController
     {
         // ->service
         $result = InstallService::createDefaultData();
+
+        // 初始化默认数据
+        if (!is_error($result)) {
+            KdxInitialize::init();
+        }
 
         return $this->result($result);
     }
