@@ -167,7 +167,7 @@ class GoodsActivityService extends BaseService
             }
         }
 
-        return $activity;
+        return $activity ?? [];
     }
 
 }
