@@ -14,6 +14,7 @@ namespace shopstar\admin\utility;
 
 use shopstar\bases\KdxAdminUtilityController;
 use shopstar\models\shop\ShopSettings;
+use yii\web\Response;
 
 /**
  * 链接选择器
@@ -27,7 +28,7 @@ class LinkController extends KdxAdminUtilityController
     /**
      * @var array 商城基础链接
      */
-    private $basicLink = [
+    private array $basicLink = [
         /**
          * @var array 商城页面相关
          */
@@ -139,7 +140,7 @@ class LinkController extends KdxAdminUtilityController
     /**
      * @var array 优惠券
      */
-    private $couponLink = [
+    private array $couponLink = [
         [
             'name' => '优惠券',
             'links' => [
@@ -158,7 +159,7 @@ class LinkController extends KdxAdminUtilityController
     /**
      * @var array 分销应用插件
      */
-    private $commissionLink = [
+    private array $commissionLink = [
         [
             'name' => '分销',
             'links' => [
@@ -198,7 +199,7 @@ class LinkController extends KdxAdminUtilityController
      * 获取列表
      * @author likexin
      */
-    private function getLinks()
+    private function getLinks(): array
     {
         $links = $this->basicLink;
         $service = [];
@@ -221,10 +222,10 @@ class LinkController extends KdxAdminUtilityController
 
     /**
      * 返回
-     * @return array
+     * @return Response
      * @author likexin
      */
-    public function actionIndex(): array
+    public function actionIndex(): Response
     {
         $links = $this->getLinks();
         return $this->result([
@@ -237,10 +238,10 @@ class LinkController extends KdxAdminUtilityController
 
     /**
      * 获取小程序跳转appid列表
-     * @return array|int[]|\yii\web\Response
+     * @return Response
      * @author likexin
      */
-    public function actionGetNavigateList()
+    public function actionGetNavigateList(): Response
     {
         return $this->result([
             'list' => ShopSettings::get('channel_setting.wxapp.navigate_appid_list', []),

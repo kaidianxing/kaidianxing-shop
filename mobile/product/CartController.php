@@ -28,6 +28,7 @@ use shopstar\services\goods\GoodsActivityService;
 use shopstar\services\goods\GoodsCartService;
 use shopstar\services\goods\GoodsService;
 use yii\helpers\Json;
+use yii\web\Response;
 
 /**
  * @author 青岛开店星信息技术有限公司
@@ -45,10 +46,9 @@ class CartController extends BaseMobileApiController
 
     /**
      * 购物车列表
-     * @return array
      * @author 青岛开店星信息技术有限公司
      */
-    public function actionGetList(): array
+    public function actionGetList(): Response
     {
         // 有效列表
         $list = GoodsCartService::getGoods($this->memberId);
@@ -56,7 +56,6 @@ class CartController extends BaseMobileApiController
         $selectedNum = 0;
         $selectedGoods = 0;
         if (!empty($list)) {
-
             //获取商品当前参与的活动
             $goodsIds = array_column($list, 'goods_id');
             $goodsActivity = GoodsActivityService::getJoinActivityByGoodsIdGroup($goodsIds, $this->clientType);
@@ -69,8 +68,8 @@ class CartController extends BaseMobileApiController
         }
         foreach ($list as $listIndex => &$listItem) {
 
-            $listItem['is_soldout'] = $listItem['is_soldout'] ? true : false;
-            $listItem['is_selected'] = $listItem['is_selected'] ? true : false;
+            $listItem['is_soldout'] = (bool)$listItem['is_holdout'];
+            $listItem['is_selected'] = (bool)$listItem['is_selected'];
 
             unset($listItem['has_option']);
 
@@ -521,10 +520,10 @@ class CartController extends BaseMobileApiController
 
     /**
      * 获取购物车数量
-     * @return array|\yii\web\Response
+     * @return Response
      * @author 青岛开店星信息技术有限公司
      */
-    public function actionGetCount()
+    public function actionGetCount(): Response
     {
         if (empty($this->memberId)) {
             return $this->result(['count' => 0]);
