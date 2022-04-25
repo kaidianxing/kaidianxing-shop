@@ -18,6 +18,7 @@ use shopstar\constants\form\FormTypeConstant;
 use shopstar\helpers\RequestHelper;
 use shopstar\models\form\FormModel;
 use shopstar\models\order\create\OrderCreator;
+use yii\web\Response;
 
 /**
  * @author 青岛开店星信息技术有限公司
@@ -36,24 +37,24 @@ class CreateController extends BaseMobileApiController
 
     /**
      * 创建订单
-     * @return array
+     * @return Response
      * @throws GuzzleException
      * @throws \shopstar\exceptions\order\OrderCreatorException
      * @author 青岛开店星信息技术有限公司
      */
-    public function actionIndex(): array
+    public function actionIndex(): Response
     {
         return $this->create($this->getArgs(), false);
     }
 
     /**
      * 确认订单
-     * @return array
+     * @return Response
      * @throws GuzzleException
      * @throws \shopstar\exceptions\order\OrderCreatorException
      * @author 青岛开店星信息技术有限公司
      */
-    public function actionConfirm(): array
+    public function actionConfirm(): Response
     {
         return $this->create($this->getArgs(), true);
     }
@@ -62,12 +63,12 @@ class CreateController extends BaseMobileApiController
      * 执行创建订单
      * @param array $args
      * @param bool $isConfirm
-     * @return array
+     * @return Response
      * @throws GuzzleException
      * @throws \shopstar\exceptions\order\OrderCreatorException
      * @author 青岛开店星信息技术有限公司
      */
-    private function create(array $args, bool $isConfirm = true)
+    private function create(array $args, bool $isConfirm = true): Response
     {
         $goodsData = $args['goods_info'];
         unset($args['goods_info']);

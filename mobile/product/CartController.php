@@ -520,10 +520,10 @@ class CartController extends BaseMobileApiController
 
     /**
      * 获取购物车数量
-     * @return Response
+     * @return array|\yii\web\Response
      * @author 青岛开店星信息技术有限公司
      */
-    public function actionGetCount(): Response
+    public function actionGetCount()
     {
         if (empty($this->memberId)) {
             return $this->result(['count' => 0]);

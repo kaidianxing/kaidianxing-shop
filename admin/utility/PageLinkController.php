@@ -199,16 +199,6 @@ class PageLinkController extends KdxAdminUtilityController
                 ],
             ],
         ],
-        [
-            'name' => '积分商城',
-            'identify' => 'creditShop',
-            'links' => [
-                [
-                    'name' => '积分商城',
-                    'url' => '/pagesCreditShop/index',
-                ],
-            ],
-        ],
     ];
 
     /**

@@ -245,9 +245,6 @@ class IndexController extends BaseMobileApiController
         // 主题色
         $set['theme_color'] = ShopSettings::get('diypage.theme_color');
 
-        // 获取商城状态
-        $set['admin_status'] = CoreSettings::get('site.status');
-
         return $this->result($set);
     }
 

@@ -78,9 +78,6 @@ class InitController extends KdxAdminApiController
         $result['shop_attachment_url'] = CoreAttachmentService::getRoot();
         $result['storage'] = ShopSettings::getImageCompressionRule();
 
-        // 获取商城状态
-        $result['admin_status'] = CoreSettings::get('site.status');
-
         return $this->result($result);
     }
 

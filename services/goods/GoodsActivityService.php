@@ -139,7 +139,7 @@ class GoodsActivityService extends BaseService
             ->orderBy(['start_time' => SORT_ASC]) // 先开始的活动
             ->first();
         if ($exist) {
-            return $activity;
+            return $activity ?? [];
         }
 
         // 获取最低价格
