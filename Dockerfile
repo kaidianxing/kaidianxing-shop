@@ -1,4 +1,4 @@
-FROM registry.cn-hangzhou.aliyuncs.com/kaidianxing/composer:2.0.8
+FROM registry.cn-hangzhou.aliyuncs.com/kaidianxing/composer:2.0.8 as builder
   
 WORKDIR /app
 
@@ -10,4 +10,6 @@ FROM registry.cn-hangzhou.aliyuncs.com/kaidianxing/nginx-php:7.4
 
 WORKDIR /var/www/html
 
-COPY --from=0 --chown=82:82 /app .
+VOLUME /var/www/html/public/data
+
+COPY --from=builder --chown=82:82 /app .
