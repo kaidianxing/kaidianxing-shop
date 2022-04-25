@@ -19,6 +19,4 @@ $config['defaultRoute'] = 'notify/dispatch';
 $config['controllerNamespace'] = 'application\mobile';
 defined('SHOP_STAR_IS_NOTIFY') or define('SHOP_STAR_IS_NOTIFY', 1);
 
-\shopstar\helpers\LogHelper::info('2222',[33333]);
-
 (new \shopstar\bases\yii\Application($config))->run();

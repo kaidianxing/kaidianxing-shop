@@ -31,7 +31,7 @@ class XmlHelper
      * @return bool|\SimpleXMLElement
      * @author likexin
      */
-    public static function fromString($string, string $className = 'SimpleXMLElement', int $options = 0, string $ns = '', bool $isPrefix)
+    public static function fromString($string, string $className = 'SimpleXMLElement', int $options = 0, string $ns = '', bool $isPrefix = false)
     {
         libxml_disable_entity_loader(true);
         if (preg_match('/(\<\!DOCTYPE|\<\!ENTITY)/i', $string)) {

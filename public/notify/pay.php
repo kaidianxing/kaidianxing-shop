@@ -11,14 +11,14 @@
  */
 
 // 开发模式
-defined('YII_DEBUG') or define('YII_DEBUG', true);
+defined('YII_DEBUG') or define('YII_DEBUG', false);
 defined('YII_ENV') or define('YII_ENV', 'prod');
 
-require dirname(dirname(__DIR__)) . '/config/bootstrap.php';
-require dirname(dirname(__DIR__)) . '/shopstar/functions.php';
+require dirname(__DIR__, 2) . '/config/bootstrap.php';
+require dirname(__DIR__, 2) . '/functions.php';
 
-$config = require dirname(dirname(__DIR__)) . '/config/web.php';
-$config['controllerNamespace'] = 'application\mobile';
+$config = require dirname(__DIR__, 2) . '/config/web.php';
+$config['controllerNamespace'] = 'shopstar\mobile';
 $config['defaultRoute'] = 'notify/pay';
 
 defined('SHOP_STAR_IS_NOTIFY') or define('SHOP_STAR_IS_NOTIFY', 1);

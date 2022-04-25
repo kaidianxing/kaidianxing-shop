@@ -31,6 +31,7 @@ class PayController extends BaseController
     public $enableCsrfValidation = false;
 
     /**
+     * @throws \yii\base\Exception
      * @author likexin
      */
     public function actionIndex()
