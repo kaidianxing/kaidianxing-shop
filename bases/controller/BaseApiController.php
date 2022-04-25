@@ -165,12 +165,9 @@ class BaseApiController extends BaseController
         try {
             return parent::runAction($id, $params);
         } catch (BaseException $exception) {
-
             return $this->error($exception->getMessage(), $exception->getCode() !== 0 ? $exception->getCode() : -1);
         } catch (InvalidRouteException $exception) {
-
             return $this->error($exception->getName(), 404);
-
         } catch (\Exception $exception) {
             return $this->error(YII_DEBUG ? $exception->getTraceAsString() : $exception->getMessage(), 500);
         }

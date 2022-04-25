@@ -36,8 +36,6 @@ class AlipayDriver extends BasePaymentNewDriver implements PaymentNewDriverInter
      */
     public function buildConfig(): array
     {
-        \Yansongda\Pay\Gateways\Alipay\Support::clear();
-
         $config = [
             'app_id' => $this->paymentModel->appid,
             'private_key' => $this->paymentModel->ali_private_key,

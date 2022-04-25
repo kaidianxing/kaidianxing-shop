@@ -43,8 +43,6 @@ class WechatDriver extends BasePaymentNewDriver implements PaymentNewDriverInter
      */
     public function buildConfig(bool $withCert = false): array
     {
-        \Yansongda\Pay\Gateways\Wechat\Support::clear();
-
         // 根据渠道不同定义app_id的key值
         $appIdKey = $this->clientType == ClientTypeConstant::CLIENT_WXAPP ? 'miniapp_id' : 'app_id';
 

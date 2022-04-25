@@ -32,7 +32,7 @@
     "yiisoft/yii2-redis": "^2.0",
     "yiisoft/yii2-queue": "^2.3",
     "yiisoft/yii2-swiftmailer": "^2.1",
-    "yansongda/pay": "^3.1",
+    "yansongda/pay": "^2.10",
     "overtrue/wechat": "^4.5",
     "overtrue/easy-sms": "^2.1",
     "phpoffice/phpspreadsheet": "^1.22",
