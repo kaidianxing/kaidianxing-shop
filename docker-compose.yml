@@ -5,6 +5,8 @@ services:
     container_name: kdx
     build: .
     restart: always
+    volumes:
+      - kdx-data:/var/www/html/public/data
     ports:
       - "80:80"
     depends_on:
@@ -27,8 +29,9 @@ services:
     volumes:
       - kdx-mysql-data:/var/lib/mysql
     environment:
-      - MYSQL_ROOT_PASSWORD=123456
+      - MYSQL_ROOT_PASSWORD=root
       - MYSQL_DATABASE=kaidianxing
 volumes:
+  kdx-data:
   kdx-redis-data:
   kdx-mysql-data:
