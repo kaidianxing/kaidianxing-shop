@@ -745,45 +745,42 @@ class OpController extends KdxAdminApiController
 
                 $goodsInfo = Json::decode($goodsInfo);
 
-                // 拼团不执行自动发货
-                if ($order->activity_type != OrderActivityTypeConstant::ACTIVITY_TYPE_GROUPS) {
+                // 判断虚拟商品
+                // 判断核销
+                if ($order->dispatch_type == OrderDispatchExpressConstant::ORDER_DISPATCH_SELFFETCH) {
+                    // 核销的不发货,直接待收货
+                    OrderService::ship($order, [
+                        'order_goods_id' => array_column($goodsInfo, 'order_goods_id'),
+                        'no_express' => 1 // 不需要快递
+                    ]);
 
-                    // 判断虚拟商品
-                    // 判断核销
-                    if ($order->dispatch_type == OrderDispatchExpressConstant::ORDER_DISPATCH_SELFFETCH) {
-                        // 核销的不发货,直接待收货
-                        OrderService::ship($order, [
-                            'order_goods_id' => array_column($goodsInfo, 'order_goods_id'),
-                            'no_express' => 1 // 不需要快递
-                        ]);
-
-                    } else {
-                        // 不是核销的判断是否自动发货
-                        if (GoodsService::checkOrderGoodsVirtualType($order)) {
-                            if ($goodsInfo[0]['auto_deliver'] == GoodsVirtualConstant::GOODS_VIRTUAL_AUTO_DELIVERY) {
-                                // 虚拟商品&&自动发货 自动完成
-                                $virtualRes = OrderService::ship($order, [
-                                    'order_goods_id' => array_column($goodsInfo, 'order_goods_id'),
-                                    'no_express' => 1 // 不需要快递
-                                ]);
-                                if (is_error($virtualRes)) {
-                                    throw new OrderException(OrderException::ORDER_MANAGE_OP_PAY_ORDER_VIRTUAL_SEND_FAIL, $virtualRes['message']);
-                                }
-                                $virtualRes = OrderService::complete($order, 2);
-                            } else {
-                                // 虚拟商品&&不自动发货
-                                $virtualRes = OrderService::ship($order, [
-                                    'order_goods_id' => array_column($goodsInfo, 'order_goods_id'),
-                                    'no_express' => 1 // 不需要快递
-                                ]);
-                            }
-
+                } else {
+                    // 不是核销的判断是否自动发货
+                    if (GoodsService::checkOrderGoodsVirtualType($order)) {
+                        if ($goodsInfo[0]['auto_deliver'] == GoodsVirtualConstant::GOODS_VIRTUAL_AUTO_DELIVERY) {
+                            // 虚拟商品&&自动发货 自动完成
+                            $virtualRes = OrderService::ship($order, [
+                                'order_goods_id' => array_column($goodsInfo, 'order_goods_id'),
+                                'no_express' => 1 // 不需要快递
+                            ]);
                             if (is_error($virtualRes)) {
                                 throw new OrderException(OrderException::ORDER_MANAGE_OP_PAY_ORDER_VIRTUAL_SEND_FAIL, $virtualRes['message']);
                             }
+                            $virtualRes = OrderService::complete($order, 2);
+                        } else {
+                            // 虚拟商品&&不自动发货
+                            $virtualRes = OrderService::ship($order, [
+                                'order_goods_id' => array_column($goodsInfo, 'order_goods_id'),
+                                'no_express' => 1 // 不需要快递
+                            ]);
+                        }
+
+                        if (is_error($virtualRes)) {
+                            throw new OrderException(OrderException::ORDER_MANAGE_OP_PAY_ORDER_VIRTUAL_SEND_FAIL, $virtualRes['message']);
                         }
                     }
                 }
+
                 // 分销
                 $isCommission = true;
 

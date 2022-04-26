@@ -149,9 +149,8 @@ class OrderService extends BaseService
             //修改订单商品
             OrderGoodsModel::updateAll(['status' => OrderStatusConstant::ORDER_STATUS_CLOSE], ['order_id' => $order->id,]);
 
-            // 需要返还库存 (切换规格导致订单关闭不需要返还     拼团 拼团返利订单不返还库存
-            if (empty($options['un_update_stock']) && !in_array($order->activity_type, [OrderActivityTypeConstant::ACTIVITY_TYPE_GROUPS])) {
-
+            // 需要返还库存 (切换规格导致订单关闭不需要返还
+            if (empty($options['un_update_stock'])) {
                 //返还库存
                 $result = GoodsService::updateQty(false, $order->id, [], GoodsReductionTypeConstant::GOODS_REDUCTION_TYPE_ORDER, [
                     'transaction' => false,
@@ -699,11 +698,10 @@ class OrderService extends BaseService
                 $orderInfo['extra_discount_rules_package'] = Json::decode($orderInfo['extra_discount_rules_package']);
             }
             $discountRules = $orderInfo['extra_discount_rules_package'];
+
             // 需要检查是否参与分销的活动
             $checkCommissionActivity = [
-                'presell', // 预售 TODO likexin
                 'seckill', // 秒杀
-                'groups',//拼团
             ];
 
             // 取活动交集
@@ -711,18 +709,12 @@ class OrderService extends BaseService
 
             // 如果有活动  检测活动是否支持分销
             if (!empty($activityIntersect)) {
-                // 如果包含预售
-                if (in_array('presell', $activityIntersect)) {
-                    // 不支持
-                    $discountRules[0]['presell']['is_commission'] == 0 && $isCommission = false;
-                } else {
-                    // 其他活动
-                    // 取订单参与的活动
-                    $activity = array_column($discountRules, $activityIntersect[0]);
-                    // 不支持
-                    if ($activity[0]['rules']['is_commission'] == 0) {
-                        $isCommission = false;
-                    }
+                // 其他活动
+                // 取订单参与的活动
+                $activity = array_column($discountRules, $activityIntersect[0]);
+                // 不支持
+                if ($activity[0]['rules']['is_commission'] == 0) {
+                    $isCommission = false;
                 }
             }
 
@@ -732,7 +724,6 @@ class OrderService extends BaseService
             }
 
             CommissionService::orderFinish($orderInfo['id'], $orderInfo['member_id']);
-
 
             // 消费奖励
             ConsumeRewardLogService::sendReward($orderInfo['member_id'], $orderInfo['id'], 0);
@@ -811,8 +802,9 @@ class OrderService extends BaseService
      * 支付完成后
      * @param OrderPaySuccessStruct $orderPaySuccessStruct
      * @return array|bool
+     * @throws \yii\base\Exception
+     * @throws \yii\base\InvalidConfigException
      * @throws \yii\db\Exception
-     * @throws OrderException
      * @author 青岛开店星信息技术有限公司
      */
     public static function paySuccess(OrderPaySuccessStruct $orderPaySuccessStruct)
@@ -825,245 +817,213 @@ class OrderService extends BaseService
             return error('订单不存在');
         }
 
-        // 活动规则
-        $extraPricePackage = Json::decode($order['extra_discount_rules_package']);
-        // 额外数据
-        $extraPackage = Json::decode($order->extra_package) ?? [];
+        // 不是待支付状态
+        if ($order->status != OrderStatusConstant::ORDER_STATUS_WAIT_PAY) {
+            if ($order->status == OrderStatusConstant::ORDER_STATUS_CLOSE) {  //如果等于已关闭
 
-        /** 预售逻辑处理快 **/
-        // 商品预售 定金预售
-        $presellPayType = 0; // 预售支付类型 0不是预售订单 1 定金  2 尾款 3 全款
-        $presellOrder = [];
+                $config = [
+                    "member_id" => $order['member_id'],
+                    "order_id" => $order['id'],
+                    "order_no" => $order['order_no'],
+                    "refund_fee" => $order['pay_price'],
+                    "client_type" => $order['create_from'],
+                    "pay_type" => $orderPaySuccessStruct->payType,
+                    "pay_price" => $order['pay_price'],
+                    "order_type" => PayOrderTypeConstant::ORDER_TYPE_ORDER,
+                    "refund_desc" => "关闭订单退款"
+                ];
 
-        // 不是支付定金
-        if ($presellPayType != 1) {
-            // 修改order状态
-            //不是待支付状态
-            if ($order->status != OrderStatusConstant::ORDER_STATUS_WAIT_PAY) {
-                if ($order->status == OrderStatusConstant::ORDER_STATUS_CLOSE) {  //如果等于已关闭
+                // 退款记录数据
+                $refundLogData = [
+                    'member_id' => $order['member_id'],
+                    'money' => $order['pay_price'],
+                    'order_id' => $order['id'],
+                    'order_no' => $order['order_no'],
+                    'type' => RefundLogConstant::TYPE_ORDER_STATUS_EXCEPTION
+                ];
 
-                    $config = [
-                        "member_id" => $order['member_id'],
-                        "order_id" => $order['id'],
-                        "order_no" => $order['order_no'],
-                        "refund_fee" => $order['pay_price'],
-                        "client_type" => $order['create_from'],
-                        "pay_type" => $orderPaySuccessStruct->payType,
-                        "pay_price" => $order['pay_price'],
-                        "order_type" => PayOrderTypeConstant::ORDER_TYPE_ORDER,
-                        "refund_desc" => "关闭订单退款"
-                    ];
-
-                    // 退款记录数据
-                    $refundLogData = [
-                        'member_id' => $order['member_id'],
-                        'money' => $order['pay_price'],
-                        'order_id' => $order['id'],
-                        'order_no' => $order['order_no'],
-                        'type' => RefundLogConstant::TYPE_ORDER_STATUS_EXCEPTION
-                    ];
-
-                    //订单退款
-                    $result = self::refund($config, $refundLogData);
-                    if (is_error($result)) {
-                        LogHelper::error('[ORDER PASSIVE REFUND ERROR]', [
-                            'message' => $result['message']
-                        ]);
-                        return error('订单被动退款失败:' . $result['message']);
-                    }
+                //订单退款
+                $result = self::refund($config, $refundLogData);
+                if (is_error($result)) {
+                    LogHelper::error('[ORDER PASSIVE REFUND ERROR]', [
+                        'message' => $result['message']
+                    ]);
+                    return error('订单被动退款失败:' . $result['message']);
                 }
-
-                return error('订单状态不正确');
             }
 
-            $order->status = OrderStatusConstant::ORDER_STATUS_WAIT_SEND;
-            $payTime = DateTimeHelper::now();
-            $order->pay_time = $payTime;
-            $order->pay_type = $orderPaySuccessStruct->payType;
-            $order->trade_no = $orderPaySuccessStruct->tradeNo ?: '';
-            $order->out_trade_no = $orderPaySuccessStruct->outTradeNo ?: '';
-            if (!$order->save()) {
-                return error('订单状态修改失败');
-            }
+            return error('订单状态不正确');
+        }
 
-            $result = OrderGoodsModel::updateAll([
-                'status' => OrderStatusConstant::ORDER_STATUS_WAIT_SEND,
-                'pay_time' => $payTime
-            ], [
-                'order_id' => $orderPaySuccessStruct->orderId,
-                'member_id' => $orderPaySuccessStruct->accountId,
+        // 修改order状态
+        $order->status = OrderStatusConstant::ORDER_STATUS_WAIT_SEND;
+        $payTime = DateTimeHelper::now();
+        $order->pay_time = $payTime;
+        $order->pay_type = $orderPaySuccessStruct->payType;
+        $order->trade_no = $orderPaySuccessStruct->tradeNo ?: '';
+        $order->out_trade_no = $orderPaySuccessStruct->outTradeNo ?: '';
+        if (!$order->save()) {
+            return error('订单状态修改失败');
+        }
+
+        $result = OrderGoodsModel::updateAll([
+            'status' => OrderStatusConstant::ORDER_STATUS_WAIT_SEND,
+            'pay_time' => $payTime
+        ], [
+            'order_id' => $orderPaySuccessStruct->orderId,
+            'member_id' => $orderPaySuccessStruct->accountId,
+        ]);
+
+        if (is_error($result)) {
+            return error('订单商品状态修改失败');
+        }
+
+        $goodsInfo = $order->goods_info;
+        if (empty($goodsInfo)) {
+            return error('订单商品不存在');
+        }
+        $goodsInfo = Json::decode($goodsInfo);
+
+        // 修改虚拟卡密数据表状态
+        if ($order->order_type == OrderTypeConstant::ORDER_TYPE_VIRTUAL_ACCOUNT) {
+            $orderVirtualAccountData = VirtualAccountOrderMapModel::getMapList($orderPaySuccessStruct->orderId);
+            if ($orderVirtualAccountData) {
+                VirtualAccountDataModel::updateStatus($orderVirtualAccountData, VirtualAccountDataConstant::ORDER_VIRTUAL_ACCOUNT_DATA_SUCCESS);
+            }
+        }
+
+        // 升级
+        $memberLevelUpdateType = ShopSettings::get('member.level.update_type');
+        //会员自动升级
+        if ($memberLevelUpdateType == 2) {
+            MemberLevelService::autoUpLevel($orderPaySuccessStruct->accountId, $order->pay_price, $orderPaySuccessStruct->orderId);
+        }
+
+        // 消费奖励
+        ConsumeRewardLogService::sendReward($orderPaySuccessStruct->accountId, $orderPaySuccessStruct->orderId, 1);
+
+        // 购物奖励
+        ShoppingRewardLogModel::sendReward($orderPaySuccessStruct->accountId, $orderPaySuccessStruct->orderId, 0);
+
+        $messageData = [
+            'shop_name' => ShopSettings::get('sysset.mall.basic')['name'],
+            'member_nickname' => $order->member_nickname,
+            'dispatch_price' => $order->dispatch_price,
+            'goods_title' => $goodsInfo[0]['title'] ?: '' . (count($goodsInfo) > 1 ? '' : '等'),
+            'goods_detail' => $goodsInfo[0]['sub_name'] ? ($goodsInfo[0]['sub_name'] . (count($goodsInfo) > 1 ? '' : '等')) : '',
+            'buyer_name' => $order->buyer_name,
+            'buyer_mobile' => $order->buyer_mobile,
+            'address_info' => $order->address_state . '-' . $order->address_city . '-' . $order->address_area . '-' . $order->address_detail,
+            'pay_price' => $order->pay_price,
+            'status' => OrderStatusConstant::getText($order->status),
+            'created_at' => $order->created_at,
+            'pay_time' => $order->pay_time,
+            'remark' => $order->remark,
+            'order_no' => $order->order_no,
+            'member_balance' => MemberModel::getBalance($order->member_id),
+        ];
+
+        //消息通知
+        $notice = NoticeComponent::getInstance(NoticeTypeConstant::BUYER_ORDER_PAY, $messageData);
+        if (!is_error($notice)) {
+            $notice->sendMessage($order->member_id);
+        }
+
+        //消息通知
+        $notice = NoticeComponent::getInstance(NoticeTypeConstant::SELLER_ORDER_PAY, $messageData, '');
+        if (!is_error($notice)) {
+            $notice->sendMessage();
+        }
+
+        // 虚拟卡密发送邮件
+        if ($order->order_type == OrderTypeConstant::ORDER_TYPE_VIRTUAL_ACCOUNT) {
+            VirtualAccountDataModel::sendMailer($orderPaySuccessStruct->orderId);
+        }
+
+        // 打印小票
+        QueueHelper::push(new AutoPrinterOrder([
+            'job' => [
+                'scene' => PrinterSceneConstant::PRINTER_PAY,
+                'order_id' => $orderPaySuccessStruct->orderId
+            ]
+        ]));
+
+        // 分销
+
+        $isCommission = true;
+        // 订单参加的活动
+        $orderActivity = array_keys(Json::decode($order['extra_price_package']));
+        $discountRules = Json::decode($order['extra_discount_rules_package']);
+        // 需要检查是否参与分销的活动
+        $checkCommissionActivity = [
+            'presell', // 预售
+            'seckill', // 秒杀
+            'groups',//拼团
+            'full_reduce', // 满减折
+        ];
+
+        // 取活动交集
+        $activityIntersect = array_intersect($orderActivity, $checkCommissionActivity);
+
+        // 如果有活动  检测活动是否支持分销
+        if (!empty($activityIntersect)) {
+            // 如果包含预售
+            if (in_array('presell', $activityIntersect)) {
+                // 不支持
+                $discountRules[0]['presell']['is_commission'] == 0 && $isCommission = false;
+            } else {
+                // 其他活动
+                // 取订单参与的活动
+                $activity = array_column($discountRules, $activityIntersect[0]);
+                // 不支持
+                if ($activity[0]['rules']['is_commission'] == 0) {
+                    $isCommission = false;
+                }
+            }
+        }
+
+        // 积分商城不支持分销
+        if ($order->activity_type == OrderActivityTypeConstant::ACTIVITY_TYPE_CREDIT_SHOP) {
+            $isCommission = false;
+        }
+
+        // 支持分销 且有权限
+        if ($isCommission) {
+            CommissionService::orderPay($orderPaySuccessStruct->orderId, $orderPaySuccessStruct->accountId);
+        }
+
+        // 不是核销的判断是否自动发货
+        // 判断虚拟商品不走这里
+        if (GoodsService::checkOrderGoodsVirtualType($order)) {
+            $virtualRes = self::ship($order, [
+                'order_goods_id' => array_column($goodsInfo, 'order_goods_id'),
+                'no_express' => 1, // 不需要快递
+                'transaction' => false,
             ]);
-
-            if (is_error($result)) {
-                return error('订单商品状态修改失败');
-            }
-
-            $goodsInfo = $order->goods_info;
-            if (empty($goodsInfo)) {
-                return error('订单商品不存在');
-            }
-            $goodsInfo = Json::decode($goodsInfo);
-
-            // 修改虚拟卡密数据表状态
-            if ($order->order_type == OrderTypeConstant::ORDER_TYPE_VIRTUAL_ACCOUNT) {
-                $orderVirtualAccountData = VirtualAccountOrderMapModel::getMapList($orderPaySuccessStruct->orderId);
-                if ($orderVirtualAccountData) {
-                    VirtualAccountDataModel::updateStatus($orderVirtualAccountData, VirtualAccountDataConstant::ORDER_VIRTUAL_ACCOUNT_DATA_SUCCESS);
-                }
-            }
-
-            // 升级
-            $memberLevelUpdateType = ShopSettings::get('member.level.update_type');
-            //会员自动升级
-            if ($memberLevelUpdateType == 2) {
-                MemberLevelService::autoUpLevel($orderPaySuccessStruct->accountId, $order->pay_price, $orderPaySuccessStruct->orderId);
-            }
-
-            //不等于拼团
-            if ($order['activity_type'] != OrderActivityTypeConstant::ACTIVITY_TYPE_GROUPS) {
-                // 消费奖励
-                ConsumeRewardLogService::sendReward($orderPaySuccessStruct->accountId, $orderPaySuccessStruct->orderId, 1);
-
-                // 购物奖励
-                ShoppingRewardLogModel::sendReward($orderPaySuccessStruct->accountId, $orderPaySuccessStruct->orderId, 0);
-            }
-
-            $messageData = [
-                'shop_name' => ShopSettings::get('sysset.mall.basic')['name'],
-                'member_nickname' => $order->member_nickname,
-                'dispatch_price' => $order->dispatch_price,
-                'goods_title' => $goodsInfo[0]['title'] ?: '' . (count($goodsInfo) > 1 ? '' : '等'),
-                'goods_detail' => $goodsInfo[0]['sub_name'] ? ($goodsInfo[0]['sub_name'] . (count($goodsInfo) > 1 ? '' : '等')) : '',
-                'buyer_name' => $order->buyer_name,
-                'buyer_mobile' => $order->buyer_mobile,
-                'address_info' => $order->address_state . '-' . $order->address_city . '-' . $order->address_area . '-' . $order->address_detail,
-                'pay_price' => $order->pay_price,
-                'status' => OrderStatusConstant::getText($order->status),
-                'created_at' => $order->created_at,
-                'pay_time' => $order->pay_time,
-                'remark' => $order->remark,
-                'order_no' => $order->order_no,
-                'member_balance' => MemberModel::getBalance($order->member_id),
-            ];
-
-            //消息通知
-            $notice = NoticeComponent::getInstance(NoticeTypeConstant::BUYER_ORDER_PAY, $messageData);
-            if (!is_error($notice)) {
-                $notice->sendMessage($order->member_id);
-            }
-
-            //消息通知
-            $notice = NoticeComponent::getInstance(NoticeTypeConstant::SELLER_ORDER_PAY, $messageData, '');
-            if (!is_error($notice)) {
-                $notice->sendMessage();
-            }
-
-            // 虚拟卡密发送邮件
-            if ($order->order_type == OrderTypeConstant::ORDER_TYPE_VIRTUAL_ACCOUNT) {
-                VirtualAccountDataModel::sendMailer($orderPaySuccessStruct->orderId);
-            }
-
-            // 打印小票
-            QueueHelper::push(new AutoPrinterOrder([
-                'job' => [
-                    'scene' => PrinterSceneConstant::PRINTER_PAY,
-                    'order_id' => $orderPaySuccessStruct->orderId
-                ]
-            ]));
-
-            // 分销
-
-            $isCommission = true;
-            // 订单参加的活动
-            $orderActivity = array_keys(Json::decode($order['extra_price_package']));
-            $discountRules = Json::decode($order['extra_discount_rules_package']);
-            // 需要检查是否参与分销的活动
-            $checkCommissionActivity = [
-                'presell', // 预售
-                'seckill', // 秒杀
-                'groups',//拼团
-                'full_reduce', // 满减折
-            ];
-
-            // 取活动交集
-            $activityIntersect = array_intersect($orderActivity, $checkCommissionActivity);
-
-            // 如果有活动  检测活动是否支持分销
-            if (!empty($activityIntersect)) {
-                // 如果包含预售
-                if (in_array('presell', $activityIntersect)) {
-                    // 不支持
-                    $discountRules[0]['presell']['is_commission'] == 0 && $isCommission = false;
-                } else {
-                    // 其他活动
-                    // 取订单参与的活动
-                    $activity = array_column($discountRules, $activityIntersect[0]);
-                    // 不支持
-                    if ($activity[0]['rules']['is_commission'] == 0) {
-                        $isCommission = false;
-                    }
-                }
-            }
-
-            // 积分商城不支持分销
-            if ($order->activity_type == OrderActivityTypeConstant::ACTIVITY_TYPE_CREDIT_SHOP) {
-                $isCommission = false;
-            }
-
-            // 支持分销 且有权限
-            if ($isCommission) {
-                CommissionService::orderPay($orderPaySuccessStruct->orderId, $orderPaySuccessStruct->accountId);
-            }
-
-
-            // 不是核销的判断是否自动发货
-            // 判断虚拟商品 拼团不走这里
-            if ($order->activity_type != OrderActivityTypeConstant::ACTIVITY_TYPE_GROUPS
-                && GoodsService::checkOrderGoodsVirtualType($order)) {
-                if ($goodsInfo[0]['auto_deliver'] == GoodsVirtualConstant::GOODS_VIRTUAL_AUTO_DELIVERY) {
-                    // 虚拟商品&&自动发货 自动完成
-                    $virtualRes = self::ship($order, [
-                        'order_goods_id' => array_column($goodsInfo, 'order_goods_id'),
-                        'no_express' => 1, // 不需要快递
-                        'transaction' => false,
-                    ]);
-                    if (is_error($virtualRes)) {
-                        return error($virtualRes['message']);
-                    }
-                    $virtualRes = self::complete($order, 2);
-                } else {
-                    // 虚拟商品&&不自动发货
-                    $virtualRes = self::ship($order, [
-                        'order_goods_id' => array_column($goodsInfo, 'order_goods_id'),
-                        'no_express' => 1, // 不需要快递
-                        'transaction' => false,
-                    ]);
-                }
-
+            if ($goodsInfo[0]['auto_deliver'] == GoodsVirtualConstant::GOODS_VIRTUAL_AUTO_DELIVERY) {
+                // 虚拟商品&&自动发货 自动完成
                 if (is_error($virtualRes)) {
                     return error($virtualRes['message']);
                 }
+                $virtualRes = self::complete($order, 2);
             }
 
-
+            if (is_error($virtualRes)) {
+                return error($virtualRes['message']);
+            }
         }
 
-        // 不是尾款
-        if ($presellPayType != 2) {
-            //减库存
-            $result = GoodsService::updateQty(true, $orderPaySuccessStruct->orderId, [], GoodsReductionTypeConstant::GOODS_REDUCTION_TYPE_PAYMENT, [
-                'transaction' => false,
-                'reason' => '付款减库存',
-                'presell_activity_id' => $presellOrder['activity_id'], // 预售活动id
-            ]);
-            if (is_error($result)) {
-                return error($result['message']);
-            }
+        //减库存
+        $result = GoodsService::updateQty(true, $orderPaySuccessStruct->orderId, [], GoodsReductionTypeConstant::GOODS_REDUCTION_TYPE_PAYMENT, [
+            'transaction' => false,
+            'reason' => '付款减库存',
+        ]);
+        if (is_error($result)) {
+            return error($result['message']);
         }
 
         return true;
     }
-
 
     /**
      * 虚拟自动发货
@@ -1285,7 +1245,7 @@ class OrderService extends BaseService
      * @param array $config
      * @param array $refundLogData
      * @return array|bool
-     * @throws \shopstar\exceptions\tradeOrder\TradeOrderOperationException
+     * @throws \yii\base\InvalidConfigException
      * @author 青岛开店星信息技术有限公司.
      */
     public static function refund(array $config, array $refundLogData)

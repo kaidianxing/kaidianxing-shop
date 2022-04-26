@@ -22,15 +22,16 @@ use shopstar\models\commission\CommissionRelationModel;
  */
 class CommissionService extends BaseService
 {
+
     /**
      * 订单创建处理
      * @param int $orderId
      * @param int $memberId
-     * @return bool
+     * @return void
      * @throws \yii\db\Exception
      * @author 青岛开店星信息技术有限公司
      */
-    public static function orderCreate(int $orderId, int $memberId): bool
+    public static function orderCreate(int $orderId, int $memberId): void
     {
         // 上下线关系处理
         CommissionRelationModel::handle($memberId);
@@ -40,19 +41,17 @@ class CommissionService extends BaseService
 
         // 上级分销商升级
         CommissionLevelService::agentUpgrade($memberId);
-
-        return true;
     }
 
     /**
      * 订单支付处理
      * @param int $orderId
      * @param int $memberId
-     * @return bool
+     * @return void
      * @throws \yii\db\Exception
      * @author 青岛开店星信息技术有限公司
      */
-    public static function orderPay(int $orderId, int $memberId): bool
+    public static function orderPay(int $orderId, int $memberId): void
     {
         // 上下线关系处理
         CommissionRelationModel::handle($memberId, 0, CommissionRelationLogConstant::TYPE_BIND);
@@ -65,17 +64,16 @@ class CommissionService extends BaseService
 
         // 上级分销商升级
         CommissionLevelService::agentUpgrade($memberId);
-
     }
 
     /**
      * 订单完成处理
      * @param int $orderId
      * @param int $memberId
-     * @return bool
+     * @return void
      * @author 青岛开店星信息技术有限公司
      */
-    public static function orderFinish(int $orderId, int $memberId): bool
+    public static function orderFinish(int $orderId, int $memberId): void
     {
         // 处理分销订单相关表 状态
         CommissionOrderModel::updateOrderFinish($orderId);
@@ -85,7 +83,5 @@ class CommissionService extends BaseService
 
         // 上级分销商升级
         CommissionLevelService::agentUpgrade($memberId);
-
-        return true;
     }
 }

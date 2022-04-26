@@ -95,9 +95,8 @@ class MarketingStatisticsModel extends \shopstar\bases\model\BaseActiveRecord
      * 订单上的activity_type 和 活动的type对应
      * @var int[]
      */
-    public static $typeMap = [
+    public static array $typeMap = [
         'seckill' => OrderActivityTypeConstant::ACTIVITY_TYPE_SECKILL,
-        'groups' => OrderActivityTypeConstant::ACTIVITY_TYPE_GROUPS,
     ];
 
     /**

@@ -68,8 +68,6 @@ class IndexController extends BaseMobileApiController
 
         $type = [
             OrderActivityTypeConstant::ACTIVITY_TYPE_SECKILL,
-            OrderActivityTypeConstant::ACTIVITY_TYPE_GROUPS,
-            OrderActivityTypeConstant::ACTIVITY_TYPE_CREDIT_SHOP,
         ];
         if (in_array($get['activity_type'], $type)) {
             unset($config['delivery']);
