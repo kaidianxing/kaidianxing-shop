@@ -38,7 +38,7 @@
             }
         )
     })()</script>
-<script src="https://cdn.bootcss.com/three.js/r83/three.min.js"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/three.js/r128/three.min.js"></script>
 <script src="/static/dist/install/js/chunk-vendors.js?v=2.0.0"></script>
 <script src="/static/dist/install/js/app.js?v=2.0.0"></script>
 </body>

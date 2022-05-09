@@ -88,9 +88,6 @@ class ResetPasswordController extends Controller
             return $this->stdout("Reset Fail :: {$user->getErrorMessage()}.\n", Console::BOLD, Console::FG_RED);
         }
 
-        // 用完删除自己
-        @unlink(__FILE__);
-
         return $this->stdout("Reset success.\n", Console::BOLD, Console::FG_GREEN);
     }
 

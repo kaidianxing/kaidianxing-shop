@@ -52,7 +52,7 @@
             }
         )
     })()</script>
-<script src="https://cdn.bootcss.com/three.js/r83/three.min.js" async></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/three.js/r128/three.min.js"></script>
 <script src="/static/dist/shop/js/chunk-vendors.js?v=1.0.7"></script>
 <script src="/static/dist/shop/js/app.js?v=1.0.7"></script>
 </body>
