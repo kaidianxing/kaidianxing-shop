@@ -204,9 +204,14 @@ class GoodsCreator
         // 会员折扣：系统默认
         $this->goodsInfo['goods']['member_level_discount_type'] = "1";
         // 分销
-        $this->goodsInfo['goods']['goods_commission'] = [];
-        $this->goodsInfo['goods_commission'] = [];
-
+        $this->goodsInfo['goods']['goods_commission'] = [
+            'type' => 0,
+            'info' => null,
+        ];
+        $this->goodsInfo['goods_commission'] = [
+            'type' => 0,
+            'info' => null,
+        ];
     }
 
     /**

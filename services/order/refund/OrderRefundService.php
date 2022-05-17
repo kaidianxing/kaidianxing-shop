@@ -424,6 +424,8 @@ class OrderRefundService extends BaseService
                 ['order_id' => $orderId, 'id' => $orderGoodsId]
             );
         }
+
+        return success();
     }
 
 

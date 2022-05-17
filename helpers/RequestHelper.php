@@ -299,11 +299,11 @@ class RequestHelper
      * 获取数字数据
      * @param $name
      * @param int $dec
-     * @param int $default
-     * @return int
+     * @param float $default
+     * @return float
      * @author 青岛开店星信息技术有限公司
      */
-    public static function postFloat($name, int $dec = 2, $default = 0): int
+    public static function postFloat($name, int $dec = 2, float $default = 0): float
     {
         return round(self::post($name, $default), $dec);
     }

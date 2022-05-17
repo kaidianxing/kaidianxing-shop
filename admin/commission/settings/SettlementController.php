@@ -76,7 +76,7 @@ class SettlementController extends KdxAdminApiController
             'auto_check_level' => RequestHelper::postInt('auto_check_level', 1),
             'auto_check_price' => RequestHelper::post('auto_check_price', ''),
 
-            'withdraw_type' => RequestHelper::postArray('withdraw_type', []),
+            'withdraw_type' => RequestHelper::postArray('withdraw_type'),
         ];
 
         // 最低提现额度
