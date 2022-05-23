@@ -1,4 +1,4 @@
-![](_readme/gitte-banner_1647592828084.png?v=2)
+![](_readme/gitte-banner_1647592828084.png)
 
 &nbsp;
 
@@ -6,7 +6,7 @@
 
 &nbsp;
 
-开店星基于Yii2+Vue2.0+uniapp 前沿技术研发，易学易用，前后端分离，多端开发，负载均衡，性能优越架构稳定；商城商品、订单、用户精细化管理；涵盖秒杀、消费奖励、超级海报等基础营销插件；H5+小程序+公众号，全渠道覆盖，框架成熟稳定便于扩展，高效二开，低成本快速搭建个性化商城。
+开店星基于Yii2+Vue2.0+uniapp 前沿技术研发，易学易用，前后端分离，多端开发，负载均衡，性能优越架构稳定；商城商品、订单、用户精细化管理；涵盖秒杀、消费奖励、超级海报等20+营销插件；H5+小程序+公众号，全渠道覆盖，线上线下全场景支持，框架成熟稳定便于扩展，高效二开，低成本快速搭建个性化商城。
 
 &nbsp;
 
@@ -14,21 +14,32 @@
 
 &nbsp;
 
-![](_readme/001_1647593246850.png?v=2)
+
+
+:-: ![](_readme/1.png)
 
 &nbsp;
 
-![](_readme/004.png?v=2)
+:-: ![](_readme/2.png)
 
 &nbsp;
 
-![](_readme/003.png?v=2)
+:-: ![](_readme/3.png)
 
 &nbsp;
 
-![](_readme/002_1647593027929.png?v=2)
+:-: ![](_readme/4.png)
 
 &nbsp;
+
+:-: ![](_readme/5.png)
+
+&nbsp;
+
+:-: ![](_readme/6.png)
+
+&nbsp;
+
 
 ## **开店星后台体验**：
 
@@ -36,12 +47,13 @@
 
 ## 演示站地址：[http://demo-free.kaidianxing.com/](http://demo-free.kaidianxing.com/)
 
+账号：admin    密码：admin
 
 &nbsp;
 
 ## **官方技术交流群**：
 
-![](_readme/gitte-banner备份.png?v=2)
+![](_readme/gitte-banner备份.png)
 
 
 &nbsp;
@@ -58,7 +70,7 @@
 
 *   gitee仓库——[https://gitee.com/kaidianxing/kaidianxing](https://gitee.com/kaidianxing/kaidianxing)
 
-![](_readme/gitte-banner备份2.png?v=2)
+![](_readme/gitte-banner备份2.png)
 
 &nbsp;
 ## **核心技术**：
@@ -66,7 +78,7 @@
 *   前端技术栈 ES6、vue、vuex、vue-router、vue-cli、axios、uni-app、 iView、echarts、vant
 * 后端技术栈：PHP，Yii2，Mysql，Redis
 
-![](_readme/编组6备份.png?v=2)
+![](_readme/编组6备份.png)
 
 &nbsp;
 
@@ -124,27 +136,39 @@
 
 
 ## **功能列表：**
-![](_readme/编组6.png?v=2)
+![](_readme/编组6.png)
 
 &nbsp;
 
 ## **页面展示：**
 
-![](_readme/登录页.png?v=2)
+![](_readme/登录页.png)
+![](_readme/运营_1653036046106.png)
+![](_readme/渠道.png)
+![](_readme/店铺.png)
+![](_readme/主题色.png)
+![](_readme/商品_1653036139197.png)
+![](_readme/添加商品.png)
+![](_readme/商品分类.png)
+![](_readme/会员列表.png)
+![](_readme/会员统计.png)
+![](_readme/优惠券_1653036222902.png)
+![](_readme/应用_1653036248376.png)
+![](_readme/分销.png)
+![](_readme/秒杀.png)
+![](_readme/消费奖励.png)
+![](_readme/设置_1653036292595.png)
 
-![](_readme/运营_1647593389001.png?v=2)
 
-![](_readme/装修_1647593407866.png?v=2)
 
-![](_readme/商品_1647593421217.png?v=2)
 
-![](_readme/会员_1647593431727.png?v=2)
 
-![](_readme/优惠券.png?v=2)
 
-![](_readme/应用_1647593452217.png?v=2)
 
-![](_readme/设置_1647593461498.png?v=2)
+
+
+
+
 
 
 
