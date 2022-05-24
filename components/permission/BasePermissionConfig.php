@@ -213,18 +213,22 @@ class BasePermissionConfig
      */
     public static function deleteConfigCache()
     {
+        CacheHelper::delete('is_created_perm_cache');
         CacheHelper::delete('is_created_perm_cache_0');
         CacheHelper::delete('is_created_perm_cache_20');
         CacheHelper::delete('is_created_perm_cache_21');
 
+        \Yii::$app->redis->del('kdx_shop_is_created_perm_cache');
         \Yii::$app->redis->del('kdx_shop_is_created_perm_cache_0');
         \Yii::$app->redis->del('kdx_shop_is_created_perm_cache_20');
         \Yii::$app->redis->del('kdx_shop_is_created_perm_cache_21');
 
+        CacheHelper::delete('all_perm_key');
         CacheHelper::delete('all_perm_key_0');
         CacheHelper::delete('all_perm_key_20');
         CacheHelper::delete('all_perm_key_21');
 
+        \Yii::$app->redis->del('kdx_shop_controller_perm_hash');
         \Yii::$app->redis->del('kdx_shop_controller_perm_hash_0');
         \Yii::$app->redis->del('kdx_shop_controller_perm_hash_20');
         \Yii::$app->redis->del('kdx_shop_controller_perm_hash_21');

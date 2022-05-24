@@ -528,6 +528,7 @@ class ListController extends KdxAdminApiController
         'o.goods_price',
         'o.activity_type',
         'o.original_goods_price',
+        'o.scene',
         // 会员相关
         'o.member_id',
         'o.member_realname',

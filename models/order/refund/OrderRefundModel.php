@@ -13,12 +13,14 @@
 namespace shopstar\models\order\refund;
 
 use shopstar\bases\model\BaseActiveRecord;
+use shopstar\constants\order\OrderSceneConstant;
 use shopstar\constants\RefundConstant;
 
 use shopstar\helpers\DateTimeHelper;
 use shopstar\helpers\RequestHelper;
 use shopstar\models\order\OrderGoodsModel;
 use shopstar\models\order\OrderModel;
+use shopstar\services\wxTransactionComponent\WxTransactionComponentOrderService;
 use yii\helpers\Json;
 
 /**
@@ -59,6 +61,7 @@ use yii\helpers\Json;
  * @property string $refund_mobile 退货手机号 卖家
  * @property string $refund_name 退货姓名 卖家
  * @property int $credit 退积分 (暂时只有积分商城用)
+ * @property int $aftersale_id 自定义交易组件维权单id
  */
 class OrderRefundModel extends BaseActiveRecord
 {
@@ -104,7 +107,7 @@ class OrderRefundModel extends BaseActiveRecord
     public function rules()
     {
         return [
-            [['order_id', 'order_goods_id', 'member_id', 'is_contain_dispatch', 'status', 'refund_type', 'refund_address_id', 'is_history', 'need_platform', 'credit'], 'integer'],
+            [['order_id', 'order_goods_id', 'member_id', 'is_contain_dispatch', 'status', 'refund_type', 'refund_address_id', 'is_history', 'need_platform', 'credit', 'aftersale_id'], 'integer'],
             [['price'], 'number'],
             [['images', 'content', 'refund_address'], 'string'],
             [['seller_accept_time', 'member_express_time', 'seller_express_time', 'created_at', 'finish_time'], 'safe'],
@@ -155,6 +158,7 @@ class OrderRefundModel extends BaseActiveRecord
             'refund_name' => '退货姓名 卖家',
             'need_platform' => '需要平台介入 1 平台介入',
             'credit' => '退积分 (暂时只有积分商城用)',
+            'aftersale_id' => '自定义交易组件维权单id',
         ];
     }
 
@@ -246,6 +250,13 @@ class OrderRefundModel extends BaseActiveRecord
     public static function setExpress()
     {
         $post = RequestHelper::post();
+
+        // 获取order
+        $order = OrderModel::findOne(['id' => $post['order_id']]);
+        if (empty($order)) {
+            return error('订单不存在');
+        }
+
         $refund = self::getRefundByOrder($post['order_id'], $post['order_goods_id'] ?? 0);
         if (is_error($refund)) {
             return $refund;
@@ -274,6 +285,15 @@ class OrderRefundModel extends BaseActiveRecord
 
         if ($refund->save() === false) {
             return error($refund->getErrorMessage());
+        }
+
+        // 判断是否是视频号订单(用户上传物流信息)
+        if ($order->scene == OrderSceneConstant::ORDER_SCENE_VIDEO_NUMBER_BROADCAST) {
+            $result = WxTransactionComponentOrderService::uploadReturnInfo($refund->aftersale_id, $order->member_id, $refund->member_express_encoding, $refund->member_express_sn);
+
+            if (is_error($result)) {
+                return error($result['message'], $result['error']);
+            }
         }
     }
 

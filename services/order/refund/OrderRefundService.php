@@ -16,6 +16,7 @@ use shopstar\bases\service\BaseService;
 use shopstar\constants\order\OrderActivityTypeConstant;
 use shopstar\constants\order\OrderConstant;
 use shopstar\constants\order\OrderDispatchExpressConstant;
+use shopstar\constants\order\OrderSceneConstant;
 use shopstar\constants\order\OrderStatusConstant;
 use shopstar\constants\RefundConstant;
 use shopstar\helpers\DateTimeHelper;
@@ -24,6 +25,7 @@ use shopstar\models\order\OrderModel;
 use shopstar\models\order\refund\OrderRefundModel;
 use shopstar\models\shop\ShopSettings;
 use shopstar\services\order\OrderService;
+use shopstar\services\wxTransactionComponent\WxTransactionComponentOrderService;
 use yii\helpers\Json;
 
 /**
@@ -229,6 +231,11 @@ class OrderRefundService extends BaseService
             $data['return'] = false;
         }
 
+        // 判断是否视频号订单 视频号现在不支持换货
+        if ($order->scene == OrderSceneConstant::ORDER_SCENE_VIDEO_NUMBER_BROADCAST) {
+            $data['exchange'] = false;
+        }
+
         if (!$data['refund'] && !$data['return'] && !$data['exchange']) {
             return error('该订单不允许维权');
         }
@@ -358,11 +365,25 @@ class OrderRefundService extends BaseService
      * 取消维权
      * @param int $orderId 订单id
      * @param int $orderGoodsId 订单商品id 单品维权有
+     * @param array $options
      * @return array
      * @author 青岛开店星信息技术有限公司
      */
-    public static function cancelRefund(int $orderId, int $orderGoodsId = 0): array
+    public static function cancelRefund(int $orderId, int $orderGoodsId = 0, array $options = []): array
     {
+        $options = array_merge([
+            'videoRefund' => true,
+        ], $options);
+
+        // 查询订单
+        $order = OrderModel::findOne([
+            'id' => $orderId
+        ]);
+
+        if (empty($order)) {
+            return error('维权订单信息不存在');
+        }
+
         $refund = OrderRefundModel::getRefundByOrder($orderId, $orderGoodsId);
 
         if (is_error($refund)) {
@@ -386,6 +407,15 @@ class OrderRefundService extends BaseService
 
         if ($refund->save() === false) {
             return error('取消维权失败');
+        }
+
+        // 判断是否是视频号订单(用户取消申请)
+        if ($order->scene == OrderSceneConstant::ORDER_SCENE_VIDEO_NUMBER_BROADCAST && $options['videoRefund']) {
+            $result = WxTransactionComponentOrderService::cancelRefund($refund->aftersale_id, $order->member_id);
+
+            if (is_error($result)) {
+                return error($result['message']);
+            }
         }
 
         // 整单维权取消
@@ -423,7 +453,7 @@ class OrderRefundService extends BaseService
                 ['refund_status' => RefundConstant::REFUND_STATUS_CANCEL, 'refund_type' => 0, 'is_single_refund' => 0],
                 ['order_id' => $orderId, 'id' => $orderGoodsId]
             );
-        }
+        } 
 
         return success();
     }

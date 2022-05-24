@@ -19,6 +19,7 @@ use shopstar\constants\finance\RefundLogConstant;
 use shopstar\constants\log\order\OrderLogConstant;
 use shopstar\constants\member\MemberCreditRecordStatusConstant;
 use shopstar\constants\order\OrderPaymentTypeConstant;
+use shopstar\constants\order\OrderSceneConstant;
 use shopstar\constants\RefundConstant;
 use shopstar\exceptions\order\RefundException;
 use shopstar\helpers\OrderNoHelper;
@@ -39,6 +40,11 @@ use shopstar\services\commission\CommissionOrderService;
 use shopstar\services\consumeReward\ConsumeRewardLogService;
 use shopstar\services\order\refund\OrderRefundService;
 use shopstar\services\tradeOrder\TradeOrderService;
+use shopstar\services\wxTransactionComponent\WxTransactionComponentOrderService;
+use Throwable;
+use Yii;
+use yii\db\Exception;
+use yii\web\Response;
 
 /**
  * 整单维权处理类
@@ -87,7 +93,7 @@ class RefundController extends KdxAdminApiController
         if ($refund->status == RefundConstant::REFUND_STATUS_SHOP || $refund->status == RefundConstant::REFUND_STATUS_WAIT) {
             throw new RefundException(RefundException::REJECT_MEMBER_IS_SEND_REJECT_FAIL);
         }
-        $transaction = \Yii::$app->getDb()->beginTransaction();
+        $transaction = Yii::$app->getDb()->beginTransaction();
         try {
             // 驳回逻辑
             $refund->status = RefundConstant::REFUND_STATUS_REJECT;
@@ -96,6 +102,16 @@ class RefundController extends KdxAdminApiController
             if (!$refund->save()) {
                 throw new RefundException(RefundException::ORDER_REFUND_SAVE_REJECT_FAIL);
             }
+
+            // 判断是否是视频号订单(拒绝售后)
+            if ($order['scene'] == OrderSceneConstant::ORDER_SCENE_VIDEO_NUMBER_BROADCAST) {
+                $result = WxTransactionComponentOrderService::rejectRefund($refund->aftersale_id);
+
+                if (is_error($result)) {
+                    throw new \Exception($result['message'], $result['error']);
+                }
+            }
+
             // 更新订单商品表
             if (empty($orderGoodsId)) {
                 OrderGoodsModel::updateAll(['refund_status' => RefundConstant::REFUND_STATUS_REJECT], ['order_id' => $orderId]);
@@ -128,7 +144,7 @@ class RefundController extends KdxAdminApiController
             );
 
             $transaction->commit();
-        } catch (\Throwable $exception) {
+        } catch (Throwable $exception) {
             $transaction->rollBack();
             throw new RefundException($exception->getCode());
         }
@@ -170,7 +186,7 @@ class RefundController extends KdxAdminApiController
         if ($refund->status != RefundConstant::REFUND_STATUS_APPLY) {
             throw new RefundException(RefundException::RETURN_ACCEPT_REFUND_STATUS_NOT_APPLY);
         }
-        $transaction = \Yii::$app->getDb()->beginTransaction();
+        $transaction = Yii::$app->getDb()->beginTransaction();
         try {
             // 修改
             $refund->status = RefundConstant::REFUND_STATUS_MEMBER;
@@ -198,6 +214,15 @@ class RefundController extends KdxAdminApiController
             }
             if (!$refund->save()) {
                 throw new RefundException(RefundException::RETURN_ACCEPT_REFUND_ACCEPT_FAIL);
+            }
+
+            // 判断是否是视频号订单(同意退货)
+            if ($order['scene'] == OrderSceneConstant::ORDER_SCENE_VIDEO_NUMBER_BROADCAST) {
+                $result = WxTransactionComponentOrderService::acceptReturn($refund->aftersale_id, $refundAddress);
+
+                if (is_error($result)) {
+                    throw new Exception($result['message'], $result['error']);
+                }
             }
 
             // 订单商品表
@@ -232,7 +257,7 @@ class RefundController extends KdxAdminApiController
             );
 
             $transaction->commit();
-        } catch (\Throwable $exception) {
+        } catch (Throwable $exception) {
             $transaction->rollBack();
             throw new RefundException($exception->getCode(), $exception->getMessage());
         }
@@ -276,7 +301,7 @@ class RefundController extends KdxAdminApiController
             && $refund->status != RefundConstant::REFUND_STATUS_MEMBER) {
             throw new RefundException(RefundException::EXCHANGE_SEND_ORDER_STATUS_NOT_ALLOW);
         }
-        $transaction = \Yii::$app->getDb()->beginTransaction();
+        $transaction = Yii::$app->getDb()->beginTransaction();
         try {
             // 修改
             $refund->status = RefundConstant::REFUND_STATUS_WAIT;
@@ -321,7 +346,7 @@ class RefundController extends KdxAdminApiController
             );
 
             $transaction->commit();
-        } catch (\Throwable $exception) {
+        } catch (Throwable $exception) {
             $transaction->rollBack();
             throw new RefundException($exception->getCode(), $exception->getMessage());
         }
@@ -354,7 +379,7 @@ class RefundController extends KdxAdminApiController
         if ($refund->status != RefundConstant::REFUND_STATUS_WAIT) {
             throw new RefundException(RefundException::EXCHANGE_CLOSE_REFUND_NOT_ALLOW_CLOSE);
         }
-        $transaction = \Yii::$app->getDb()->beginTransaction();
+        $transaction = Yii::$app->getDb()->beginTransaction();
         try {
             // 修改
             $refund->status = RefundConstant::REFUND_STATUS_SUCCESS;
@@ -399,7 +424,7 @@ class RefundController extends KdxAdminApiController
             );
 
             $transaction->commit();
-        } catch (\Throwable $exception) {
+        } catch (Throwable $exception) {
             $transaction->rollBack();
             throw new RefundException($exception->getCode());
         }
@@ -449,7 +474,7 @@ class RefundController extends KdxAdminApiController
             throw new RefundException(RefundException::REFUND_MANUAL_REFUND_IS_FINISH);
         }
 
-        $transaction = \Yii::$app->getDb()->beginTransaction();
+        $transaction = Yii::$app->getDb()->beginTransaction();
         try {
             // 修改
             $refund->status = RefundConstant::REFUND_STATUS_MANUAL;
@@ -562,7 +587,7 @@ class RefundController extends KdxAdminApiController
             );
 
             $transaction->commit();
-        } catch (\Throwable $exception) {
+        } catch (Throwable $exception) {
             $transaction->rollBack();
             throw new RefundException($exception->getCode());
         }
@@ -607,7 +632,7 @@ class RefundController extends KdxAdminApiController
             throw new RefundException(RefundException::REFUND_MANUAL_REFUND_IS_FINISH);
         }
 
-        $transaction = \Yii::$app->getDb()->beginTransaction();
+        $transaction = Yii::$app->getDb()->beginTransaction();
         try {
             // 如果退款单号为空 则生成
             if (empty($refund->refund_no)) {
@@ -747,7 +772,10 @@ class RefundController extends KdxAdminApiController
                     // 调用交易订单服务进行退款
                     TradeOrderService::operation([
                         'orderNo' => $order->order_no,  // 请使用订单编号
-                    ])->refund($refundPrice, '维权完成退款');
+                    ])->refund($refundPrice, '维权完成退款', [
+                        'videoRefund' => (bool)($order['scene'] == OrderSceneConstant::ORDER_SCENE_VIDEO_NUMBER_BROADCAST),
+                        'aftersale_id' => $refund->aftersale_id,
+                    ]);
 
                 } catch (\Exception $exception) {
                     // 如果找不到订单  使用旧版
@@ -787,7 +815,7 @@ class RefundController extends KdxAdminApiController
 
             $transaction->commit();
 
-        } catch (\Throwable $exception) {
+        } catch (Throwable $exception) {
             $transaction->rollBack();
             throw new RefundException(RefundException::REFUND_ACCEPT_FAIL, $exception->getMessage() . '(' . $exception->getCode() . ')');
         }
@@ -797,8 +825,8 @@ class RefundController extends KdxAdminApiController
 
     /**
      * 所有快递公司
-     * @return array|\yii\web\Response
-     * @throws \yii\db\Exception
+     * @return array|Response
+     * @throws Exception
      * @author 青岛开店星信息技术有限公司
      */
     public function actionAllExpress()

@@ -16,21 +16,10 @@ $config = [
     'id' => 'shopstar-console',
     'controllerNamespace' => 'shopstar\console\controllers',
     'components' => [],
-
     'controllerMap' => [
-//        'fixture' => [ // Fixture generation command line.
-//            'class' => 'yii\faker\FixtureController',
-//        ],
-
         'migrate' => [
             'class' => 'yii\console\controllers\MigrateController',
-            'migrationTable' => '{{%kdx_migration}}',
-//            'migrationPath' => null, // disable non-namespaced migrations if app\migrations is listed below
-//            'migrationNamespaces' => [
-//                'app\migrations', // shopstar migrations for the whole application
-//                'module\migrations', // Migrations for the specific project's module
-//                'some\extension\migrations', // Migrations for the specific extension
-//            ],
+            'migrationTable' => '{{%migration}}',
         ],
     ],
 ];

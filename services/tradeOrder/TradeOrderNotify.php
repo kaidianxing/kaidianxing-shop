@@ -262,7 +262,7 @@ class TradeOrderNotify
     private function verifySign()
     {
         // 余额支付进来无需验证签名
-        if ($this->type == 'balance') {
+        if ($this->type == 'balance' || (isset($this->notifyParams['is_verify_sign']) && $this->notifyParams['is_verify_sign'])) {
             return;
         }
 

@@ -22,6 +22,7 @@ use shopstar\helpers\DateTimeHelper;
 use shopstar\helpers\OrderNoHelper;
 use shopstar\models\tradeOrder\TradeOrderModel;
 use shopstar\models\tradeOrder\TradeOrderRefundModel;
+use shopstar\services\wxTransactionComponent\WxTransactionComponentOrderService;
 use yii\base\Component;
 
 /**
@@ -146,12 +147,18 @@ class TradeOrderOperation extends Component
      * 订单退款
      * @param float $refundPrice 退款金额
      * @param string $refundSubject 退款说明
+     * @param array $options
      * @return bool
      * @throws TradeOrderOperationException
      * @author likexin
      */
-    public function refund(float $refundPrice, string $refundSubject = ''): bool
+    public function refund(float $refundPrice, string $refundSubject = '', array $options = []): bool
     {
+        $options = array_merge([
+            'videoRefund' => false, // 是否是交易组件退款（视频号）
+            'aftersale_id' => 0, // 退款id（交易组件用）
+        ], $options);
+
         $where = [
             'order_no' => $this->orderNo,
         ];
@@ -220,24 +227,34 @@ class TradeOrderOperation extends Component
                 throw new TradeOrderOperationException(TradeOrderOperationException::REFUND_UPDATE_STATUS_FAIL);
             }
 
-            // payType从int类型转为string类型
-            $payTypeIdentity = PayTypeConstant::getIdentity($tradeOrder->pay_type);
+            // 如果是视频号下单 走视频号退款
+            if ($options['videoRefund']) {
+                $result = WxTransactionComponentOrderService::returnAccept($options['aftersale_id']);
 
-            // 调用支付组件进行退款
-            $instance = PaymentNewComponent::getInstance($payTypeIdentity, [
-                'clientType' => $tradeOrder->client_type,
-                'payType' => $tradeOrder->pay_type,
-                'tradeNo' => $tradeOrder->trade_no,
-                'accountId' => $tradeOrder->account_id,
-                'subject' => $refundSubject,
-                'notifyUrl' => '',/** @change likexin 需要传入，命令行获取不到，退款时不需要回调 */
-            ]);
-            if (is_error($instance)) {
-                throw new TradeOrderOperationException(TradeOrderOperationException::REFUND_PAYMENT_COMPONENT_INSTANCE_FAIL);
-            }
-            $result = $instance->refund($tradeOrder->order_price, $refundPrice, $refundNo);
-            if (is_error($result)) {
-                throw new TradeOrderOperationException(TradeOrderOperationException::REFUND_PAYMENT_COMPONENT_REFUND_FAIL);
+                if (is_error($result)) {
+                    throw new \Exception($result['message'], $result['error']);
+                }
+            } else {
+
+                // payType从int类型转为string类型
+                $payTypeIdentity = PayTypeConstant::getIdentity($tradeOrder->pay_type);
+
+                // 调用支付组件进行退款
+                $instance = PaymentNewComponent::getInstance($payTypeIdentity, [
+                    'clientType' => $tradeOrder->client_type,
+                    'payType' => $tradeOrder->pay_type,
+                    'tradeNo' => $tradeOrder->trade_no,
+                    'accountId' => $tradeOrder->account_id,
+                    'subject' => $refundSubject,
+                    'notifyUrl' => '',/** @change likexin 需要传入，命令行获取不到，退款时不需要回调 */
+                ]);
+                if (is_error($instance)) {
+                    throw new TradeOrderOperationException(TradeOrderOperationException::REFUND_PAYMENT_COMPONENT_INSTANCE_FAIL);
+                }
+                $result = $instance->refund($tradeOrder->order_price, $refundPrice, $refundNo);
+                if (is_error($result)) {
+                    throw new TradeOrderOperationException(TradeOrderOperationException::REFUND_PAYMENT_COMPONENT_REFUND_FAIL);
+                }
             }
 
             $transaction->commit();

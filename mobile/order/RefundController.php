@@ -16,6 +16,7 @@ use shopstar\bases\controller\BaseMobileApiController;
 use shopstar\components\notice\NoticeComponent;
 use shopstar\constants\components\notice\NoticeTypeConstant;
 use shopstar\constants\order\OrderConstant;
+use shopstar\constants\order\OrderSceneConstant;
 use shopstar\constants\order\OrderStatusConstant;
 use shopstar\constants\RefundConstant;
 use shopstar\exceptions\order\RefundException;
@@ -29,6 +30,7 @@ use shopstar\models\order\OrderModel;
 use shopstar\models\order\refund\OrderRefundModel;
 use shopstar\models\shop\ShopSettings;
 use shopstar\services\order\refund\OrderRefundService;
+use shopstar\services\wxTransactionComponent\WxTransactionComponentOrderService;
 use yii\helpers\Json;
 use yii\web\Response;
 
@@ -307,6 +309,9 @@ class RefundController extends BaseMobileApiController
             // 维权订单
             $refund = OrderRefundModel::getRefundByOrder($order->id, $data['order_goods_id']);
             // 如果不存在 则新增
+            $isHistory = 0;
+
+            // 如果不存在 则新增
             if (is_error($refund)) {
                 // 多商户 第一次维权 不能平台介入
                 if ($post['need_platform'] == 1) {
@@ -318,6 +323,7 @@ class RefundController extends BaseMobileApiController
             } else if ($refund->status == RefundConstant::REFUND_STATUS_REJECT) {
                 // 需要获取是拒绝的订单 要改为历史维权
                 $refund->is_history = 1;
+                $isHistory = 1;
                 if ($refund->save() === false) {
                     throw new RefundException(RefundException::REFUND_SUBMIT_CHANGE_HISTORY_FAIL);
                 }
@@ -348,6 +354,30 @@ class RefundController extends BaseMobileApiController
                     ['order_id' => $post['order_id']]
                 );
 
+                // 同步小程序视频号订单
+                if ($order->scene == OrderSceneConstant::ORDER_SCENE_VIDEO_NUMBER_BROADCAST) {
+                    // 判断生成与修改
+                    if ($isHistory) {
+                        $result = WxTransactionComponentOrderService::updateRefund($refund->aftersale_id, $this->memberId, $post['refund_type'], $refund->price, $refund->content);
+
+                        if (is_error($result)) {
+                            throw new RefundException($result['error'], $result['message']);
+                        }
+                    } else {
+                        $afterSaleId = WxTransactionComponentOrderService::refundSubmit($order->id, $refund->id, $this->memberId, $post['refund_type'], $data['order_goods_id'],  $refund->price, $refund->content);
+
+                        if (is_error($afterSaleId)) {
+                            throw new RefundException($afterSaleId['error'], $afterSaleId['message']);
+                        }
+
+                        $refund->aftersale_id = $afterSaleId;
+
+                        if ($refund->save() === false) {
+                            throw new RefundException(RefundException::REFUND_SUBMIT_ORDER_REFUND_FAIL, $refund->getErrorMessage());
+                        }
+                    }
+                }
+
             } else { // 单品维权
                 // 订单表 refund_type 是 是否单品维权
                 OrderModel::updateAll(
@@ -359,6 +389,30 @@ class RefundController extends BaseMobileApiController
                     ['is_single_refund' => 1, 'refund_type' => $data['refund_type'], 'refund_status' => 0],
                     ['id' => $data['order_goods_id'], 'member_id' => $this->memberId]
                 );
+
+                // 同步小程序视频号订单
+                if ($order->scene == OrderSceneConstant::ORDER_SCENE_VIDEO_NUMBER_BROADCAST) {
+                    // 判断生成与修改
+                    if ($isHistory) {
+                        $result = WxTransactionComponentOrderService::updateRefund($refund->aftersale_id, $this->memberId, $post['refund_type'], $refund->price, $refund->content);
+
+                        if (is_error($result)) {
+                            throw new RefundException($result['error'], $result['message']);
+                        }
+                    } else {
+                        $afterSaleId = WxTransactionComponentOrderService::refundSubmit($order->id, $refund->id, $this->memberId, $post['refund_type'], $data['order_goods_id'],  $refund->price, $refund->content);
+
+                        if (is_error($afterSaleId)) {
+                            throw new RefundException($afterSaleId['error'], $afterSaleId['message']);
+                        }
+
+                        $refund->aftersale_id = $afterSaleId;
+
+                        if ($refund->save() === false) {
+                            throw new RefundException(RefundException::REFUND_SUBMIT_ORDER_REFUND_FAIL, $refund->getErrorMessage());
+                        }
+                    }
+                }
             }
 
             $order = $order->toArray();

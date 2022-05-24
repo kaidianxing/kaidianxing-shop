@@ -184,7 +184,16 @@ return [
         'category' =>  10,
         'sort_by' =>  0,
     ],
-
+    'wxTransactionComponent' => [
+        'name' => '自定义交易组件(视频号商城)',
+        'type' => 10,
+        'identity' => 'wxTransactionComponent',
+        'logo' =>  '/static/dist/shop/plugin_icon/icon-wxTransactionComponent.png',
+        'description' => '链接微信视频号',
+        'route' =>  '/wxTransactionComponent/index',
+        'category' =>  12,
+        'sort_by' =>  0,
+    ],
     'douyin' => [
         'name' => '抖音小程序',
         'type' => 20,

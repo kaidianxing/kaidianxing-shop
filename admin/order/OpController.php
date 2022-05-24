@@ -21,6 +21,7 @@ use shopstar\constants\order\OrderActivityTypeConstant;
 use shopstar\constants\order\OrderConstant;
 use shopstar\constants\order\OrderDispatchExpressConstant;
 use shopstar\constants\order\OrderPaymentTypeConstant;
+use shopstar\constants\order\OrderSceneConstant;
 use shopstar\constants\order\OrderStatusConstant;
 use shopstar\constants\order\OrderTypeConstant;
 use shopstar\constants\virtualAccount\VirtualAccountDataConstant;
@@ -46,9 +47,11 @@ use shopstar\services\commission\CommissionService;
 use shopstar\services\consumeReward\ConsumeRewardLogService;
 use shopstar\services\goods\GoodsService;
 use shopstar\services\order\OrderService;
+use shopstar\services\wxTransactionComponent\WxTransactionComponentOrderService;
 use yii\base\Exception;
 use yii\db\Expression;
 use yii\helpers\Json;
+use yii\web\Response;
 
 /**
  * 订单操作
@@ -91,11 +94,12 @@ class OpController extends KdxAdminApiController
 
     /**
      * 修改收货地址
-     * @return \yii\web\Response
+     * @return Response
      * @throws OrderException
+     * @throws Exception
      * @author 青岛开店星信息技术有限公司
      */
-    public function actionEditAddress(): \yii\web\Response
+    public function actionEditAddress(): Response
     {
         $orderId = RequestHelper::isPost() ? RequestHelper::postInt('order_id') : RequestHelper::getInt('order_id');
         if (empty($orderId)) {
@@ -182,6 +186,14 @@ class OpController extends KdxAdminApiController
 
             $model = new OrderModel();
             if ($result) {
+                // 同步视频号订单地址
+                if ($order['scene'] == OrderSceneConstant::ORDER_SCENE_VIDEO_NUMBER_BROADCAST) {
+                    $result = WxTransactionComponentOrderService::uploadOrderAddress($order['member_id'], $orderId, $data);
+                    if (is_error($result)) {
+                        throw new Exception($result['message'], $result['error']);
+                    }
+                }
+
                 //添加操作日志
                 LogModel::write(
                     $this->userId,
@@ -223,12 +235,12 @@ class OpController extends KdxAdminApiController
 
     /**
      * 发货
-     * @return \yii\web\Response
+     * @return Response
      * @throws OrderException
      * @throws \yii\db\Exception
      * @author 青岛开店星信息技术有限公司
      */
-    public function actionSendPackage(): \yii\web\Response
+    public function actionSendPackage(): Response
     {
         $orderId = RequestHelper::isPost() ? RequestHelper::postInt('order_id') : RequestHelper::getInt('order_id');
         if (empty($orderId)) {
@@ -334,12 +346,12 @@ class OpController extends KdxAdminApiController
 
     /**
      * 批量发货
-     * @return \yii\web\Response
+     * @return Response
      * @throws OrderException
      * @throws \yii\db\Exception
      * @author 青岛开店星信息技术有限公司
      */
-    public function actionBatchSend(): \yii\web\Response
+    public function actionBatchSend(): Response
     {
         $post = [
             'no_express' => RequestHelper::postInt('no_express', 0),
@@ -447,7 +459,7 @@ class OpController extends KdxAdminApiController
                     throw new Exception();
                 }
                 $post['order_goods_id'] = $order['no_package_order_goods_id'];
-                $result = OrderService::ship(order, $post);
+                $result = OrderService::ship($order, $post);
                 if (is_error($result)) {
                     throw new \Exception($result['message']);
                 }
@@ -466,11 +478,11 @@ class OpController extends KdxAdminApiController
 
     /**
      * 修改物流
-     * @return \yii\web\Response
+     * @return Response
      * @throws OrderException
      * @author 青岛开店星信息技术有限公司
      */
-    public function actionChangeSend(): \yii\web\Response
+    public function actionChangeSend(): Response
     {
         $packageData = RequestHelper::post('package_data');
         if (empty($packageData)) {
@@ -534,12 +546,12 @@ class OpController extends KdxAdminApiController
 
     /**
      * 获取已发货包裹列表
-     * @return \yii\web\Response
+     * @return Response
      * @throws OrderException
      * @throws \yii\db\Exception
      * @author 青岛开店星信息技术有限公司
      */
-    public function actionGetPackage(): \yii\web\Response
+    public function actionGetPackage(): Response
     {
         $orderId = RequestHelper::getInt('order_id');
         $packageId = RequestHelper::getInt('package_id');
@@ -612,11 +624,11 @@ class OpController extends KdxAdminApiController
 
     /**
      * 取消发货
-     * @return \yii\web\Response
+     * @return Response
      * @throws OrderException
      * @author 青岛开店星信息技术有限公司
      */
-    public function actionCancelSend(): \yii\web\Response
+    public function actionCancelSend(): Response
     {
         $packageId = RequestHelper::post('package_id');
         $orderId = RequestHelper::postint('order_id');
@@ -635,11 +647,11 @@ class OpController extends KdxAdminApiController
 
     /**
      * 确认收货
-     * @return \yii\web\Response
+     * @return Response
      * @throws OrderException
      * @author 青岛开店星信息技术有限公司
      */
-    public function actionFinish(): \yii\web\Response
+    public function actionFinish(): Response
     {
         $orderId = RequestHelper::postInt('order_id');
         if (empty($orderId)) {
@@ -684,11 +696,11 @@ class OpController extends KdxAdminApiController
 
     /**
      * 后台确认付款
-     * @return \yii\web\Response
+     * @return Response
      * @throws OrderException
      * @author 青岛开店星信息技术有限公司
      */
-    public function actionPay(): \yii\web\Response
+    public function actionPay(): Response
     {
         $id = RequestHelper::postInt('order_id');
         $presellPayType = RequestHelper::post('presell_pay_type'); // 预售支付类型  0||'' 非  1定金 2尾款 3全款
@@ -944,12 +956,12 @@ class OpController extends KdxAdminApiController
 
     /**
      * 关闭订单并退款
-     * @return \yii\web\Response
+     * @return Response
      * @throws OrderException
      * @throws \yii\db\Exception|\Throwable
      * @author 青岛开店星信息技术有限公司
      */
-    public function actionCloseAndRefund(): \yii\web\Response
+    public function actionCloseAndRefund(): Response
     {
         $orderId = RequestHelper::post('order_id');
         $password = RequestHelper::post('password');
@@ -1010,11 +1022,11 @@ class OpController extends KdxAdminApiController
 
     /**
      * 订单改价
-     * @return \yii\web\Response
+     * @return Response
      * @throws OrderException
      * @author 青岛开店星信息技术有限公司
      */
-    public function actionChangePrice(): \yii\web\Response
+    public function actionChangePrice(): Response
     {
         $post = RequestHelper::post();
         if (empty($post['order_id'])) {
@@ -1206,12 +1218,12 @@ class OpController extends KdxAdminApiController
 
     /**
      * 获取物流
-     * @return \yii\web\Response
+     * @return Response
      * @throws OrderException
      * @throws \yii\db\Exception
      * @author 青岛开店星信息技术有限公司
      */
-    public function actionGetExpress(): \yii\web\Response
+    public function actionGetExpress(): Response
     {
         $orderId = RequestHelper::getInt('order_id');
         $packageId = RequestHelper::getInt('package_id');
@@ -1301,11 +1313,11 @@ class OpController extends KdxAdminApiController
 
     /**
      * 获取订单改价操作记录
-     * @return \yii\web\Response
+     * @return Response
      * @throws OrderException
      * @author 青岛开店星信息技术有限公司
      */
-    public function actionChangePriceLog(): \yii\web\Response
+    public function actionChangePriceLog(): Response
     {
         $orderId = RequestHelper::get('order_id');
         if (empty($orderId)) {
@@ -1366,7 +1378,7 @@ class OpController extends KdxAdminApiController
 
     /**
      * 更改订单商家备注
-     * @return array|\yii\web\Response
+     * @return array|Response
      * @throws OrderException
      * @author 青岛开店星信息技术有限公司
      */

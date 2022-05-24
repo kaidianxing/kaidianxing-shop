@@ -1540,7 +1540,35 @@ class ShopSettings extends BaseSettings
                 'auto_send' => '0',
                 'auto_send_limit' => '0.01',// 默认值最小为0.01
             ],
+
+            // 自定义交易组件
+            'wxTransactionComponent' => self::defaultWxTransactionComponentSettings(),
         ];
     }
 
+    /**
+     * 视频号交易组件默认数据
+     * @return array
+     * @author 青岛开店星信息技术有限公司
+     */
+    private static function defaultWxTransactionComponentSettings(): array
+    {
+        return [
+            'live' => [
+                'video_number_id' => '', // 视频号id
+            ],
+            'dynamic' => [
+                'video_id' => '', // 视频id
+                'video_number_id' => '', // 视频号id
+            ],
+            'bases' => [ // 配置参数
+                'url' => '',
+                'token' => '',
+                'encoding_aes_key' => '',
+            ],
+            'development' => [ // 定向设置
+                'member_id' => 0,
+            ],
+        ];
+    }
 }

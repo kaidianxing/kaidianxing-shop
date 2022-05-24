@@ -12,6 +12,7 @@
 
 namespace shopstar\services\order;
 
+use Exception;
 use shopstar\bases\service\BaseService;
 use shopstar\components\notice\NoticeComponent;
 use shopstar\components\payment\base\PayOrderTypeConstant;
@@ -26,6 +27,7 @@ use shopstar\constants\order\OrderActivityTypeConstant;
 use shopstar\constants\order\OrderDispatchExpressConstant;
 use shopstar\constants\order\OrderPackageCityDistributionTypeConstant;
 use shopstar\constants\order\OrderPaymentTypeConstant;
+use shopstar\constants\order\OrderSceneConstant;
 use shopstar\constants\order\OrderStatusConstant;
 use shopstar\constants\order\OrderTypeConstant;
 use shopstar\constants\OrderConstant;
@@ -63,7 +65,11 @@ use shopstar\services\goods\GoodsService;
 use shopstar\services\member\MemberLevelService;
 use shopstar\services\sale\CouponMemberService;
 use shopstar\services\tradeOrder\TradeOrderService;
+use shopstar\services\wxTransactionComponent\WxTransactionComponentOrderService;
 use shopstar\structs\order\OrderPaySuccessStruct;
+use Throwable;
+use Yii;
+use yii\base\InvalidConfigException;
 use yii\helpers\Json;
 
 /**
@@ -103,6 +109,7 @@ class OrderService extends BaseService
         $options = array_merge([
             'cancel_reason' => '', //关闭理由
             'transaction' => true,
+            'is_video_close' => true,
         ], $options);
 
         //判断是否等于当前类
@@ -134,7 +141,7 @@ class OrderService extends BaseService
             'cancel_reason' => $options['cancel_reason']
         ]);
 
-        $options['transaction'] && $tr = \Yii::$app->db->beginTransaction();
+        $options['transaction'] && $tr = Yii::$app->db->beginTransaction();
 
         try {
 
@@ -163,15 +170,23 @@ class OrderService extends BaseService
             self::returnActivity($order->id, $operator, '关闭订单返还');
 
             if (is_error($result)) {
-                throw new \Exception($result['message']);
+                throw new Exception($result['message']);
             }
 
             // 修改分销订单状态
             CommissionOrderService::updateRefundStatus($order['member_id'], $order['id']);
 
+            // 关闭视频号交易订单
+            if ($order->scene == OrderSceneConstant::ORDER_SCENE_VIDEO_NUMBER_BROADCAST && $options['is_video_close']) {
+                $resultVideo = WxTransactionComponentOrderService::closeOrder($order->id, $order->member_id);
+
+                if (is_error($resultVideo)) {
+                    throw new Exception($result['message']);
+                }
+            }
 
             $options['transaction'] && $tr->commit();
-        } catch (\Throwable $throwable) {
+        } catch (Throwable $throwable) {
             $options['transaction'] && $tr->rollBack();
             return error($throwable->getMessage());
         }
@@ -179,308 +194,65 @@ class OrderService extends BaseService
         return true;
     }
 
-
     /**
-     * 发货
-     * @param $orderInfo //订单信息
-     * @param array $data 用户提交的数据
-     * @return array
-     * @throws \yii\db\Exception
-     * @author 青岛开店星信息技术有限公司
-     */
-    public static function ship($orderInfo, array $data)
-    {
-        if (is_numeric($orderInfo)) {
-            $orderInfo = OrderModel::getOrderAndOrderGoods($orderInfo, 0);
-        }
-
-        //订单商品
-        $orderGoodsInfo = OrderGoodsModel::find()->where(['order_id' => $orderInfo['id']])->indexBy('id')->asArray()->all();
-
-        if (empty($orderInfo)) {
-            return error('订单不存在');
-        }
-
-        if (empty($data)) {
-            return error('参数不能为空');
-        }
-
-        //校验达达配送的商品重量
-        if ($data['city_distribution_type'] == OrderPackageCityDistributionTypeConstant::DADA) {
-            $orderWeight = array_sum(array_column($orderInfo['orderGoods'], 'weight'));
-            if ($orderWeight <= 0) {
-                return error('达达配送订单重量不能为空，建议使用其他配送方式');
-            }
-        }
-
-        $orderGoods = ArrayHelper::index($orderInfo['orderGoods'], 'id');
-        if ((int)$orderInfo['status'] != OrderStatusConstant::ORDER_STATUS_WAIT_SEND && (int)$orderInfo['status'] != OrderStatusConstant::ORDER_STATUS_WAIT_PART_SEND) {
-            return error('订单状态错误，无法进行发货！(1)');
-        }
-
-        if ($orderInfo['order_type'] == OrderTypeConstant::ORDER_TYPE_ORDINARY) {
-            // 过滤虚拟商品
-            if (!empty($orderInfo['dispatch_type'])) {
-                if (!in_array($orderInfo['dispatch_type'], [OrderDispatchExpressConstant::ORDER_DISPATCH_EXPRESS, OrderDispatchExpressConstant::ORDER_DISPATCH_SELFFETCH, OrderDispatchExpressConstant::ORDER_DISPATCH_INTRACITY])) {
-                    return error('订单配送方式错误，无法进行发货！(2)');
-                }
-            }
-        }
-
-        // 校验是否开启配送方式
-        if ($orderInfo['dispatch_type'] == OrderDispatchExpressConstant::ORDER_DISPATCH_INTRACITY) {
-            $intracity = ShopSettings::get('dispatch.intracity');
-
-            if ($intracity['enable'] == 0) {
-                return error('同城配送未开启');
-            }
-        }
-
-        $orderGoodsIds = $data['order_goods_id'];
-        if (empty($orderGoodsIds)) {
-            return error('请选择要发货的商品');
-        }
-
-        foreach ((array)$orderGoodsIds as $orderGoodsId) {
-            if (!isset($orderGoods[$orderGoodsId])) {
-                return error("无效的订单商品 #{$orderGoodsId}");
-            }
-
-            if ($orderGoods[$orderGoodsId]['package_id'] > 0) {
-                return error("订单商品已经是发货状态 #{$orderGoodsId}");
-            }
-
-            if (!empty($orderGoodsInfo[$orderGoodsId]) && $orderGoodsInfo[$orderGoodsId]['refund_type'] != 0 && $orderGoodsInfo[$orderGoodsId]['refund_status'] >= RefundConstant::REFUND_STATUS_APPLY) {
-                return error("订单商品 \"{$orderGoods[$orderGoodsId]['title']}\" 正在维权中，不能进行发货操作");
-            }
-        }
-        unset($orderGoodsId);
-
-        // 虚拟订单
-        if (GoodsService::checkOrderGoodsVirtualType($orderInfo)) {
-            return self::virtualShip($orderInfo['id'], $orderInfo['order_type'], ['transaction' => false,]);
-        }
-
-        $noExpress = (int)$data['no_express'];
-        $expressId = $data['express_id'];
-        $expressSn = $data['express_sn'];
-        if (empty($noExpress)) {
-            if (empty($expressId)) {
-                return error('请选择物流公司');
-            }
-
-            $express = CoreExpressModel::getExpressById($expressId);
-            if (empty($express)) {
-                return error('错误的物流公司');
-            }
-
-            if (empty($expressSn)) {
-                return error('请填写物流单号');
-            }
-        }
-
-        $package = [
-            'member_id' => $orderInfo['member_id'],
-            'order_id' => $orderInfo['id'],
-            'order_goods_ids' => implode(',', $orderGoodsIds),
-            'remark' => $data['remark'],
-            'send_time' => date('Y-m-d H:i:s'),
-        ];
-
-        $package['no_express'] = $noExpress;
-        $package['express_id'] = (int)$expressId;
-        $package['express_sn'] = $expressSn ?: '';
-        $package['express_com'] = $express['code'] ?? '';
-        $package['express_name'] = $data['express_name'] ?? '';
-
-        // 同城配送
-        if ($orderInfo['dispatch_type'] == OrderDispatchExpressConstant::ORDER_DISPATCH_INTRACITY) {
-            $package['is_city_distribution'] = 1;//是否是同城配送
-
-            $package['city_distribution_type'] = isset($data['city_distribution_type']) ? intval($data['city_distribution_type']) : 0;
-        }
-
-        $data['transaction'] && $tr = OrderModel::getDB()->beginTransaction();
-
-        try {
-
-            //如果是普通订单 则修改订单商品
-            if ($orderInfo['order_type'] == OrderTypeConstant::ORDER_TYPE_ORDINARY) {
-                $orderPackage = new OrderPackageModel();
-                $orderPackage->attributes = $package;
-                if (!$orderPackage->save()) {
-                    throw new \Exception('包裹信息保存失败');
-                }
-
-                //同步订单商品状态
-                $rs = OrderGoodsModel::updateAll(['package_id' => $orderPackage->id, 'status' => OrderStatusConstant::ORDER_STATUS_WAIT_PICK], ['id' => $orderGoodsIds]);
-                if (!$rs) {
-                    throw new \Exception('订单商品信息同步失败');
-                }
-            }
-
-            //同步订单状态
-            $orderUpdate = [];
-            //每次发货都会重置发货时间
-            $orderUpdate['send_time'] = date('Y-m-d H:i:s');
-
-            //获取发货总数
-            $sendCount = OrderGoodsModel::find()->where(['order_id' => $orderInfo['id']])->andWhere(['>', 'package_id', 0])->count();
-
-            if ($sendCount == count($orderInfo['orderGoods'])) {
-                //如果全部发送了
-                $orderUpdate['status'] = OrderStatusConstant::ORDER_STATUS_WAIT_PICK;
-
-                //预计自动确认收货时间
-                $autoReceiveDays = OrderModel::getAutoReceiveDays();
-                if (OrderModel::getAutoReceive() && $autoReceiveDays > 0) {
-                    $orderUpdate['auto_finish_time'] = date('Y-m-d H:i:s', strtotime("+ {$autoReceiveDays} days", time()));
-                }
-            } else {
-                //已经维权（仅退款）过的订单商品的维权id集合（不包括当前需要发货的订单商品）
-                $refundCount = 0;
-                foreach ($orderGoods as $id => $goods) {
-                    if (!in_array($id, $orderGoodsIds) && $goods['package_id'] == 0) {
-                        //如果是仅退款，并且是退款完成的
-                        if (in_array($goods['refund_status'], [RefundConstant::REFUND_STATUS_SUCCESS, RefundConstant::REFUND_STATUS_MANUAL]) && $goods['refund_type'] == RefundConstant::TYPE_REFUND) {
-                            $refundCount++;
-                        }
-                    }
-                }
-
-                //已经同意退款的订单商品不需要发货。
-                if (!empty($refundCount)) {
-                    if ($sendCount + $refundCount == count($orderInfo['orderGoods'])) {
-                        $orderUpdate['status'] = OrderStatusConstant::ORDER_STATUS_WAIT_PICK;
-                    }
-                } else {
-                    //如果没有维权记录 那么就对比是否全部发货，如果不是全部发货 变成部分发货状态
-                    if ($sendCount == count($orderInfo['orderGoods'])) {
-                        $orderUpdate['status'] = OrderStatusConstant::ORDER_STATUS_WAIT_PICK;
-                    }
-                }
-
-                //如果发货个数不等于订单商品个数  并且 发货个数加上退款完成个数不等于订单商品个数 那就是部分发货
-                if ($orderUpdate['status'] != OrderStatusConstant::ORDER_STATUS_WAIT_PICK) {
-                    $orderUpdate['status'] = OrderStatusConstant::ORDER_STATUS_WAIT_PART_SEND;
-                }
-            }
-
-            if (!empty($orderUpdate)) {
-                $rs = OrderModel::updateAll($orderUpdate, ['id' => $orderInfo['id']]);
-                if (!$rs) {
-                    throw new \Exception('订单信息同步失败');
-                }
-            }
-
-            $data['transaction'] && $tr->commit();
-
-            // 投递队列自动完成订单
-            $shopSetting = ShopSettings::get('sysset.trade');
-
-            //如果是已全部发货 并 开启自动收货 并 自动完成时间不为空
-            $orderAutoCloseCondition = $orderUpdate['status'] == OrderStatusConstant::ORDER_STATUS_WAIT_PICK && $shopSetting['auto_receive'] == SyssetTypeConstant::CUSTOMER_AUTO_RECEIVE_TIME && !empty($orderUpdate['auto_finish_time']);
-
-            //核销订单不走这
-            $verifyAutoCloseCondition = $orderInfo['dispatch_type'] != OrderDispatchExpressConstant::ORDER_DISPATCH_SELFFETCH;
-
-            //多条件判断 请谨慎
-            if ($orderAutoCloseCondition || $verifyAutoCloseCondition) {
-
-                //获取剩余秒数
-                $delay = strtotime($orderUpdate['auto_finish_time']) - time();
-
-                //判断剩余时间是否大于0
-                if ($delay > 0) {
-                    QueueHelper::push(new AutoReceiveOrderJob([
-                        'orderId' => $orderInfo['id'],
-                    ]), $delay);
-                }
-            }
-
-
-            $goodsTitle = array_shift($orderGoodsInfo)['title'];
-            if (!empty($orderGoodsInfo)) {
-                $goodsTitle .= '等';
-            }
-
-            //消息通知
-            $messageData = [
-                'shop_name' => ShopSettings::get('sysset.mall.basic')['name'],
-                'member_nickname' => $orderInfo['member_nickname'],
-                'dispatch_price' => $orderInfo['dispatch_price'],
-                'goods_title' => $goodsTitle,
-                'buyer_name' => $orderInfo['buyer_name'],
-                'buyer_mobile' => $orderInfo['buyer_mobile'],
-                'address_info' => $orderInfo['address_state'] . '-' . $orderInfo['address_city'] . '-' . $orderInfo['address_area'] . '-' . $orderInfo['address_detail'],
-                'pay_price' => $orderInfo['pay_price'],
-                'status' => OrderStatusConstant::getText($orderInfo->status),
-                'created_at' => $orderInfo['created_at'],
-                'pay_time' => $orderInfo['pay_time'],
-                'finish_time' => $orderInfo['finish_time'],
-                'send_time' => DateTimeHelper::now(),
-                'remark' => $orderInfo['remark'],
-                'order_no' => $orderInfo['order_no'],
-                'express_no' => $expressSn ?: '',
-                'express_name' => $express['name'] ?: '',
-            ];
-
-            $notice = NoticeComponent::getInstance(NoticeTypeConstant::BUYER_ORDER_SEND, $messageData);
-            if (!is_error($notice)) {
-                $notice->sendMessage($orderInfo['member_id']);
-            }
-
-        } catch (\Throwable $throwable) {
-            $data['transaction'] && $tr->rollBack();
-            return error($throwable->getMessage());
-        }
-
-        return success();
-    }
-
-
-    /**
-     * 虚拟商品发货
+     * 返还活动
      * @param int $orderId
-     * @param int $orderType
-     * @param array $options
-     * @return array|bool
+     * @param int $operator
+     * @param string $reason
+     * @return bool
      * @author 青岛开店星信息技术有限公司
      */
-    private static function virtualShip(int $orderId, int $orderType, array $options = [])
+    public static function returnActivity(int $orderId, int $operator = 0, $reason = '')
     {
-        $options['transaction'] && $tr = OrderModel::getDB()->beginTransaction();
+        $order = OrderModel::findOne(['id' => $orderId]);
+        if (empty($order)) {
+            return false;
+        }
 
-        try {
-            //同步订单状态
-            $orderUpdate = [
-                'send_time' => date('Y-m-d H:i:s'), //每次发货都会重置发货时间
-                'status' => OrderStatusConstant::ORDER_STATUS_WAIT_PICK,
-            ];
-            //预计自动确认收货时间
-            $autoReceiveDays = OrderModel::getAutoReceiveDays();
-            if (OrderModel::getAutoReceive() && $autoReceiveDays > 0) {
-                $orderUpdate['auto_finish_time'] = date('Y-m-d H:i:s', strtotime("+ {$autoReceiveDays} days", time()));
-            }
+        $extraDiscountRulesPackage = Json::decode($order->extra_discount_rules_package);
+        if (empty($extraDiscountRulesPackage)) {
+            return false;
+        }
 
-            if (!empty($orderUpdate)) {
-                $rs = OrderModel::updateAll($orderUpdate, ['id' => $orderId]);
-                if (!$rs) {
-                    throw new \Exception('订单信息同步失败');
+        //格式化
+        $extraDiscountRulesPackageNew = [];
+        foreach ($extraDiscountRulesPackage as $extraDiscountRulesPackageIndex => $extraDiscountRulesPackageItem) {
+            foreach ($extraDiscountRulesPackageItem as $extraDiscountRulesPackageItemIndex => $extraDiscountRulesPackageItemItem) {
+                if ($extraDiscountRulesPackageItemIndex == 'credit' || $extraDiscountRulesPackageItemIndex == 'platform_credit') {
+                    $extraDiscountRulesPackageNew['credit'] += $extraDiscountRulesPackageItemItem['credit'];
+                } elseif ($extraDiscountRulesPackageItemIndex == 'balance' || $extraDiscountRulesPackageItemIndex == 'platform_balance') {
+                    $extraDiscountRulesPackageNew['balance'] += $extraDiscountRulesPackageItemItem['price'];
+                } elseif ($extraDiscountRulesPackageItemIndex == 'coupon' || $extraDiscountRulesPackageItemIndex == 'platform_coupon') {
+                    $extraDiscountRulesPackageNew['coupon'][] = $extraDiscountRulesPackageItemItem['id'];
+                } else if ($extraDiscountRulesPackageItemIndex == 'gift_card') {
+                    $extraDiscountRulesPackageNew['gift_card'] = $extraDiscountRulesPackageItemItem;
                 }
-                // 同步更新订单商品表的订单状态
-                OrderGoodsModel::updateAll(['status' => OrderStatusConstant::ORDER_STATUS_WAIT_PICK], ['order_id' => $orderId]);
             }
-            $options['transaction'] && $tr->commit();
+        }
 
-        } catch (\Throwable $throwable) {
-            $options['transaction'] && $tr->rollBack();
-            return error($throwable->getMessage());
+        // 返还优惠券
+        if (!empty($extraDiscountRulesPackageNew['coupon'])) {
+            // 只有一张优惠券
+            CouponMemberService::returnCoupon($extraDiscountRulesPackageNew['coupon'][0], $order->member_id, $orderId);
+        }
+
+
+        //返还余额抵扣
+        if (!empty($extraDiscountRulesPackageNew['balance'])) {
+            MemberModel::updateCredit($order->member_id, round2($extraDiscountRulesPackageNew['balance']), $operator, 'balance', 1, $reason, MemberCreditRecordStatusConstant::BALANCE_STATUS_REFUND, [
+                'order_id' => $orderId
+            ]);
+        }
+
+        //返还积分抵扣
+        if (!empty($extraDiscountRulesPackageNew['credit'])) {
+            MemberModel::updateCredit($order->member_id, round2($extraDiscountRulesPackageNew['credit']), $operator, 'credit', 1, $reason, MemberCreditRecordStatusConstant::CREDIT_STATUS_REFUND, [
+                'order_id' => $orderId
+            ]);
         }
 
         return true;
     }
-
 
     /**
      * 取消发货
@@ -540,14 +312,14 @@ class OrderService extends BaseService
                 'order_id' => $orderId,
             ]);
             if (empty($result)) {
-                throw new \Exception('订单商品状态修改失败');
+                throw new Exception('订单商品状态修改失败');
             }
 
             foreach ($packageId as $packageIdItem) {
                 //删除包裹信息
                 $result = OrderPackageModel::deleteAll(['id' => $packageIdItem]);
                 if (empty($result)) {
-                    throw new \Exception('取消发货失败');
+                    throw new Exception('取消发货失败');
                 }
             }
 
@@ -563,7 +335,7 @@ class OrderService extends BaseService
 
                     $result = OrderModel::updateAll(['status' => OrderStatusConstant::ORDER_STATUS_WAIT_PART_SEND], ['id' => $order['id']]);
                     if (empty($result)) {
-                        throw new \Exception('订单状态修改失败');
+                        throw new Exception('订单状态修改失败');
                     }
                 }
             } else {
@@ -571,239 +343,24 @@ class OrderService extends BaseService
                 //修改订单为未发货状态
                 $result = OrderModel::updateAll(['status' => OrderStatusConstant::ORDER_STATUS_WAIT_SEND, 'send_time' => '0000-00-00 00:00:00'], ['id' => $order['id']]);
                 if (empty($result)) {
-                    throw new \Exception('订单状态修改失败');
+                    throw new Exception('订单状态修改失败');
                 }
             }
 
             $transaction->commit();
             return success();
-        } catch (\Throwable $throwable) {
+        } catch (Throwable $throwable) {
             $transaction->rollBack();
             return error($throwable->getMessage());
         }
     }
-
-
-    /**
-     * 完成订单
-     * @param $orderInfo
-     * @param int $type 1实体商品 2虚拟商品
-     * @param array $options
-     * @return array|bool
-     * @author 青岛开店星信息技术有限公司
-     */
-    public static function complete($orderInfo, int $type = 1, array $options = [])
-    {
-        $options = array_merge([
-            'transaction' => true,
-            'auto_receive' => false
-        ], $options);
-
-        if (empty($orderInfo)) {
-            return error('订单不存在');
-        }
-
-        //订单修改字段
-        $updateOrder = [
-            'status' => OrderStatusConstant::ORDER_STATUS_SUCCESS,
-            'finish_time' => date('Y-m-d H:i:s')
-        ];
-
-        //订单包裹修改字段
-        $updatePackage = [];
-
-        //获取是否有维权
-        $refund = OrderRefundModel::getValidRefundOrderByOrderId($orderInfo['id']);
-        if ($refund) {
-            //是否存在正在维权的订单
-            $refundGoods = OrderGoodsModel::find()->where([
-                'and',
-                ['order_id' => $orderInfo['id']],
-                ['>', 'refund_type', 0],
-                ['between', 'refund_status', RefundConstant::REFUND_STATUS_APPLY, RefundConstant::REFUND_STATUS_WAIT]
-            ])->one();
-
-            if (!empty($refundGoods)) {
-                return error('订单正在维权中，不支持此操作');
-            }
-        }
-
-        // 实体商品
-        if ($type == 1) {
-            //确认收货
-            if ($orderInfo['status'] != OrderStatusConstant::ORDER_STATUS_WAIT_PICK) {
-                return error('订单状态错误，无法进行收货确认');
-            }
-
-            $updatePackage = ['finish_time' => date('Y-m-d H:i:s')];
-        }
-
-        // 判断是是虚拟商品
-        if (GoodsService::checkOrderGoodsVirtualType($orderInfo)) {
-            // 虚拟订单没有包裹，不更新
-            $updatePackage = [];
-        }
-
-        $options['transaction'] && $tr = \Yii::$app->db->beginTransaction();
-        try {
-
-            if (!is_array($orderInfo['goods_info'])) {
-                $orderInfo['goods_info'] = Json::decode($orderInfo['goods_info']);
-            }
-
-            if ($orderInfo['order_type'] == 2) {
-                // 获取商城商品ID，积分商城要特殊处理，取shop_goods_id字段
-                $shopGoodsId = $orderInfo['order_type'] == 3 ? $orderInfo['goods_info'][0]['shop_goods_id'] : $orderInfo['goods_info'][0]['goods_id'];
-                $goods = GoodsModel::find()->where(['id' => $shopGoodsId])->select(['auto_delivery', 'auto_delivery_content'])->asArray()->one();
-                if ($goods['auto_delivery'] == 1) {
-                    $updateOrder['auto_delivery_content'] = $goods['auto_delivery_content'];
-                }
-            }
-
-            //同步订单状态
-            $rs = OrderModel::updateAll($updateOrder, ['id' => $orderInfo['id']]);
-            if (!$rs) {
-                throw new \Exception('订单状态修改失败');
-            }
-
-            //同步订单商品状态
-            OrderGoodsModel::updateAll(['status' => OrderStatusConstant::ORDER_STATUS_SUCCESS], [
-                'order_id' => $orderInfo['id'],
-            ]);
-
-            //同步包裹状态
-            if (!empty($updatePackage)) {
-                $rs = OrderPackageModel::updateAll($updatePackage, ['order_id' => $orderInfo['id'], 'finish_time' => 0]);
-                if (!$rs) {
-                    throw new \Exception('包裹信息修改失败');
-                }
-            }
-
-            $memberLevelUpdateType = ShopSettings::get('member.level.update_type');
-            //会员自动升级
-            if ($memberLevelUpdateType == 1) {
-                MemberLevelService::autoUpLevel($orderInfo['member_id'], $orderInfo['pay_price'], $orderInfo['id']);
-            }
-
-            $isCommission = true;
-
-            // 订单参加的活动
-            // 订单参加的活动
-            if (StringHelper::isJson($orderInfo['extra_price_package'])) {
-                $orderInfo['extra_price_package'] = Json::decode($orderInfo['extra_price_package']);
-            }
-            $orderActivity = array_keys($orderInfo['extra_price_package']);
-
-            if (StringHelper::isJson($orderInfo['extra_discount_rules_package'])) {
-                $orderInfo['extra_discount_rules_package'] = Json::decode($orderInfo['extra_discount_rules_package']);
-            }
-            $discountRules = $orderInfo['extra_discount_rules_package'];
-
-            // 需要检查是否参与分销的活动
-            $checkCommissionActivity = [
-                'seckill', // 秒杀
-            ];
-
-            // 取活动交集
-            $activityIntersect = array_intersect($orderActivity, $checkCommissionActivity);
-
-            // 如果有活动  检测活动是否支持分销
-            if (!empty($activityIntersect)) {
-                // 其他活动
-                // 取订单参与的活动
-                $activity = array_column($discountRules, $activityIntersect[0]);
-                // 不支持
-                if ($activity[0]['rules']['is_commission'] == 0) {
-                    $isCommission = false;
-                }
-            }
-
-            // 积分商城不支持分销
-            if ($orderInfo['activity_type'] == OrderActivityTypeConstant::ACTIVITY_TYPE_CREDIT_SHOP) {
-                $isCommission = false;
-            }
-
-            CommissionService::orderFinish($orderInfo['id'], $orderInfo['member_id']);
-
-            // 消费奖励
-            ConsumeRewardLogService::sendReward($orderInfo['member_id'], $orderInfo['id'], 0);
-
-            // 购物奖励
-            ShoppingRewardLogModel::sendReward($orderInfo['member_id'], $orderInfo['id'], 1);
-
-            $options['transaction'] && $tr->commit();
-
-            // 订单自动评价
-            $tradeSet = ShopSettings::get('sysset.trade');
-            if ($tradeSet['auto_comment'] == 1) {
-                $delay = $tradeSet['auto_comment'] * 24 * 60 * 60;
-                QueueHelper::push(new AutoCommentJob([
-                    'orderId' => $orderInfo['id'],
-                    'memberId' => $orderInfo['member_id'],
-                    'content' => $tradeSet['auto_comment_content'],
-                ]), $delay);
-            }
-
-            // 是否开启送积分
-            $creditSet = ShopSettings::get('sysset.credit');
-            if ($creditSet['give_credit_status'] == 1 && $orderInfo['activity_type'] != OrderActivityTypeConstant::ACTIVITY_TYPE_CREDIT_SHOP) {
-                // 计算时间
-                $delay = $creditSet['give_credit_settle_day'] * 86400;
-                QueueHelper::push(new GiveCreditJob([
-                    'orderId' => $orderInfo['id'],
-                    'memberId' => $orderInfo['member_id'],
-                ]), $delay);
-            }
-
-
-            //消息通知
-            $messageData = [
-                'shop_name' => ShopSettings::get('sysset.mall.basic')['name'],
-                'member_nickname' => $orderInfo['member_nickname'],
-                'dispatch_price' => $orderInfo['dispatch_price'],
-                'goods_title' => $orderInfo['goods_info'][0]['title'] ?: '' . (count($orderInfo['goods_info']) > 1 ? '' : '等'),
-                'buyer_name' => $orderInfo['buyer_name'],
-                'buyer_mobile' => $orderInfo['buyer_mobile'],
-                'address_info' => $orderInfo['address_state'] . '-' . $orderInfo['address_city'] . '-' . $orderInfo['address_area'] . '-' . $orderInfo['address_detail'],
-                'pay_price' => $orderInfo['pay_price'],
-                'status' => OrderStatusConstant::getText($orderInfo['status']),
-                'created_at' => $orderInfo['created_at'],
-                'pay_time' => $orderInfo['pay_time'],
-                'finish_time' => $updateOrder['finish_time'],
-                'send_time' => $orderInfo['send_time'],
-                'remark' => $orderInfo['remark'],
-                'order_no' => $orderInfo['order_no'],
-            ];
-
-            $notice = NoticeComponent::getInstance(NoticeTypeConstant::SELLER_ORDER_RECEIVE, $messageData, '');
-            if (!is_error($notice)) {
-                $notice->sendMessage();
-            }
-
-            // 打印小票
-            QueueHelper::push(new AutoPrinterOrder([
-                'job' => [
-                    'scene' => PrinterSceneConstant::PRINTER_CONFIRM_RECEIPT,
-                    'order_id' => $orderInfo['id']
-                ]
-            ]));
-
-
-        } catch (\Throwable $throwable) {
-            $options['transaction'] && $tr->rollBack();
-            return error($throwable->getMessage());
-        }
-
-        return true;
-    }
-
 
     /**
      * 支付完成后
      * @param OrderPaySuccessStruct $orderPaySuccessStruct
      * @return array|bool
      * @throws \yii\base\Exception
-     * @throws \yii\base\InvalidConfigException
+     * @throws InvalidConfigException
      * @throws \yii\db\Exception
      * @author 青岛开店星信息技术有限公司
      */
@@ -1026,6 +583,581 @@ class OrderService extends BaseService
     }
 
     /**
+     * 退款
+     * @param array $config
+     * @param array $refundLogData
+     * @return array|bool
+     * @throws InvalidConfigException
+     * @author 青岛开店星信息技术有限公司.
+     */
+    public static function refund(array $config, array $refundLogData)
+    {
+        try {
+            TradeOrderService::operation([
+                'orderNo' => $config['order_no']  // 请使用订单编号
+            ])->refund($config['refund_fee'], $config['refund_desc']);
+        } catch (Exception $exception) {
+            // 兼容旧版支付
+            if ($exception->getCode() == '108130') {
+                $payDriver = PayComponent::getInstance($config);
+                $result = $payDriver->refund();
+                if (is_error($result)) {
+                    $refundLogData['status'] = 0;
+                    $refundLogData['remark'] = $result['message'];
+
+                    // 写入退款记录
+                    RefundLogModel::writeLog($refundLogData);
+                    return error($result['message']);
+                }
+            } else {
+                $refundLogData['status'] = 0;
+                $refundLogData['remark'] = $exception->getMessage();
+
+                // 写入退款记录
+                RefundLogModel::writeLog($refundLogData);
+                return error($exception->getMessage());
+            }
+        }
+
+        $refundLogData['status'] = 1;
+
+        // 写入退款记录
+        return RefundLogModel::writeLog($refundLogData);
+    }
+
+    /**
+     * 发货
+     * @param $orderInfo //订单信息
+     * @param array $data 用户提交的数据
+     * @return array
+     * @throws \yii\db\Exception
+     * @author 青岛开店星信息技术有限公司
+     */
+    public static function ship($orderInfo, array $data)
+    {
+        if (is_numeric($orderInfo)) {
+            $orderInfo = OrderModel::getOrderAndOrderGoods($orderInfo, 0);
+        }
+
+        //订单商品
+        $orderGoodsInfo = OrderGoodsModel::find()->where(['order_id' => $orderInfo['id']])->indexBy('id')->asArray()->all();
+
+        if (empty($orderInfo)) {
+            return error('订单不存在');
+        }
+
+        if (empty($data)) {
+            return error('参数不能为空');
+        }
+
+        //校验达达配送的商品重量
+        if ($data['city_distribution_type'] == OrderPackageCityDistributionTypeConstant::DADA) {
+            $orderWeight = array_sum(array_column($orderInfo['orderGoods'], 'weight'));
+            if ($orderWeight <= 0) {
+                return error('达达配送订单重量不能为空，建议使用其他配送方式');
+            }
+        }
+
+        $orderGoods = ArrayHelper::index($orderInfo['orderGoods'], 'id');
+        if ((int)$orderInfo['status'] != OrderStatusConstant::ORDER_STATUS_WAIT_SEND && (int)$orderInfo['status'] != OrderStatusConstant::ORDER_STATUS_WAIT_PART_SEND) {
+            return error('订单状态错误，无法进行发货！(1)');
+        }
+
+        if ($orderInfo['order_type'] == OrderTypeConstant::ORDER_TYPE_ORDINARY) {
+            // 过滤虚拟商品
+            if (!empty($orderInfo['dispatch_type'])) {
+                if (!in_array($orderInfo['dispatch_type'], [OrderDispatchExpressConstant::ORDER_DISPATCH_EXPRESS, OrderDispatchExpressConstant::ORDER_DISPATCH_SELFFETCH, OrderDispatchExpressConstant::ORDER_DISPATCH_INTRACITY])) {
+                    return error('订单配送方式错误，无法进行发货！(2)');
+                }
+            }
+        }
+
+        // 校验是否开启配送方式
+        if ($orderInfo['dispatch_type'] == OrderDispatchExpressConstant::ORDER_DISPATCH_INTRACITY) {
+            $intracity = ShopSettings::get('dispatch.intracity');
+
+            if ($intracity['enable'] == 0) {
+                return error('同城配送未开启');
+            }
+        }
+
+        $orderGoodsIds = $data['order_goods_id'];
+        if (empty($orderGoodsIds)) {
+            return error('请选择要发货的商品');
+        }
+
+        foreach ((array)$orderGoodsIds as $orderGoodsId) {
+            if (!isset($orderGoods[$orderGoodsId])) {
+                return error("无效的订单商品 #{$orderGoodsId}");
+            }
+
+            if ($orderGoods[$orderGoodsId]['package_id'] > 0) {
+                return error("订单商品已经是发货状态 #{$orderGoodsId}");
+            }
+
+            if (!empty($orderGoodsInfo[$orderGoodsId]) && $orderGoodsInfo[$orderGoodsId]['refund_type'] != 0 && $orderGoodsInfo[$orderGoodsId]['refund_status'] >= RefundConstant::REFUND_STATUS_APPLY) {
+                return error("订单商品 \"{$orderGoods[$orderGoodsId]['title']}\" 正在维权中，不能进行发货操作");
+            }
+        }
+        unset($orderGoodsId);
+
+        // 虚拟订单
+        if (GoodsService::checkOrderGoodsVirtualType($orderInfo)) {
+            return self::virtualShip($orderInfo['id'], $orderInfo['order_type'], ['transaction' => false,]);
+        }
+
+        $noExpress = (int)$data['no_express'];
+        $expressId = $data['express_id'];
+        $expressSn = $data['express_sn'];
+        if (empty($noExpress)) {
+            if (empty($expressId)) {
+                return error('请选择物流公司');
+            }
+
+            $express = CoreExpressModel::getExpressById($expressId);
+            if (empty($express)) {
+                return error('错误的物流公司');
+            }
+
+            if (empty($expressSn)) {
+                return error('请填写物流单号');
+            }
+        }
+
+        $package = [
+            'member_id' => $orderInfo['member_id'],
+            'order_id' => $orderInfo['id'],
+            'order_goods_ids' => implode(',', $orderGoodsIds),
+            'remark' => $data['remark'],
+            'send_time' => date('Y-m-d H:i:s'),
+        ];
+
+        $package['no_express'] = $noExpress;
+        $package['express_id'] = (int)$expressId;
+        $package['express_sn'] = $expressSn ?: '';
+        $package['express_com'] = $express['code'] ?? '';
+        $package['express_name'] = $data['express_name'] ?? '';
+
+        // 同城配送
+        if ($orderInfo['dispatch_type'] == OrderDispatchExpressConstant::ORDER_DISPATCH_INTRACITY) {
+            $package['is_city_distribution'] = 1;//是否是同城配送
+
+            $package['city_distribution_type'] = isset($data['city_distribution_type']) ? intval($data['city_distribution_type']) : 0;
+        }
+
+        $data['transaction'] && $tr = OrderModel::getDB()->beginTransaction();
+
+        try {
+
+            //如果是普通订单 则修改订单商品
+            if ($orderInfo['order_type'] == OrderTypeConstant::ORDER_TYPE_ORDINARY) {
+                $orderPackage = new OrderPackageModel();
+                $orderPackage->attributes = $package;
+                if (!$orderPackage->save()) {
+                    throw new Exception('包裹信息保存失败');
+                }
+
+                //同步订单商品状态
+                $rs = OrderGoodsModel::updateAll(['package_id' => $orderPackage->id, 'status' => OrderStatusConstant::ORDER_STATUS_WAIT_PICK], ['id' => $orderGoodsIds]);
+                if (!$rs) {
+                    throw new Exception('订单商品信息同步失败');
+                }
+            }
+
+            //同步订单状态
+            $orderUpdate = [];
+            //每次发货都会重置发货时间
+            $orderUpdate['send_time'] = date('Y-m-d H:i:s');
+
+            //获取发货总数
+            $sendCount = OrderGoodsModel::find()->where(['order_id' => $orderInfo['id']])->andWhere(['>', 'package_id', 0])->count();
+
+            if ($sendCount == count($orderInfo['orderGoods'])) {
+                //如果全部发送了
+                $orderUpdate['status'] = OrderStatusConstant::ORDER_STATUS_WAIT_PICK;
+
+                //预计自动确认收货时间
+                $autoReceiveDays = OrderModel::getAutoReceiveDays();
+                if (OrderModel::getAutoReceive() && $autoReceiveDays > 0) {
+                    $orderUpdate['auto_finish_time'] = date('Y-m-d H:i:s', strtotime("+ {$autoReceiveDays} days", time()));
+                }
+            } else {
+                //已经维权（仅退款）过的订单商品的维权id集合（不包括当前需要发货的订单商品）
+                $refundCount = 0;
+                foreach ($orderGoods as $id => $goods) {
+                    if (!in_array($id, $orderGoodsIds) && $goods['package_id'] == 0) {
+                        //如果是仅退款，并且是退款完成的
+                        if (in_array($goods['refund_status'], [RefundConstant::REFUND_STATUS_SUCCESS, RefundConstant::REFUND_STATUS_MANUAL]) && $goods['refund_type'] == RefundConstant::TYPE_REFUND) {
+                            $refundCount++;
+                        }
+                    }
+                }
+
+                //已经同意退款的订单商品不需要发货。
+                if (!empty($refundCount)) {
+                    if ($sendCount + $refundCount == count($orderInfo['orderGoods'])) {
+                        $orderUpdate['status'] = OrderStatusConstant::ORDER_STATUS_WAIT_PICK;
+                    }
+                } else {
+                    //如果没有维权记录 那么就对比是否全部发货，如果不是全部发货 变成部分发货状态
+                    if ($sendCount == count($orderInfo['orderGoods'])) {
+                        $orderUpdate['status'] = OrderStatusConstant::ORDER_STATUS_WAIT_PICK;
+                    }
+                }
+
+                //如果发货个数不等于订单商品个数  并且 发货个数加上退款完成个数不等于订单商品个数 那就是部分发货
+                if ($orderUpdate['status'] != OrderStatusConstant::ORDER_STATUS_WAIT_PICK) {
+                    $orderUpdate['status'] = OrderStatusConstant::ORDER_STATUS_WAIT_PART_SEND;
+                }
+            }
+
+            if (!empty($orderUpdate)) {
+                $rs = OrderModel::updateAll($orderUpdate, ['id' => $orderInfo['id']]);
+                if (!$rs) {
+                    throw new Exception('订单信息同步失败');
+                }
+            }
+
+            // 如果是视频号下产生的订单则同步发货状态给小程序端展示
+            if ($orderInfo['scene'] == OrderSceneConstant::ORDER_SCENE_VIDEO_NUMBER_BROADCAST) {
+                $wxTransactionComponent = WxTransactionComponentOrderService::sendOrder($orderInfo, $orderInfo['member_id'], $data);
+
+                if (is_error($wxTransactionComponent)) {
+                    throw new Exception($wxTransactionComponent['message']);
+                }
+            }
+
+            $data['transaction'] && $tr->commit();
+
+            // 投递队列自动完成订单
+            $shopSetting = ShopSettings::get('sysset.trade');
+
+            //如果是已全部发货 并 开启自动收货 并 自动完成时间不为空
+            $orderAutoCloseCondition = $orderUpdate['status'] == OrderStatusConstant::ORDER_STATUS_WAIT_PICK && $shopSetting['auto_receive'] == SyssetTypeConstant::CUSTOMER_AUTO_RECEIVE_TIME && !empty($orderUpdate['auto_finish_time']);
+
+            //核销订单不走这
+            $verifyAutoCloseCondition = $orderInfo['dispatch_type'] != OrderDispatchExpressConstant::ORDER_DISPATCH_SELFFETCH;
+
+            //多条件判断 请谨慎
+            if ($orderAutoCloseCondition || $verifyAutoCloseCondition) {
+
+                //获取剩余秒数
+                $delay = strtotime($orderUpdate['auto_finish_time']) - time();
+
+                //判断剩余时间是否大于0
+                if ($delay > 0) {
+                    QueueHelper::push(new AutoReceiveOrderJob([
+                        'orderId' => $orderInfo['id'],
+                    ]), $delay);
+                }
+            }
+
+
+            $goodsTitle = array_shift($orderGoodsInfo)['title'];
+            if (!empty($orderGoodsInfo)) {
+                $goodsTitle .= '等';
+            }
+
+            //消息通知
+            $messageData = [
+                'shop_name' => ShopSettings::get('sysset.mall.basic')['name'],
+                'member_nickname' => $orderInfo['member_nickname'],
+                'dispatch_price' => $orderInfo['dispatch_price'],
+                'goods_title' => $goodsTitle,
+                'buyer_name' => $orderInfo['buyer_name'],
+                'buyer_mobile' => $orderInfo['buyer_mobile'],
+                'address_info' => $orderInfo['address_state'] . '-' . $orderInfo['address_city'] . '-' . $orderInfo['address_area'] . '-' . $orderInfo['address_detail'],
+                'pay_price' => $orderInfo['pay_price'],
+                'status' => OrderStatusConstant::getText($orderInfo->status),
+                'created_at' => $orderInfo['created_at'],
+                'pay_time' => $orderInfo['pay_time'],
+                'finish_time' => $orderInfo['finish_time'],
+                'send_time' => DateTimeHelper::now(),
+                'remark' => $orderInfo['remark'],
+                'order_no' => $orderInfo['order_no'],
+                'express_no' => $expressSn ?: '',
+                'express_name' => $express['name'] ?: '',
+            ];
+
+            $notice = NoticeComponent::getInstance(NoticeTypeConstant::BUYER_ORDER_SEND, $messageData);
+            if (!is_error($notice)) {
+                $notice->sendMessage($orderInfo['member_id']);
+            }
+
+        } catch (Throwable $throwable) {
+            $data['transaction'] && $tr->rollBack();
+            return error($throwable->getMessage());
+        }
+
+        return success();
+    }
+
+    /**
+     * 虚拟商品发货
+     * @param int $orderId
+     * @param int $orderType
+     * @param array $options
+     * @return array|bool
+     * @author 青岛开店星信息技术有限公司
+     */
+    private static function virtualShip(int $orderId, int $orderType, array $options = [])
+    {
+        $options['transaction'] && $tr = OrderModel::getDB()->beginTransaction();
+
+        try {
+            //同步订单状态
+            $orderUpdate = [
+                'send_time' => date('Y-m-d H:i:s'), //每次发货都会重置发货时间
+                'status' => OrderStatusConstant::ORDER_STATUS_WAIT_PICK,
+            ];
+            //预计自动确认收货时间
+            $autoReceiveDays = OrderModel::getAutoReceiveDays();
+            if (OrderModel::getAutoReceive() && $autoReceiveDays > 0) {
+                $orderUpdate['auto_finish_time'] = date('Y-m-d H:i:s', strtotime("+ {$autoReceiveDays} days", time()));
+            }
+
+            if (!empty($orderUpdate)) {
+                $rs = OrderModel::updateAll($orderUpdate, ['id' => $orderId]);
+                if (!$rs) {
+                    throw new Exception('订单信息同步失败');
+                }
+                // 同步更新订单商品表的订单状态
+                OrderGoodsModel::updateAll(['status' => OrderStatusConstant::ORDER_STATUS_WAIT_PICK], ['order_id' => $orderId]);
+            }
+            $options['transaction'] && $tr->commit();
+
+        } catch (Throwable $throwable) {
+            $options['transaction'] && $tr->rollBack();
+            return error($throwable->getMessage());
+        }
+
+        return true;
+    }
+
+    /**
+     * 完成订单
+     * @param $orderInfo
+     * @param int $type 1实体商品 2虚拟商品
+     * @param array $options
+     * @return array|bool
+     * @author 青岛开店星信息技术有限公司
+     */
+    public static function complete($orderInfo, int $type = 1, array $options = [])
+    {
+        $options = array_merge([
+            'transaction' => true,
+            'auto_receive' => false,
+            'videoRefund' => true,
+        ], $options);
+
+        if (empty($orderInfo)) {
+            return error('订单不存在');
+        }
+
+        //订单修改字段
+        $updateOrder = [
+            'status' => OrderStatusConstant::ORDER_STATUS_SUCCESS,
+            'finish_time' => date('Y-m-d H:i:s')
+        ];
+
+        //订单包裹修改字段
+        $updatePackage = [];
+
+        //获取是否有维权
+        $refund = OrderRefundModel::getValidRefundOrderByOrderId($orderInfo['id']);
+        if ($refund) {
+            //是否存在正在维权的订单
+            $refundGoods = OrderGoodsModel::find()->where([
+                'and',
+                ['order_id' => $orderInfo['id']],
+                ['>', 'refund_type', 0],
+                ['between', 'refund_status', RefundConstant::REFUND_STATUS_APPLY, RefundConstant::REFUND_STATUS_WAIT]
+            ])->one();
+
+            if (!empty($refundGoods)) {
+                return error('订单正在维权中，不支持此操作');
+            }
+        }
+
+        // 实体商品
+        if ($type == 1) {
+            //确认收货
+            if ($orderInfo['status'] != OrderStatusConstant::ORDER_STATUS_WAIT_PICK) {
+                return error('订单状态错误，无法进行收货确认');
+            }
+
+            $updatePackage = ['finish_time' => date('Y-m-d H:i:s')];
+        }
+
+        // 判断是是虚拟商品
+        if (GoodsService::checkOrderGoodsVirtualType($orderInfo)) {
+            // 虚拟订单没有包裹，不更新
+            $updatePackage = [];
+        }
+
+        $options['transaction'] && $tr = Yii::$app->db->beginTransaction();
+        try {
+
+            if (!is_array($orderInfo['goods_info'])) {
+                $orderInfo['goods_info'] = Json::decode($orderInfo['goods_info']);
+            }
+
+            if ($orderInfo['order_type'] == 2) {
+                // 获取商城商品ID，积分商城要特殊处理，取shop_goods_id字段
+                $shopGoodsId = $orderInfo['order_type'] == 3 ? $orderInfo['goods_info'][0]['shop_goods_id'] : $orderInfo['goods_info'][0]['goods_id'];
+                $goods = GoodsModel::find()->where(['id' => $shopGoodsId])->select(['auto_delivery', 'auto_delivery_content'])->asArray()->one();
+                if ($goods['auto_delivery'] == 1) {
+                    $updateOrder['auto_delivery_content'] = $goods['auto_delivery_content'];
+                }
+            }
+
+            //同步订单状态
+            $rs = OrderModel::updateAll($updateOrder, ['id' => $orderInfo['id']]);
+            if (!$rs) {
+                throw new Exception('订单状态修改失败');
+            }
+
+            //同步订单商品状态
+            OrderGoodsModel::updateAll(['status' => OrderStatusConstant::ORDER_STATUS_SUCCESS], [
+                'order_id' => $orderInfo['id'],
+            ]);
+
+            //同步包裹状态
+            if (!empty($updatePackage)) {
+                $rs = OrderPackageModel::updateAll($updatePackage, ['order_id' => $orderInfo['id'], 'finish_time' => 0]);
+                if (!$rs) {
+                    throw new Exception('包裹信息修改失败');
+                }
+            }
+
+            $memberLevelUpdateType = ShopSettings::get('member.level.update_type');
+            //会员自动升级
+            if ($memberLevelUpdateType == 1) {
+                MemberLevelService::autoUpLevel($orderInfo['member_id'], $orderInfo['pay_price'], $orderInfo['id']);
+            }
+
+            $isCommission = true;
+
+            // 订单参加的活动
+            // 订单参加的活动
+            if (StringHelper::isJson($orderInfo['extra_price_package'])) {
+                $orderInfo['extra_price_package'] = Json::decode($orderInfo['extra_price_package']);
+            }
+            $orderActivity = array_keys($orderInfo['extra_price_package']);
+
+            if (StringHelper::isJson($orderInfo['extra_discount_rules_package'])) {
+                $orderInfo['extra_discount_rules_package'] = Json::decode($orderInfo['extra_discount_rules_package']);
+            }
+            $discountRules = $orderInfo['extra_discount_rules_package'];
+
+            // 需要检查是否参与分销的活动
+            $checkCommissionActivity = [
+                'seckill', // 秒杀
+            ];
+
+            // 取活动交集
+            $activityIntersect = array_intersect($orderActivity, $checkCommissionActivity);
+
+            // 如果有活动  检测活动是否支持分销
+            if (!empty($activityIntersect)) {
+                // 其他活动
+                // 取订单参与的活动
+                $activity = array_column($discountRules, $activityIntersect[0]);
+                // 不支持
+                if ($activity[0]['rules']['is_commission'] == 0) {
+                    $isCommission = false;
+                }
+            }
+
+            // 积分商城不支持分销
+            if ($orderInfo['activity_type'] == OrderActivityTypeConstant::ACTIVITY_TYPE_CREDIT_SHOP) {
+                $isCommission = false;
+            }
+
+            CommissionService::orderFinish($orderInfo['id'], $orderInfo['member_id']);
+
+            // 消费奖励
+            ConsumeRewardLogService::sendReward($orderInfo['member_id'], $orderInfo['id'], 0);
+
+            // 购物奖励
+            ShoppingRewardLogModel::sendReward($orderInfo['member_id'], $orderInfo['id'], 1);
+
+            // 微信视频号自定义交易组件 同步订单状态给微信
+            if ($orderInfo['scene'] == OrderSceneConstant::ORDER_SCENE_VIDEO_NUMBER_BROADCAST && $options['videoRefund']) {
+                $wxRes = WxTransactionComponentOrderService::confirmOrderStatus($orderInfo['id'], $orderInfo['member_id']);
+
+                if (is_error($wxRes)) {
+                    throw new Exception($wxRes['message']);
+                }
+            }
+
+            $options['transaction'] && $tr->commit();
+
+            // 订单自动评价
+            $tradeSet = ShopSettings::get('sysset.trade');
+            if ($tradeSet['auto_comment'] == 1) {
+                $delay = $tradeSet['auto_comment'] * 24 * 60 * 60;
+                QueueHelper::push(new AutoCommentJob([
+                    'orderId' => $orderInfo['id'],
+                    'memberId' => $orderInfo['member_id'],
+                    'content' => $tradeSet['auto_comment_content'],
+                ]), $delay);
+            }
+
+            // 是否开启送积分
+            $creditSet = ShopSettings::get('sysset.credit');
+            if ($creditSet['give_credit_status'] == 1 && $orderInfo['activity_type'] != OrderActivityTypeConstant::ACTIVITY_TYPE_CREDIT_SHOP) {
+                // 计算时间
+                $delay = $creditSet['give_credit_settle_day'] * 86400;
+                QueueHelper::push(new GiveCreditJob([
+                    'orderId' => $orderInfo['id'],
+                    'memberId' => $orderInfo['member_id'],
+                ]), $delay);
+            }
+
+
+            //消息通知
+            $messageData = [
+                'shop_name' => ShopSettings::get('sysset.mall.basic')['name'],
+                'member_nickname' => $orderInfo['member_nickname'],
+                'dispatch_price' => $orderInfo['dispatch_price'],
+                'goods_title' => $orderInfo['goods_info'][0]['title'] ?: '' . (count($orderInfo['goods_info']) > 1 ? '' : '等'),
+                'buyer_name' => $orderInfo['buyer_name'],
+                'buyer_mobile' => $orderInfo['buyer_mobile'],
+                'address_info' => $orderInfo['address_state'] . '-' . $orderInfo['address_city'] . '-' . $orderInfo['address_area'] . '-' . $orderInfo['address_detail'],
+                'pay_price' => $orderInfo['pay_price'],
+                'status' => OrderStatusConstant::getText($orderInfo['status']),
+                'created_at' => $orderInfo['created_at'],
+                'pay_time' => $orderInfo['pay_time'],
+                'finish_time' => $updateOrder['finish_time'],
+                'send_time' => $orderInfo['send_time'],
+                'remark' => $orderInfo['remark'],
+                'order_no' => $orderInfo['order_no'],
+            ];
+
+            $notice = NoticeComponent::getInstance(NoticeTypeConstant::SELLER_ORDER_RECEIVE, $messageData, '');
+            if (!is_error($notice)) {
+                $notice->sendMessage();
+            }
+
+            // 打印小票
+            QueueHelper::push(new AutoPrinterOrder([
+                'job' => [
+                    'scene' => PrinterSceneConstant::PRINTER_CONFIRM_RECEIPT,
+                    'order_id' => $orderInfo['id']
+                ]
+            ]));
+
+
+        } catch (Throwable $throwable) {
+            $options['transaction'] && $tr->rollBack();
+            return error($throwable->getMessage());
+        }
+
+        return true;
+    }
+
+    /**
      * 虚拟自动发货
      * @param int $orderId
      * @return bool | array
@@ -1067,7 +1199,6 @@ class OrderService extends BaseService
 
         return true;
     }
-
 
     /**
      * 关闭订单并退款
@@ -1133,13 +1264,13 @@ class OrderService extends BaseService
             isset($options['refund_reason']) && !empty($options['refund_reason']) && $update['refund_reason'] = $options['refund_reason'];
             $result = OrderModel::updateAll($update, ['id' => $orderInfo['id']]);
             if (empty($result)) {
-                throw new \Exception('订单状态更新失败');
+                throw new Exception('订单状态更新失败');
             }
 
             //关闭订单商品
             $result = OrderGoodsModel::updateAll(['status' => OrderStatusConstant::ORDER_STATUS_CLOSE], ['order_id' => $orderInfo['id']]);
             if (empty($result)) {
-                throw new \Exception('订单商品状态更新失败');
+                throw new Exception('订单商品状态更新失败');
             }
 
             //返还营销
@@ -1195,7 +1326,7 @@ class OrderService extends BaseService
             if ($orderInfo['pay_type'] != OrderPaymentTypeConstant::ORDER_PAYMENT_TYPE_ADMIN_CONFIRM) {
                 $result = self::refund($config, $refundLogData);
                 if (is_error($result)) {
-                    throw new \Exception($result['message']);
+                    throw new Exception($result['message']);
                 }
             }
 
@@ -1230,115 +1361,10 @@ class OrderService extends BaseService
                 $notice->sendMessage($orderInfo['member_id']);
             }
 
-        } catch (\Throwable $throwable) {
+        } catch (Throwable $throwable) {
             $options['transaction'] && $transaction->rollBack();
             LogHelper::error('[ORDER REFUND ERROR]:', [$throwable->getMessage(), $throwable->getFile(), $throwable->getLine()]);
             return error($throwable->getMessage());
-        }
-
-        return true;
-    }
-
-
-    /**
-     * 退款
-     * @param array $config
-     * @param array $refundLogData
-     * @return array|bool
-     * @throws \yii\base\InvalidConfigException
-     * @author 青岛开店星信息技术有限公司.
-     */
-    public static function refund(array $config, array $refundLogData)
-    {
-        try {
-            TradeOrderService::operation([
-                'orderNo' => $config['order_no']  // 请使用订单编号
-            ])->refund($config['refund_fee'], $config['refund_desc']);
-        } catch (\Exception $exception) {
-            // 兼容旧版支付
-            if ($exception->getCode() == '108130') {
-                $payDriver = PayComponent::getInstance($config);
-                $result = $payDriver->refund();
-                if (is_error($result)) {
-                    $refundLogData['status'] = 0;
-                    $refundLogData['remark'] = $result['message'];
-
-                    // 写入退款记录
-                    RefundLogModel::writeLog($refundLogData);
-                    return error($result['message']);
-                }
-            } else {
-                $refundLogData['status'] = 0;
-                $refundLogData['remark'] = $exception->getMessage();
-
-                // 写入退款记录
-                RefundLogModel::writeLog($refundLogData);
-                return error($exception->getMessage());
-            }
-        }
-
-        $refundLogData['status'] = 1;
-
-        // 写入退款记录
-        return RefundLogModel::writeLog($refundLogData);
-    }
-
-
-    /**
-     * 返还活动
-     * @param int $orderId
-     * @param int $operator
-     * @param string $reason
-     * @return bool
-     * @author 青岛开店星信息技术有限公司
-     */
-    public static function returnActivity(int $orderId, int $operator = 0, $reason = '')
-    {
-        $order = OrderModel::findOne(['id' => $orderId]);
-        if (empty($order)) {
-            return false;
-        }
-
-        $extraDiscountRulesPackage = Json::decode($order->extra_discount_rules_package);
-        if (empty($extraDiscountRulesPackage)) {
-            return false;
-        }
-
-        //格式化
-        $extraDiscountRulesPackageNew = [];
-        foreach ($extraDiscountRulesPackage as $extraDiscountRulesPackageIndex => $extraDiscountRulesPackageItem) {
-            foreach ($extraDiscountRulesPackageItem as $extraDiscountRulesPackageItemIndex => $extraDiscountRulesPackageItemItem) {
-                if ($extraDiscountRulesPackageItemIndex == 'credit' || $extraDiscountRulesPackageItemIndex == 'platform_credit') {
-                    $extraDiscountRulesPackageNew['credit'] += $extraDiscountRulesPackageItemItem['credit'];
-                } elseif ($extraDiscountRulesPackageItemIndex == 'balance' || $extraDiscountRulesPackageItemIndex == 'platform_balance') {
-                    $extraDiscountRulesPackageNew['balance'] += $extraDiscountRulesPackageItemItem['price'];
-                } elseif ($extraDiscountRulesPackageItemIndex == 'coupon' || $extraDiscountRulesPackageItemIndex == 'platform_coupon') {
-                    $extraDiscountRulesPackageNew['coupon'][] = $extraDiscountRulesPackageItemItem['id'];
-                } else if ($extraDiscountRulesPackageItemIndex == 'gift_card') {
-                    $extraDiscountRulesPackageNew['gift_card'] = $extraDiscountRulesPackageItemItem;
-                }
-            }
-        }
-
-        // 返还优惠券
-        if (!empty($extraDiscountRulesPackageNew['coupon'])) {
-            // 只有一张优惠券
-            CouponMemberService::returnCoupon($extraDiscountRulesPackageNew['coupon'][0], $order->member_id, $orderId);
-        }
-
-
-        //返还余额抵扣
-        if (!empty($extraDiscountRulesPackageNew['balance'])) {
-            MemberModel::updateCredit($order->member_id, round2($extraDiscountRulesPackageNew['balance']), $operator, 'balance', 1, $reason, MemberCreditRecordStatusConstant::BALANCE_STATUS_REFUND, [
-                'order_id' => $orderId
-            ]);
-        }
-
-        //返还积分抵扣
-        if (!empty($extraDiscountRulesPackageNew['credit'])) {
-            MemberModel::updateCredit($order->member_id, round2($extraDiscountRulesPackageNew['credit']), $operator, 'credit', 1, $reason, MemberCreditRecordStatusConstant::CREDIT_STATUS_REFUND, [
-                'order_id' => $orderId
-            ]);
         }
 
         return true;

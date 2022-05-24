@@ -9,7 +9,7 @@
     <link rel="stylesheet" href="/static/dist/shop/css/loading.css">
     <link rel="stylesheet" href="//at.alicdn.com/t/font_1534025_3r4j1r8yrkq.css">
     <link rel="stylesheet" href="//at.alicdn.com/t/font_1872121_xxkupf2vsz.css">
-    <link rel="stylesheet" href="//at.alicdn.com/t/font_3137624_9xlj9hv4is4.css">
+    <link rel="stylesheet" href="//at.alicdn.com/t/font_3137624_luqu2scokt.css">
     <link rel="stylesheet" href="//at.alicdn.com/t/font_2199488_00ye6ht7d6zp.css">
     <link rel="stylesheet" href="//at.alicdn.com/t/font_2199566_7pueb97i5h.css">
     <style>/* remixicon图标库 */
@@ -26,12 +26,12 @@
             content: "\e7dd";
         }</style>
     <script>window.config = <?php echo $settingsJson ?? ''?>;</script>
-    <link href="/static/dist/shop/css/app.css?v=1.0.7" rel="preload" as="style">
-    <link href="/static/dist/shop/css/chunk-vendors.css?v=1.0.7" rel="preload" as="style">
-    <link href="/static/dist/shop/js/app.js?v=1.0.7" rel="preload" as="script">
-    <link href="/static/dist/shop/js/chunk-vendors.js?v=1.0.7" rel="preload" as="script">
-    <link href="/static/dist/shop/css/chunk-vendors.css?v=1.0.7" rel="stylesheet">
-    <link href="/static/dist/shop/css/app.css?v=1.0.7" rel="stylesheet">
+    <link href="/static/dist/shop/css/app.css?v=1.0.12" rel="preload" as="style">
+    <link href="/static/dist/shop/css/chunk-vendors.css?v=1.0.12" rel="preload" as="style">
+    <link href="/static/dist/shop/js/app.js?v=1.0.12" rel="preload" as="script">
+    <link href="/static/dist/shop/js/chunk-vendors.js?v=1.0.12" rel="preload" as="script">
+    <link href="/static/dist/shop/css/chunk-vendors.css?v=1.0.12" rel="stylesheet">
+    <link href="/static/dist/shop/css/app.css?v=1.0.12" rel="stylesheet">
 </head>
 <body>
 <div class="app-loading" id="app-loading">
@@ -52,8 +52,8 @@
             }
         )
     })()</script>
-<script src="https://cdn.bootcdn.net/ajax/libs/three.js/r128/three.min.js"></script>
-<script src="/static/dist/shop/js/chunk-vendors.js?v=1.0.7"></script>
-<script src="/static/dist/shop/js/app.js?v=1.0.7"></script>
+<script src="https://cdn.bootcss.com/three.js/r83/three.min.js" async></script>
+<script src="/static/dist/shop/js/chunk-vendors.js?v=1.0.12"></script>
+<script src="/static/dist/shop/js/app.js?v=1.0.12"></script>
 </body>
 </html>

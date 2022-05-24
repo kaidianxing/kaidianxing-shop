@@ -16,11 +16,13 @@ use shopstar\bases\controller\BaseMobileApiController;
 use shopstar\constants\base\PayTypeConstant;
 use shopstar\constants\ClientTypeConstant;
 use shopstar\constants\order\OrderActivityTypeConstant;
+use shopstar\constants\order\OrderSceneConstant;
 use shopstar\constants\order\OrderStatusConstant;
 use shopstar\constants\OrderConstant;
 use shopstar\constants\tradeOrder\TradeOrderTypeConstant;
 use shopstar\exceptions\order\OrderException;
 use shopstar\exceptions\sysset\PaymentException;
+use shopstar\exceptions\tradeOrder\TradeOrderPayException;
 use shopstar\helpers\RequestHelper;
 use shopstar\models\member\MemberWechatModel;
 use shopstar\models\member\MemberWxappModel;
@@ -29,9 +31,14 @@ use shopstar\models\order\OrderModel;
 use shopstar\models\shop\ShopSettings;
 use shopstar\services\order\OrderService;
 use shopstar\services\tradeOrder\TradeOrderService;
+use shopstar\services\wxTransactionComponent\WxTransactionComponentOrderService;
 use shopstar\structs\order\OrderPaySuccessStruct;
+use Yii;
+use yii\base\InvalidConfigException;
+use yii\db\Exception;
 use yii\helpers\Json;
 use yii\helpers\StringHelper;
+use yii\web\Response;
 
 /**
  * @author 青岛开店星信息技术有限公司
@@ -64,6 +71,12 @@ class IndexController extends BaseMobileApiController
             if (in_array('20', $dispatchType)) {
                 unset($config['delivery']);
             }
+
+            // 检测是否是视频号订单 仅支持微信支付
+            $scene = array_column($order, 'scene');
+            if ($scene == OrderSceneConstant::ORDER_SCENE_VIDEO_NUMBER_BROADCAST) {
+                $config = [$config['wechat']];
+            }
         }
 
         $type = [
@@ -78,12 +91,13 @@ class IndexController extends BaseMobileApiController
 
     /**
      * 支付
-     * @return array|\yii\web\Response
+     * @return array|Response
+     * @throws Exception
+     * @throws InvalidConfigException
      * @throws OrderException
      * @throws PaymentException
-     * @throws \shopstar\exceptions\tradeOrder\TradeOrderPayException
-     * @throws \yii\base\InvalidConfigException
-     * @throws \yii\db\Exception
+     * @throws TradeOrderPayException
+     * @throws \yii\base\Exception
      * @author 青岛开店星信息技术有限公司
      */
     public function actionPay()
@@ -139,7 +153,7 @@ class IndexController extends BaseMobileApiController
             //货到付款直接付款成功
             foreach ($order as $orderIndex => $orderItem) {
                 // paysuccess结构体
-                $orderPaySuccessStruct = \Yii::createObject([
+                $orderPaySuccessStruct = Yii::createObject([
                     'class' => 'shopstar\structs\order\OrderPaySuccessStruct',
                     'accountId' => $this->memberId,
                     'orderId' => $orderItem->id,
@@ -189,14 +203,31 @@ class IndexController extends BaseMobileApiController
             'callbackUrl' => RequestHelper::post('return_url'), // 回调URL
         ])->unify();
 
+        $data = $result['pay_params']['pay_url'] ?? $result['pay_params'];
+
+        // 如果是视频号直播产生的订单需要上传给微信小程序端
+        if ($this->clientType == ClientTypeConstant::CLIENT_WXAPP) {
+            // 获取开发人员设置
+            $developmentMemberId = ShopSettings::get('wxTransactionComponent.development.member_id');
+
+            // 1. 判断场景值或者是开发会员
+            if ($order[0]['scene'] == OrderSceneConstant::ORDER_SCENE_VIDEO_NUMBER_BROADCAST || $developmentMemberId == $this->memberId) {
+                $data = WxTransactionComponentOrderService::callback($openid, $order[0], $result['pay_params']);
+
+                if (is_error($data)) {
+                    return $this->error($data['message']);
+                }
+            }
+        }
+
         return $this->result([
-            'data' => $result['pay_params']['pay_url'] ?? $result['pay_params'],
+            'data' => $data,
         ]);
     }
 
     /**
      * 支付校验
-     * @return array|\yii\web\Response
+     * @return array|Response
      * @throws OrderException
      * @author 青岛开店星信息技术有限公司
      */
