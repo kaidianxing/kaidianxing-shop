@@ -17,12 +17,19 @@
 //     with_live: false, //直播
 //     with_recharge: false// 个人中心 支付入口
 // };
-var config = {
-    "base_url": "http://kdx-free-mbw.v5dev.getpkg.cn/h5/api",
-    "attachment_url": "http://kdx-free-mbw.v5dev.getpkg.cn/data/attachment/",
-    "public_url": "http://kdx-free-mbw.v5dev.getpkg.cn/",
-    "wap_dist_url": "http://kdx-free-mbw.v5dev.getpkg.cn/static/dist/shop/kdx_wap/",
-    "wap_url": "http://kdx-free-mbw.v5dev.getpkg.cn/h5"
+// var config = {
+//     "base_url": "http://kdx-free-mbw.v5dev.getpkg.cn/h5/api",
+//     "attachment_url": "http://kdx-free-mbw.v5dev.getpkg.cn/data/attachment/",
+//     "public_url": "http://kdx-free-mbw.v5dev.getpkg.cn/",
+//     "wap_dist_url": "http://kdx-free-mbw.v5dev.getpkg.cn/static/dist/shop/kdx_wap/",
+//     "wap_url": "http://kdx-free-mbw.v5dev.getpkg.cn/h5"
+// }
+var config = {//测试站
+    "base_url": "https://free-shopstar.v5bsklk.getpkg.cn/h5/api",
+    "attachment_url": "https://free-shopstar.v5bsklk.getpkg.cn/data/attachment/",
+    "public_url": "https://free-shopstar.v5bsklk.getpkg.cn/",
+    "wap_dist_url": "https://free-shopstar.v5bsklk.getpkg.cn/static/dist/shop/kdx_wap/",
+    "wap_url": "https://free-shopstar.v5bsklk.getpkg.cn/h5"
 }
 
 
