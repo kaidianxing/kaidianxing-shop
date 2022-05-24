@@ -57,7 +57,7 @@
   "repositories": [
     {
       "type": "composer",
-      "url": "https://asset-packagist.org",
+      "url": "https://asset-packagist.cn",
       "options": {
         "ssl": {
           "verify_peer": false
