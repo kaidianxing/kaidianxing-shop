@@ -196,9 +196,9 @@ class CheckEnvService
             // 上传大小限制 upload_max_filesize
             return error('上传文件限制设置错误，请修改php.ini参数upload_max_filesize为"50M"');
 
-        } elseif (ini_get('error_reporting') != '32759') {
+        } elseif (ini_get('error_reporting') != '32759' && ini_get('error_reporting') != '32757') {
             // 错误级别
-            return error('错误级别设置错误，请修改php.ini参数error_reporting为"E_ALL & ~E_NOTICE"');
+            return error('错误级别设置错误，请修改php.ini参数error_reporting为"E_ALL & ~E_NOTICE"或"E_ALL & ~E_NOTICE & ~E_WARNING"');
 
         } elseif (!in_array(ini_get('date.timezone'), ['PRC', 'Asia/Shanghai'])) {
             // 时区
