@@ -10,6 +10,8 @@
  * @warning 未经许可禁止私自删除版权信息
  */
 
+ini_set('error_reporting', E_ALL & ~E_NOTICE);
+
 // 开发模式
 defined('YII_DEBUG') or define('YII_DEBUG', false);
 defined('YII_ENV') or define('YII_ENV', 'prod');
