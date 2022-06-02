@@ -29,7 +29,8 @@ var config = {//测试站
     "attachment_url": "https://free-shopstar.v5bsklk.getpkg.cn/data/attachment/",
     "public_url": "https://free-shopstar.v5bsklk.getpkg.cn/",
     "wap_dist_url": "https://free-shopstar.v5bsklk.getpkg.cn/static/dist/shop/kdx_wap/",
-    "wap_url": "https://free-shopstar.v5bsklk.getpkg.cn/h5"
+    "wap_url": "https://free-shopstar.v5bsklk.getpkg.cn/h5",
+    "with_recharge" :true
 }
 
 

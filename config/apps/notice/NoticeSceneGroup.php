@@ -29,19 +29,19 @@ class NoticeSceneGroup implements NoticeSceneGroupInterface
                 'basic' => [
                     NoticeTypeConstant::BUYER_ORDER_PAY => [
                         'title' => NoticeTypeConstant::getText(NoticeTypeConstant::BUYER_ORDER_PAY),
-                        'item' => ['wechat', 'wxapp', 'sms']
+                        'item' => ['wechat', 'subscribe', 'wxapp', 'sms']
                     ],//用户付款成功
                     NoticeTypeConstant::BUYER_ORDER_SEND => [
                         'title' => NoticeTypeConstant::getText(NoticeTypeConstant::BUYER_ORDER_SEND),
-                        'item' => ['wechat', 'wxapp', 'sms']
+                        'item' => ['wechat', 'subscribe', 'wxapp', 'sms']
                     ], //订单发货
                     NoticeTypeConstant::BUYER_ORDER_CANCEL_AND_REFUND => [
                         'title' => NoticeTypeConstant::getText(NoticeTypeConstant::BUYER_ORDER_CANCEL_AND_REFUND),
-                        'item' => ['wechat', 'wxapp', 'sms']
+                        'item' => ['wechat', 'subscribe', 'wxapp', 'sms']
                     ], //退款成功
                     NoticeTypeConstant::BUYER_PAY_WITHDRAW => [
                         'title' => NoticeTypeConstant::getText(NoticeTypeConstant::BUYER_PAY_WITHDRAW),
-                        'item' => ['wechat', 'wxapp', 'sms']
+                        'item' => ['wechat', 'subscribe', 'wxapp', 'sms']
                     ], //提现成功
 //                    NoticeTypeConstant::BUYER_MEMBER_UPDATE => [
 //                        'title' => NoticeTypeConstant::getText(NoticeTypeConstant::BUYER_MEMBER_UPDATE),
@@ -49,7 +49,7 @@ class NoticeSceneGroup implements NoticeSceneGroupInterface
 //                    ], //会员升级
                     NoticeTypeConstant::BUYER_PAY_RECHARGE => [
                         'title' => NoticeTypeConstant::getText(NoticeTypeConstant::BUYER_PAY_RECHARGE),
-                        'item' => ['wechat', 'wxapp', 'sms']
+                        'item' => ['wechat', 'subscribe', 'wxapp', 'sms']
                     ], //余额充值成功
                     NoticeTypeConstant::BUYER_PAY_CREDIT => [
                         'title' => NoticeTypeConstant::getText(NoticeTypeConstant::BUYER_PAY_CREDIT),
@@ -59,7 +59,7 @@ class NoticeSceneGroup implements NoticeSceneGroupInterface
                 'sale' => [
                     NoticeTypeConstant::BUYER_COUPON_SEND => [
                         'title' => NoticeTypeConstant::getText(NoticeTypeConstant::BUYER_COUPON_SEND),
-                        'item' => ['wechat', 'wxapp', 'sms']
+                        'item' => ['wechat', 'subscribe', 'wxapp', 'sms']
                     ]
                 ],
                 'verify_code' => [

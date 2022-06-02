@@ -42,7 +42,7 @@
         #__vconsole .vc-switch,
         #__vconsole .vc-panel {
             z-index: 9999999 !important;
-            /* display: none!important; */
+            display: none!important;
         }
 
         #__vconsole {
@@ -286,7 +286,7 @@
             <p class="good-info"></p></div>
     </div>
 </div>
-<script src="/static/dist/shop_wap/static/js/chunk-vendors.js?v=1.0.7"></script>
-<script src="/static/dist/shop_wap/static/js/index.js?v=1.0.7"></script>
+<script src="/static/dist/shop_wap/static/js/chunk-vendors.js?v=1653471497981"></script>
+<script src="/static/dist/shop_wap/static/js/index.js?v=1653471497981"></script>
 </body>
 </html>

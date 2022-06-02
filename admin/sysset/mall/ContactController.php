@@ -64,6 +64,9 @@ class ContactController extends KdxAdminApiController
         }
         $contact['tel2'] = !empty($params['tel2']) ? $params['tel2'] : '';
 
+        // 高德地图 高德Web端(JS API)安全密钥
+        $contact['amap_code'] = $params['amap_code'];
+
         if (empty($params['amap_key'])) {
             throw new MallException(MallException::AMAP_KEY_INVALID);
         } else {

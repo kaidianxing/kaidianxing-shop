@@ -552,6 +552,9 @@ class ApplyController extends KdxAdminApiController
         }
 
         // 修改打款状态
+        /**
+         * @var CommissionApplyModel $apply
+         */
         $apply = CommissionApplyModel::find()->where([
             'id' => $id,
         ])->one();
@@ -573,11 +576,16 @@ class ApplyController extends KdxAdminApiController
             ['member_id' => $apply->member_id]
         );
 
+        /**
+         * @var MemberModel $member
+         */
+        $member = MemberModel::find()->where(['id' => $apply->member_id])->select(['id', 'nickname'])->one();
 
         // 发送通知 拒绝申请
         $result = NoticeComponent::getInstance(NoticeTypeConstant::COMMISSION_BUYER_COMMISSION_PAY, [
             'withdraw_money' => $apply->apply_commission,
             'change_time' => DateTimeHelper::now(),
+            'name' => $member->nickname,
         ], 'commission');
         if (!is_error($result)) {
             $result->sendMessage($apply->member_id);

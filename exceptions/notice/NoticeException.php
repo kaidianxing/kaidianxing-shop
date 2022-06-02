@@ -94,6 +94,36 @@ class NoticeException extends BaseException
     /**
      * @Message("参数错误")
      */
+    public const MANAGE_INDEX_GET_SUBSCRIBE_NOTICE_PARAMS_ERROR = 3420206;
+
+    /**
+     * @Message("缺少默认模板")
+     */
+    public const MANAGE_INDEX_WECHAT_SUBSCRIBE_NOTICE_LACK_DEFAULT_TEMPLATE_ERROR = 3420207;
+
+    /**
+     * @Message("添加到微信订阅消息错误")
+     */
+    public const MANAGE_INDEX_WECHAT_SUBSCRIBE_NOTICE_ADD_WECHAT_TEMPLATE_ERROR = 340209;
+
+    /**
+     * @Message("添加失败")
+     */
+    public const MANAGE_INDEX_WECHAT_SUBSCRIBE_NOTICE_ERROR = 340210;
+
+    /**
+     * @Message("删除失败")
+     */
+    public const MANAGE_INDEX_WECHAT_SUBSCRIBE_NOTICE_DELETE_ERROR = 340210;
+
+    /**
+     * @Message("参数错误")
+     */
+    public const MANAGE_INDEX_WECHAT_SUBSCRIBE_NOTICE_PARAMS_ERROR = 340101;
+
+    /**
+     * @Message("参数错误")
+     */
     public const MANAGE_INDEX_GET_SMS_NOTICE_PARAMS_ERROR = 340000;
 
     /**
@@ -101,14 +131,4 @@ class NoticeException extends BaseException
      */
     public const MANAGE_INDEX_SMS_NOTICE_PARAMS_ERROR = 340001;
 
-    //签名
-    /**
-     * @Message("参数错误")
-     */
-    const MANAGE_SMS_SIGNATURE_ENABLED_PARAMS_ERROR = 342001;
-
-    /**
-     * @Message("请填写内容")
-     */
-    const MANAGE_SMS_SIGNATURE_APPLY_PARAMS_ERROR = 342002;
 }

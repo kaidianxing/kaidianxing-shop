@@ -25,6 +25,8 @@ use shopstar\models\member\group\MemberGroupModel;
 use shopstar\models\member\MemberLevelModel;
 use shopstar\models\member\MemberModel;
 use shopstar\models\notice\NoticeWechatDefaultTemplateModel;
+use shopstar\models\notice\NoticeWechatSubscribeDefaultTemplateModel;
+use shopstar\models\notice\NoticeWechatSubscribeTemplateModel;
 use shopstar\models\notice\NoticeWechatTemplateModel;
 use shopstar\models\notice\NoticeWxappDefaultTemplateModel;
 use shopstar\models\notice\NoticeWxappTemplateModel;
@@ -430,8 +432,8 @@ class IndexController extends KdxAdminApiController
 
     /**
      * 设置短信
+     * @return array|int[]|\yii\web\Response
      * @throws NoticeException
-     * @throws \yii\db\Exception
      * @author 青岛开店星信息技术有限公司
      */
     public function actionSmsNotice()
@@ -461,6 +463,129 @@ class IndexController extends KdxAdminApiController
 
         // 保存
         $this->setAllSetting($post, $setting, 'sms');
+
+        return $this->success();
+    }
+
+    /**
+     * 获取公众号一次性订阅消息
+     * @return array|int[]|\yii\web\Response
+     * @throws NoticeException
+     * @author likexin
+     */
+    public function actionGetSubscribeNotice()
+    {
+        $get = RequestHelper::get();
+        if (empty($get['type_code'])) {
+            throw new NoticeException(NoticeException::MANAGE_INDEX_GET_SUBSCRIBE_NOTICE_PARAMS_ERROR);
+        }
+
+        // 获取缓存
+        $result = ShopSettings::get('plugin_notice.send.' . $get['type_code'])['subscribe'] ?: [];
+        $result['status'] = (int)$result['status'];
+
+        return $this->success($result);
+    }
+
+    /**
+     * 公众号一次性订阅消息
+     * @return array|int[]|\yii\web\Response
+     * @throws NoticeException
+     * @throws \yii\db\StaleObjectException
+     * @author likexin
+     */
+    public function actionSubscribeNotice()
+    {
+        $post = RequestHelper::post();
+        if (empty($post['type_code'])) {
+            throw new NoticeException(NoticeException::MANAGE_INDEX_WECHAT_SUBSCRIBE_NOTICE_PARAMS_ERROR);
+        }
+
+        // 分销通知 特殊处理
+        $commissionNotice = [
+            'commission_buyer_child_pay',
+            'commission_buyer_agent_add_child',
+            'commission_buyer_agent_add_child_line',
+        ];
+        if (in_array($post['type_code'], $commissionNotice)) {
+            $setting['commission_level'] = $post['commission_level'];
+        }
+
+        // 人信云通知 特殊处理
+        $rxyNotice = [
+            'rxy_advisory_reminder',
+        ];
+        if (in_array($post['type_code'], $rxyNotice)) {
+            $setting['is_send_message'] = $post['is_send_message'];
+            $setting['message_num'] = $post['message_num'];
+            $setting['line_num'] = $post['line_num'];
+            $setting['is_send_line'] = $post['is_send_line'];
+
+        }
+
+        $noticeModel = NoticeWechatSubscribeTemplateModel::findOne([
+            'scene_code' => $post['type_code'],
+        ]);
+
+        //状态 是否开启消息通知
+        $setting['status'] = $post['status'] ?: 0;
+        //开启
+        if ($setting['status'] == 1) {
+            // 获取默认模板
+            $defaultTemplate = NoticeWechatSubscribeDefaultTemplateModel::findOne([
+                'scene_code' => $post['type_code']
+            ]);
+
+            if (empty($defaultTemplate)) {
+                throw new NoticeException(NoticeException::MANAGE_INDEX_WECHAT_SUBSCRIBE_NOTICE_LACK_DEFAULT_TEMPLATE_ERROR);
+            }
+
+            $noticeModel = NoticeWechatSubscribeTemplateModel::findOne([
+                'scene_code' => $post['type_code'],
+            ]);
+            //如果为空 则上传小程序模板库，并添加到本地模板库
+            if (empty($noticeModel)) {
+                $noticeModel = new NoticeWechatSubscribeTemplateModel();
+                $result = OfficialAccountMessageHelper::addTemplateSubscribe($defaultTemplate->template_id, Json::decode($defaultTemplate->kid_list), $defaultTemplate->scene_desc);
+                if (is_error($result)) {
+                    throw new NoticeException(NoticeException::MANAGE_INDEX_WECHAT_SUBSCRIBE_NOTICE_ADD_WECHAT_TEMPLATE_ERROR, $result['message']);
+                }
+
+                $noticeModel->setAttributes([
+                    'scene_code' => $post['type_code'],
+                    'title' => $defaultTemplate->name,
+                    'template_id' => $defaultTemplate->template_id,
+                    'create_time' => DateTimeHelper::now(),
+                    'kid_list' => $defaultTemplate->kid_list,
+                    'scene_desc' => $defaultTemplate->scene_desc,
+                    'pri_tmpl_id' => $result['priTmplId'],
+                    'content' => $defaultTemplate['content'],
+                ]);
+
+                if (!$noticeModel->save()) {
+                    throw new NoticeException(NoticeException::MANAGE_INDEX_WECHAT_SUBSCRIBE_NOTICE_ERROR);
+                }
+            }
+
+            //赋值模板id
+            $setting['template_id'] = $noticeModel->id;
+        } else {
+            //删除模板
+            if (!empty($noticeModel->id)) {
+                if (!$noticeModel->delete()) {
+                    throw new NoticeException(NoticeException::MANAGE_INDEX_WECHAT_SUBSCRIBE_NOTICE_DELETE_ERROR);
+                }
+
+                //删除公众号模板
+                OfficialAccountMessageHelper::deleteTemplateSubscribe($noticeModel->pri_tmpl_id);
+            }
+
+            //重置模板id
+            $setting['template_id'] = 0;
+        }
+
+        // 保存
+        $this->setAllSetting($post, $setting, 'subscribe');
 
         return $this->success();
     }

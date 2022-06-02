@@ -14,12 +14,16 @@ namespace shopstar\mobile;
 
 use shopstar\bases\controller\BaseMobileApiController;
 use shopstar\components\amap\AmapClient;
+use shopstar\constants\ClientTypeConstant;
 use shopstar\helpers\ArrayHelper;
 use shopstar\helpers\RequestHelper;
 use shopstar\helpers\ShopUrlHelper;
 use shopstar\models\core\CoreAddressModel;
 use shopstar\models\core\CoreSettings;
 use shopstar\models\member\MemberSession;
+use shopstar\models\notice\NoticeWechatSubscribeTemplateModel;
+use shopstar\models\notice\NoticeWechatTemplateModel;
+use shopstar\models\notice\NoticeWxappTemplateModel;
 use shopstar\models\shop\ShopSettings;
 use shopstar\models\statistics\StatisticsPageViewModel;
 use shopstar\models\statistics\StatisticsUniqueViewModel;
@@ -322,6 +326,38 @@ class IndexController extends BaseMobileApiController
 
         return $this->result($result);
 
+    }
+
+    /**
+     * 获取消息通知的模板信息
+     * @author nizengchao
+     */
+    public function actionGetNoticeTemplate()
+    {
+        $list = '';
+        if ($this->clientType == ClientTypeConstant::CLIENT_WXAPP) {
+            // 小程序
+            $list = NoticeWxappTemplateModel::find()->select('scene_code,pri_tmpl_id')->get();
+            if ($list) {
+                $list = array_column($list, 'pri_tmpl_id', 'scene_code');
+            }
+        } elseif ($this->clientType == ClientTypeConstant::CLIENT_WECHAT) {
+            // 公众号
+            $type = RequestHelper::get('type', 'subscribe');
+            if ($type == 'subscribe') {
+                $list = NoticeWechatSubscribeTemplateModel::find()->select('scene_code,pri_tmpl_id')->get();
+                if ($list) {
+                    $list = array_column($list, 'pri_tmpl_id', 'scene_code');
+                }
+            } else {
+                $list = NoticeWechatTemplateModel::find()->select('scene_code,template_id')->get();
+                if ($list) {
+                    $list = array_column($list, 'template_id', 'scene_code');
+                }
+            }
+        }
+
+        return $this->result(['data' => $list ?: '']);
     }
 
 }

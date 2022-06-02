@@ -47,7 +47,7 @@ class WxAppController extends BaseMobileApiController
         LogHelper::info('[GET]', $get, SHOP_STAR_TMP_PATH . '/logs/wx-app' . date('Y-m-d') . '.log');
 
         // 验证消息是否来自微信服务器
-        $checkWechat = $this->checkSignature($get['signature'] ?: '', $get['timestamp'] ?: 0, $get['nonce'] ?: '', $get['route_shop_id'] ?: 0);
+        $checkWechat = $this->checkSignature($get['signature'] ?: '', $get['timestamp'] ?: 0, $get['nonce'] ?: '');
         if (!$checkWechat) {
             return 'error';
         }

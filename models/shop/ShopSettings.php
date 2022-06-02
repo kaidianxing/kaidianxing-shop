@@ -501,6 +501,10 @@ class ShopSettings extends BaseSettings
                             'is_default' => 1, //是否默认
                             'member_id' => []
                         ],
+                        'subscribe' => [    // 公众号一次性订阅消息
+                            'status' => '0',
+                            'template_id' => '',
+                        ],
                         'sms' => [ //短信
                             'status' => 0,
                             'template_id' => 0
@@ -517,6 +521,10 @@ class ShopSettings extends BaseSettings
                             'template_id' => '',
                             'is_default' => 1, //是否默认
                             'member_id' => []
+                        ],
+                        'subscribe' => [//公众号一次性订阅消息
+                            'status' => '0',
+                            'template_id' => '',
                         ],
                         'sms' => [ //短信
                             'status' => 0,
@@ -620,6 +628,10 @@ class ShopSettings extends BaseSettings
                             'is_default' => 1, //是否默认
                             'member_id' => []
                         ],
+                        'subscribe' => [//公众号一次性订阅消息
+                            'status' => '0',
+                            'template_id' => '',
+                        ],
                         'sms' => [ //短信
                             'status' => 0,
                             'template_id' => 0
@@ -635,6 +647,10 @@ class ShopSettings extends BaseSettings
                             'template_id' => '',
                             'is_default' => 1, //是否默认
                             'member_id' => []
+                        ],
+                        'subscribe' => [//公众号一次性订阅消息
+                            'status' => '0',
+                            'template_id' => '',
                         ],
                         'sms' => [ //短信
                             'status' => 0,
@@ -669,6 +685,10 @@ class ShopSettings extends BaseSettings
                             'is_default' => 1, //是否默认
                             'member_id' => []
                         ],
+                        'subscribe' => [//公众号一次性订阅消息
+                            'status' => '0',
+                            'template_id' => '',
+                        ],
                         'sms' => [ //短信
                             'status' => 0,
                             'template_id' => 0
@@ -684,6 +704,10 @@ class ShopSettings extends BaseSettings
                             'template_id' => '',
                             'is_default' => 1, //是否默认
                             'member_id' => []
+                        ],
+                        'subscribe' => [//公众号一次性订阅消息
+                            'status' => '0',
+                            'template_id' => '',
                         ],
                         'sms' => [ //短信
                             'status' => 0,
@@ -701,6 +725,10 @@ class ShopSettings extends BaseSettings
                             'is_default' => 1, //是否默认
                             'member_id' => []
                         ],
+                        'subscribe' => [//公众号一次性订阅消息
+                            'status' => '0',
+                            'template_id' => '',
+                        ],
                         'sms' => [ //短信
                             'status' => 0,
                             'template_id' => 0
@@ -716,6 +744,10 @@ class ShopSettings extends BaseSettings
                             'template_id' => '',
                             'is_default' => 1, //是否默认
                             'member_id' => []
+                        ],
+                        'subscribe' => [//公众号一次性订阅消息
+                            'status' => '0',
+                            'template_id' => '',
                         ],
                         'sms' => [ //短信
                             'status' => 0,
@@ -733,6 +765,10 @@ class ShopSettings extends BaseSettings
                             'is_default' => 1, //是否默认
                             'member_id' => []
                         ],
+                        'subscribe' => [//公众号一次性订阅消息
+                            'status' => '0',
+                            'template_id' => '',
+                        ],
                         'sms' => [ //短信
                             'status' => 0,
                             'template_id' => 0
@@ -748,6 +784,10 @@ class ShopSettings extends BaseSettings
                             'template_id' => '',
                             'is_default' => 1, //是否默认
                             'member_id' => []
+                        ],
+                        'subscribe' => [//公众号一次性订阅消息
+                            'status' => '0',
+                            'template_id' => '',
                         ],
                         'sms' => [ //短信
                             'status' => 0,
@@ -765,6 +805,10 @@ class ShopSettings extends BaseSettings
                             'is_default' => 1, //是否默认
                             'member_id' => []
                         ],
+                        'subscribe' => [//公众号一次性订阅消息
+                            'status' => '0',
+                            'template_id' => '',
+                        ],
                         'sms' => [ //短信
                             'status' => 0,
                             'template_id' => 0
@@ -780,6 +824,10 @@ class ShopSettings extends BaseSettings
                             'template_id' => '',
                             'is_default' => 1, //是否默认
                             'member_id' => []
+                        ],
+                        'subscribe' => [//公众号一次性订阅消息
+                            'status' => '0',
+                            'template_id' => '',
                         ],
                         'sms' => [ //短信
                             'status' => 0,
@@ -825,6 +873,10 @@ class ShopSettings extends BaseSettings
                             'is_default' => 1, //是否默认
                             'member_id' => []
                         ],
+                        'subscribe' => [//公众号一次性订阅消息
+                            'status' => '0',
+                            'template_id' => '',
+                        ],
                         'sms' => [ //短信
                             'status' => 0,
                             'template_id' => 0
@@ -837,6 +889,10 @@ class ShopSettings extends BaseSettings
                             'is_default' => 1,
                             'member_id' => []
                         ],
+                        'subscribe' => [//公众号一次性订阅消息
+                            'status' => '0',
+                            'template_id' => '',
+                        ],
                         'sms' => [ //短信
                             'status' => 0,
                             'template_id' => 0
@@ -848,6 +904,10 @@ class ShopSettings extends BaseSettings
                             'template_id' => '',
                             'is_default' => 1,
                             'member_id' => []
+                        ],
+                        'subscribe' => [//公众号一次性订阅消息
+                            'status' => '0',
+                            'template_id' => '',
                         ],
                         'sms' => [ //短信
                             'status' => 0,
@@ -888,6 +948,10 @@ class ShopSettings extends BaseSettings
                             'is_default' => 1,
                             'member_id' => []
                         ],
+                        'subscribe' => [//公众号一次性订阅消息
+                            'status' => '0',
+                            'template_id' => '',
+                        ],
                         'sms' => [ //短信
                             'status' => 0,
                             'template_id' => 0,
@@ -902,6 +966,10 @@ class ShopSettings extends BaseSettings
                             'is_default' => 1,
                             'member_id' => []
                         ],
+                        'subscribe' => [//公众号一次性订阅消息
+                            'status' => '0',
+                            'template_id' => '',
+                        ],
                         'sms' => [ //短信
                             'status' => 0,
                             'template_id' => 0,
@@ -915,6 +983,10 @@ class ShopSettings extends BaseSettings
                             'is_default' => 1,
                             'member_id' => []
                         ],
+                        'subscribe' => [//公众号一次性订阅消息
+                            'status' => '0',
+                            'template_id' => '',
+                        ],
                         'sms' => [ //短信
                             'status' => 0,
                             'template_id' => 0
@@ -926,6 +998,10 @@ class ShopSettings extends BaseSettings
                             'template_id' => '',
                             'is_default' => 1,
                             'member_id' => []
+                        ],
+                        'subscribe' => [//公众号一次性订阅消息
+                            'status' => '0',
+                            'template_id' => '',
                         ],
                         'sms' => [ //短信
                             'status' => 0,
@@ -939,6 +1015,10 @@ class ShopSettings extends BaseSettings
                             'is_default' => 1,
                             'member_id' => []
                         ],
+                        'subscribe' => [//公众号一次性订阅消息
+                            'status' => '0',
+                            'template_id' => '',
+                        ],
                         'sms' => [ //短信
                             'status' => 0,
                             'template_id' => 0
@@ -950,6 +1030,10 @@ class ShopSettings extends BaseSettings
                             'template_id' => '',
                             'is_default' => 1,
                             'member_id' => []
+                        ],
+                        'subscribe' => [//公众号一次性订阅消息
+                            'status' => '0',
+                            'template_id' => '',
                         ],
                         'sms' => [ //短信
                             'status' => 0,
@@ -963,6 +1047,10 @@ class ShopSettings extends BaseSettings
                             'commission_level' => '1',
                             'is_default' => 1,
                             'member_id' => []
+                        ],
+                        'subscribe' => [//公众号一次性订阅消息
+                            'status' => '0',
+                            'template_id' => '',
                         ],
                         'sms' => [ //短信
                             'status' => 0,
@@ -994,6 +1082,10 @@ class ShopSettings extends BaseSettings
                             'template_id' => '',
                             'is_default' => 1, //是否默认
                             'member_id' => []
+                        ],
+                        'subscribe' => [//公众号一次性订阅消息
+                            'status' => '0',
+                            'template_id' => '',
                         ],
                         'wxapp' => [
                             'status' => '0', //是否开启1是0否

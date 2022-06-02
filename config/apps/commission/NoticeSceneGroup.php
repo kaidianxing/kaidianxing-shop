@@ -45,11 +45,11 @@ class NoticeSceneGroup implements NoticeSceneGroupInterface
                     ],
                     NoticeTypeConstant::COMMISSION_BUYER_WITHDRAW_APPLY_FAIL => [ // 买家申请提现失败通知
                         'title' => NoticeTypeConstant::getText(NoticeTypeConstant::COMMISSION_BUYER_WITHDRAW_APPLY_FAIL),
-                        'item' => ['wechat', 'sms']
+                        'item' => ['wechat', 'subscribe', 'sms']
                     ],
                     NoticeTypeConstant::COMMISSION_BUYER_COMMISSION_PAY => [ // 买家佣金打款通知
                         'title' => NoticeTypeConstant::getText(NoticeTypeConstant::COMMISSION_BUYER_COMMISSION_PAY),
-                        'item' => ['wechat', 'sms']
+                        'item' => ['wechat', 'subscribe', 'sms']
                     ],
                     NoticeTypeConstant::COMMISSION_BUYER_AGENT_ADD_CHILD_LINE => [ // 买家新增下线通知
                         'title' => NoticeTypeConstant::getText(NoticeTypeConstant::COMMISSION_BUYER_AGENT_ADD_CHILD_LINE),

@@ -166,8 +166,8 @@ class NoticeComponent extends Component
      * $options[sms][data] 短信替换内容
      * $options[sms][sms_tpl_id] 短信模板id
      * $options[signature][content] 签名
-     *
      * @return bool
+     * @throws \yii\base\Exception
      * @author 青岛开店星信息技术有限公司
      */
     public function sendVerifyCode(int $mobile, array $options = []): bool
@@ -177,8 +177,12 @@ class NoticeComponent extends Component
         try {
             $setting = ShopSettings::get('plugin_notice.send')[$this->sceneCode] ?: [];
             $setting = $setting['sms'];
-            //没有开启短信
-            if (!isset($setting) || $setting['status'] == 0) throw new \Exception('sms not open');
+
+            // 没有开启短信
+            if (!isset($setting) || $setting['status'] == 0) {
+                throw new \Exception('sms not open');
+            }
+
             //组成
             $messageClass = Yii::createObject([
                 'class' => 'shopstar\components\notice\sends\\' . ucfirst('smsVerifyCode') . 'Notice',

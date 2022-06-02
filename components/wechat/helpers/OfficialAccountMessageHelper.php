@@ -15,6 +15,8 @@ namespace shopstar\components\wechat\helpers;
 use shopstar\components\platform\Wechat;
 use shopstar\components\wechat\bases\WechatChannelConstant;
 use shopstar\components\wechat\WechatComponent;
+use shopstar\helpers\HttpHelper;
+use yii\helpers\Json;
 
 /**
  * 公众号模板消息   demo https://www.easywechat.com/docs/4.1/official-account/template_message
@@ -133,10 +135,66 @@ class OfficialAccountMessageHelper
     }
 
     /**
+     * 添加一次性订阅消息模板
+     * @param int $tid
+     * @param array $kidList
+     * @param string $sceneDesc
+     * @return array|bool|mixed
+     * @author likexin
+     */
+    public static function addTemplateSubscribe(int $tid, array $kidList, string $sceneDesc)
+    {
+        try {
+            $token = WechatComponent::getInstance(WechatChannelConstant::CHANNEL_OFFICIAL_ACCOUNT, [])->factory->access_token->getToken();
+            // 微信开放平台参数兼容
+            $token['access_token'] = $token['authorizer_access_token'] ?? $token['access_token'];
+            $result = HttpHelper::postJson('https://api.weixin.qq.com/wxaapi/newtmpl/addtemplate?access_token=' . $token['access_token'], Json::encode([
+                'tid' => $tid,
+                'kidList' => $kidList,
+                'sceneDesc' => $sceneDesc,
+            ]), [
+                'headers' => [
+                    'Content-Type' => 'application/json'
+                ]
+            ]);
+        } catch (\Exception $exception) {
+            $result = $exception;
+        }
+
+        return Wechat::apiError($result);
+    }
+
+    /**
+     * 删除一次性订阅消息模板
+     * @param string $templateId 用户的模板id
+     * @return array|bool|mixed
+     * @author likexin
+     */
+    public static function deleteTemplateSubscribe(string $templateId)
+    {
+        try {
+            $token = WechatComponent::getInstance(WechatChannelConstant::CHANNEL_OFFICIAL_ACCOUNT, [])->factory->access_token->getToken();
+            // 微信开放平台参数兼容
+            $token['access_token'] = $token['authorizer_access_token'] ?? $token['access_token'];
+            $result = HttpHelper::postJson('https://api.weixin.qq.com/wxaapi/newtmpl/deltemplate?access_token=' . $token['access_token'], Json::encode([
+                'priTmplId' => $templateId,
+            ]), [
+                'headers' => [
+                    'Content-Type' => 'application/json'
+                ]
+            ]);
+        } catch (\Exception $exception) {
+            $result = $exception;
+        }
+        return Wechat::apiError($result);
+    }
+
+    /**
+     * 发送一次性订阅消息
      * @param array $messageData
      * @return array|\EasyWeChat\Kernel\Support\Collection|object|\Psr\Http\Message\ResponseInterface|string
      * @throws \GuzzleHttp\Exception\GuzzleException
-     * @author 青岛开店星信息技术有限公司
+     * @author likexin
      */
     public static function sendSubscription(array $messageData)
     {
@@ -144,14 +202,18 @@ class OfficialAccountMessageHelper
             /**
              * @var $instance \EasyWeChat\OfficialAccount\TemplateMessage\Client
              */
-            $instance = WechatComponent::getInstance(WechatChannelConstant::CHANNEL_OFFICIAL_ACCOUNT, [])->factory->template_message;
-            $result = $instance->sendSubscription($messageData);
+            $token = WechatComponent::getInstance(WechatChannelConstant::CHANNEL_OFFICIAL_ACCOUNT, [])->factory->access_token->getToken();
+            // 微信开放平台参数兼容
+            $token['access_token'] = $token['authorizer_access_token'] ?? $token['access_token'];
+            $result = HttpHelper::postJson('https://api.weixin.qq.com/cgi-bin/message/subscribe/bizsend?access_token=' . $token['access_token'], Json::encode($messageData), [
+                'headers' => [
+                    'Content-Type' => 'application/json'
+                ]
+            ]);
         } catch (\Exception $exception) {
             $result = $exception;
         }
-
         return Wechat::apiError($result);
-
     }
 
 }

@@ -14,10 +14,10 @@ use yii\db\Migration;
 
 /**
  * 清除权限
- * Class m220524_024036_clear_perms
+ * Class m220602_014459_clear_perms
  * @author likexin
  */
-class m220524_024036_clear_perms extends Migration
+class m220602_014459_clear_perms extends Migration
 {
 
     /**
