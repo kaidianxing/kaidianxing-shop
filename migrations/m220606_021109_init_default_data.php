@@ -10,5 +10,24 @@
  * @warning 未经许可禁止私自删除版权信息
  */
 
-!defined('SHOP_STAR_VERSION') && define('SHOP_STAR_VERSION', '1.0.7');
-!defined('SHOP_STAR_RELEASE') && define('SHOP_STAR_RELEASE', '20220606101610');
+use shopstar\config\modules\KdxInitialize;
+use yii\db\Migration;
+
+/**
+ * 重新初始化默认数据
+ * Class m220606_021109_init_default_data
+ * @author likexin
+ */
+class m220606_021109_init_default_data extends Migration
+{
+
+    /**
+     * {@inheritdoc}
+     * @author likexin
+     */
+    public function up()
+    {
+        // 重新初始化默认数据
+        KdxInitialize::init();
+    }
+}
