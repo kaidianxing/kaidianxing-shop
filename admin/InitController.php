@@ -67,6 +67,7 @@ class InitController extends KdxAdminApiController
         $result['settings'] = [
             'name' => $shopSettings['name'] ?? '',
             'logo' => $shopSettings['logo'] ?? '',
+            'icp_code' => $shopSettings['icp_code'] ?? '',
         ];
 
         //服务专属功能

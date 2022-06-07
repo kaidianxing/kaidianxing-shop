@@ -120,20 +120,6 @@ class CoreSettings extends BaseSettings
             'site' => [
                 'name' => '', // 店铺助手的
                 'logo' => '', // b端小程序用
-                'status' => 1, // 站点状态 默认开启
-
-                'pc_name' => '', // pc的 名称
-                'pc_logo' => '', // pc logo
-                'is_save_pc' => '0', // 是否保存过pc
-
-                // 站点登录配图
-                'login_logo_type' => 0,     //商家端登录logo 0 默认 1自定义
-                'login_logo_img' => '',     //商家端登录logo 1自定义图片url
-
-                // 后面看
-                'copyright_info' => '',       //商家端版本信息
-                'copyright_open' => '1',       //商家端版本信息开关
-                'close_redirect_url' => '',  //商家端关闭后重定向url
             ],
 
             /**

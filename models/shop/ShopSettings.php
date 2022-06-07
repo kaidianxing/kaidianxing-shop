@@ -317,6 +317,7 @@ class ShopSettings extends BaseSettings
                         'name' => '商城名称',
                         'agreement_name' => '',
                         'agreement_content' => '',
+                        'icp_code' => '', // ICP备案号
                     ],
                     'share' => [ // 分享设置
                         'title_type' => '1',

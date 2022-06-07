@@ -87,10 +87,4 @@ class ClientTypeConstant extends BaseConstant
      */
     public const MANAGE_SHOP_ASSISTANT = 51;
 
-    /**
-     * @Text("管理端")
-     * @Identify("admin")
-     */
-    public const ADMIN_PC = 60; // TODO likexin
-
 }

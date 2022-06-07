@@ -12,13 +12,13 @@
 
 namespace shopstar\admin\account;
 
+use shopstar\bases\KdxAdminAccountApiController;
 use shopstar\constants\ClientTypeConstant;
 use shopstar\helpers\CryptHelper;
 use shopstar\helpers\RequestHelper;
 use shopstar\helpers\StringHelper;
 use shopstar\models\user\UserModel;
 use shopstar\models\user\UserSession;
-use shopstar\bases\KdxAdminAccountApiController;
 
 /**
  * Class ChangePasswordController
@@ -40,7 +40,7 @@ class ChangePasswordController extends KdxAdminAccountApiController
         }
 
         // 原密码
-        if ($this->clientType == ClientTypeConstant::MANAGE_PC || $this->clientType == ClientTypeConstant::ADMIN_PC) {
+        if ($this->clientType == ClientTypeConstant::MANAGE_PC) {
             $originalPassword = RequestHelper::post('original_password');
         }
 
@@ -58,7 +58,7 @@ class ChangePasswordController extends KdxAdminAccountApiController
         }
 
         // 判断原密码不能为空
-        if (!empty($user->password) && ($this->clientType == ClientTypeConstant::MANAGE_PC || $this->clientType == ClientTypeConstant::ADMIN_PC)) {
+        if (!empty($user->password) && $this->clientType == ClientTypeConstant::MANAGE_PC) {
             if (empty($originalPassword)) {
                 return $this->error('参数错误 original_password不能为空');
             }

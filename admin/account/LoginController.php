@@ -14,20 +14,16 @@ namespace shopstar\admin\account;
 
 use shopstar\bases\KdxAdminAccountApiController;
 use shopstar\constants\ClientTypeConstant;
-use shopstar\constants\user\UserAuditStatusConstant;
 use shopstar\constants\user\UserIsDeleteConstant;
 use shopstar\exceptions\adminAccount\UserLoginException;
-use shopstar\exceptions\UserException;
 use shopstar\helpers\CryptHelper;
 use shopstar\helpers\DateTimeHelper;
 use shopstar\helpers\RequestHelper;
 use shopstar\models\core\CoreSettings;
-use shopstar\models\member\MemberModel;
 use shopstar\models\role\ManagerModel;
 use shopstar\models\shop\ShopSettings;
 use shopstar\models\user\UserModel;
 use shopstar\models\user\UserSession;
-use shopstar\services\core\attachment\CoreAttachmentService;
 use yii\helpers\Json;
 
 /**
@@ -67,67 +63,26 @@ class LoginController extends KdxAdminAccountApiController
      * 登录初始化
      * @return array|int[]|\yii\web\Response
      * @throws UserLoginException
-     * @throws \yii\base\InvalidConfigException
      * @author likexin
      */
     public function actionInit()
     {
         if (!in_array($this->clientType, [
             ClientTypeConstant::MANAGE_SHOP_ASSISTANT,
-            ClientTypeConstant::ADMIN_PC,
             ClientTypeConstant::MANAGE_PC
         ])) {
             throw new UserLoginException(UserLoginException::LOGIN_INIT_CLIENT_TYPE_INVALID);
         }
 
-        if (in_array($this->clientType, [ClientTypeConstant::ADMIN_PC, ClientTypeConstant::MANAGE_PC])) {
-
-            //管理端登录
-            if ($this->clientType == ClientTypeConstant::ADMIN_PC) {
-                $result['setting'] = CoreSettings::get('admin_basic');
-            } else {
-                $result['setting'] = CoreSettings::get('site');
-            }
-
-            $shopData = ShopSettings::get('sysset.mall.basic');
-
-            $result['setting']['pc_name'] = $shopData['name'] ?? '';
-            $result['setting']['pc_logo'] = $shopData['logo'] ?? '';
-            $result['setting']['login_show_img'] = $shopData['login_show_img'] ?? '';
-            return $this->result($result);
-        }
-
-        $result = [];
-
-        // 查询商户
-        $data = ShopSettings::get('sysset.mall.basic');
-        $result['shop'] = [
-            'name' => $data['name'],
-            'logo' => $data['logo'],
+        $shopData = ShopSettings::get('sysset.mall.basic');
+        $result = [
+            'setting' => [
+                'pc_name' => $shopData['name'] ?? '',
+                'pc_logo' => $shopData['logo'] ?? '',
+                'login_show_img' => $shopData['login_show_img'] ?? '',
+                'icp_code' => $shopData['icp_code'] ?? '',
+            ],
         ];
-
-        // 解析token
-        $token = RequestHelper::get('token');
-        if (!empty($token)) {
-            $tokenDecode = $this->decodeToken($token);
-            // 查询会员
-            if (!empty($tokenDecode) && !empty($tokenDecode['member_id'])) {
-                $result['member'] = MemberModel::find()
-                    ->where([
-                        'id' => $tokenDecode['member_id'],
-                    ])
-                    ->select(['nickname', 'avatar'])
-                    ->first();
-                $result['user'] = [
-                    'id' => $tokenDecode['user_id'],
-                ];
-            }
-        }
-
-        $result['shop_attachment_url'] = CoreAttachmentService::getRoot();
-        $result['storage'] = ShopSettings::getImageCompressionRule();
-
-        $result['site_settings'] = CoreSettings::get('site');
 
         return $this->result($result);
     }
@@ -177,11 +132,6 @@ class LoginController extends KdxAdminAccountApiController
         //判断状态
         if (empty($user['status'])) {
             throw new UserLoginException(UserLoginException::LOGIN_SUBMIT_USER_STATUS_INVALID);
-        }
-
-        //判断是否是超管
-        if ($this->clientType == ClientTypeConstant::ADMIN_PC && $user['is_root'] == 0) {
-            throw new UserLoginException(UserLoginException::LOGIN_SUBMIT_USER_PERMISSION_DENIED);
         }
 
         // 验证密码

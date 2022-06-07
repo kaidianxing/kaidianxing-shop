@@ -75,6 +75,7 @@ class BasicController extends KdxAdminApiController
             'photo_preview' => RequestHelper::post('photo_preview', ''), // 商城图片预览
             'agreement_name' => RequestHelper::post('agreement_name', ''), // 协议标题
             'agreement_content' => RequestHelper::post('agreement_content', ''), // 协议内容
+            'icp_code' => RequestHelper::post('icp_code', ''), // ICP备案号
         ];
 
         try {
