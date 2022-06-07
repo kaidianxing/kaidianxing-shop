@@ -253,7 +253,7 @@ class TradeOrderOperation extends Component
                 }
                 $result = $instance->refund($tradeOrder->order_price, $refundPrice, $refundNo);
                 if (is_error($result)) {
-                    throw new TradeOrderOperationException(TradeOrderOperationException::REFUND_PAYMENT_COMPONENT_REFUND_FAIL);
+                    throw new TradeOrderOperationException(TradeOrderOperationException::REFUND_PAYMENT_COMPONENT_REFUND_FAIL, '调用支付组件退款失败:' . ($result['message'] ?? ''));
                 }
             }
 
