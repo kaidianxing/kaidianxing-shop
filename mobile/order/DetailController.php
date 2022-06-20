@@ -17,6 +17,7 @@ use shopstar\components\amap\AmapClient;
 use shopstar\constants\form\FormTypeConstant;
 use shopstar\constants\order\OrderActivityTypeConstant;
 use shopstar\constants\order\OrderDispatchExpressConstant;
+use shopstar\constants\order\OrderPackageCityDistributionTypeConstant;
 use shopstar\constants\order\OrderStatusConstant;
 use shopstar\constants\order\OrderTypeConstant;
 use shopstar\exceptions\order\CommentException;
@@ -300,6 +301,29 @@ class DetailController extends BaseMobileApiController
                 return true;
             }
 
+            // 达达
+            if ($dispatchOrderInfo['type'] == OrderPackageCityDistributionTypeConstant::DADA) {
+                switch ($dispatchOrderInfo['status']) {
+                    case 1:
+                        $originInfo['intracity_status_text'] = '商家已接单';
+                        break;
+                    case 2:
+                        $originInfo['intracity_status_text'] = '骑手已接单';
+                        break;
+                    case 3:
+                    case 100:
+                        $originInfo['intracity_status_text'] = '骑手已到店';
+                        break;
+                    case 4:
+                        $originInfo['intracity_status_text'] = '商品已送达';
+                        break;
+                    case 5:
+                        $originInfo['intracity_status_text'] = '订单已取消';
+                        break;
+                    default:
+                        $originInfo['intracity_status_text'] = '';
+                }
+            }
         }
 
         return true;

@@ -337,6 +337,7 @@ class OpController extends KdxAdminApiController
             $dispatchInfo = [
                 'enable' => $intracitySetting['enable'],
                 'merchant' => $intracitySetting['enable'] && $intracitySetting['merchant'] ? 1 : 0,
+                'dada' => $intracitySetting['enable'] && $intracitySetting['dada']['enable'] ? 1 : 0,
             ];
             $return['dispatch'] = $dispatchInfo;
         }

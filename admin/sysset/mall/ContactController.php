@@ -100,12 +100,14 @@ class ContactController extends KdxAdminApiController
             $originDispatch = ShopSettings::get('dispatch.intracity');
             $setArgs = [
                 'enable' => $originDispatch['enable'],
+                'merchant' => $originDispatch['merchant'],
                 'third_party' => $originDispatch['third_party'],
                 'amap_key' => $originDispatch['amap_key'],
             ];
             ShopSettings::set('dispatch.intracity', $setArgs);
         }
         ShopSettings::set('contact', $contact);
+        ShopSettings::set('dispatch.intracity.amap_key', $params['web_key']);
 
         return $this->success();
     }

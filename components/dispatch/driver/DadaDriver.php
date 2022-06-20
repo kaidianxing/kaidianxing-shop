@@ -26,8 +26,8 @@ use yii\helpers\Json;
 class DadaDriver extends BaseDispatchDriver implements DispatchDriverInterface
 {
 
-//    private $url = 'http://newopen.qa.imdada.cn';
-    private $url = 'http://newopen.imdada.cn';
+    private $url = 'http://newopen.qa.imdada.cn';
+//    private $url = 'http://newopen.imdada.cn';
     private $APP_KEY = '';
     private $version = '1.0';
     private $APP_SECRET = '';

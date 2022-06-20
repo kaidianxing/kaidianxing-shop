@@ -118,6 +118,7 @@ class ListController extends KdxAdminApiController
     {
         $type = [
             ['id' => '10', 'name' => '快递配送',],
+            ['id' => '30', 'name' => '同城配送',],
         ];
 
         return $this->result(['dispatch_type' => $type]);

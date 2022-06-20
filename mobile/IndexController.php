@@ -201,30 +201,11 @@ class IndexController extends BaseMobileApiController
         $set['plugins'] = CoreAppService::getAppEnableList();
 
         // 下单排序设置
-        $set['dispatch_sort'] = ShopSettings::get('dispatch.sort');
-        $set['dispatch_name'] = ShopSettings::get('dispatch.name');
-
-        if (empty($set['dispatch_sort'])) {
-            $setArray = [];
-            $shopSet = ShopSettings::get('dispatch');
-            // 快递开启
-            if ($shopSet['express']['enable'] == 1) {
-                $setArray[] = 10;
-            }
-            // 同城开启
-            if ($shopSet['intracity']['enable'] == 1) {
-                $setArray[] = 30;
-            }
-            $set['dispatch_sort'] = implode(',', $setArray);
-        }
-        // 核销检测权限
-        $setArray = explode(',', $set['dispatch_sort']);
-        // 如果没有核销设置 判断当前有没有核销
-        if (in_array(20, $setArray)) { // 如果有核销配送方式  判断当前是否有权限
-            $setArray = ArrayHelper::deleteByValue($setArray, 20);
-        }
-        $set['dispatch_sort'] = implode(',', $setArray);
-
+        $set['dispatch_sort'] = '10,30';
+        $set['dispatch_name'] = [
+            10 => '普通快递',
+            30 => '同城配送',
+        ];
 
         // 手机端loading设置
         $set['core_settings'] = [

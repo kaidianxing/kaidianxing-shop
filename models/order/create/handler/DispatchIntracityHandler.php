@@ -22,22 +22,22 @@ use shopstar\models\shop\ShopSettings;
 
 class DispatchIntracityHandler implements HandlerInterface
 {
-    private $orderCreatorKernel;
+    private OrderCreatorKernel $orderCreatorKernel;
 
     /**
      * @var array 同城配送设置
      */
-    protected $settings = [];
+    protected array $settings = [];
 
     /**
      * @var array 收货地址
      */
-    protected $address = [];
+    protected array $address = [];
 
     /**
      * @var array 店铺地址
      */
-    protected $shopContact = [];
+    protected array $shopContact = [];
 
 
     /**
@@ -62,7 +62,8 @@ class DispatchIntracityHandler implements HandlerInterface
      * 订单业务核心处理器标准
      *
      * 请注意：请不要忘记处理完成之后需要挂载到订单实体类下，请不要随意删除在当前挂载属性以外的属性
-     * @return mixed|void
+     * @return void
+     * @throws OrderCreatorException
      * @author 青岛开店星信息技术有限公司
      */
     public function processor()
@@ -287,7 +288,7 @@ class DispatchIntracityHandler implements HandlerInterface
      * @return float
      * @author 青岛开店星信息技术有限公司
      */
-    protected function getActualDistancePrice(float $actualDistance, float $initialPrice)
+    protected function getActualDistancePrice(float $actualDistance, float $initialPrice): float
     {
         // 运费
         $dispatchPrice = 0;
@@ -336,9 +337,10 @@ class DispatchIntracityHandler implements HandlerInterface
      * 挂载错误信息
      * @param $errorCode
      * @param string $errorMsg
+     * @throws OrderCreatorException
      * @author 青岛开店星信息技术有限公司
      */
-    private function mountError($errorCode, $errorMsg = '')
+    private function mountError($errorCode, string $errorMsg = '')
     {
         // 确认订单返回弱类型错误
         if ($this->orderCreatorKernel->isConfirm) {

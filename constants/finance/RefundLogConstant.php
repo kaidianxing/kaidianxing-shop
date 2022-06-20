@@ -33,6 +33,36 @@ class RefundLogConstant extends BaseConstant
     const TYPE_ORDER_BUYER_REFUND = 11;
 
     /**
+     * @Text("预售定金退款")
+     */
+    const TYPE_PRESELL_ORDER_SELLER_FRONT_REFUND = 30;
+
+    /**
+     * @Text("预售尾款商家退款")
+     */
+    const TYPE_PRESELL_ORDER_SELLER_FINAL_REFUND = 31;
+
+    /**
+     * @Text("预售尾款用户维权退款")
+     */
+    const TYPE_PRESELL_ORDER_BUYER_FINAL_REFUND = 32;
+
+    /**
+     * @Text("拼团退款")
+     */
+    const TYPE_GROUPS_REFUND = 40;
+
+    /**
+     * @Text("拼团返利退款")
+     */
+    const TYPE_GROUPS_REBATE_REFUND = 41;
+
+    /**
+     * @Text("裂变免单退款")
+     */
+    const TYPE_GROUPS_FISSION_REFUND = 42;
+
+    /**
      * @Text("订单状态异常退款")
      */
     const TYPE_ORDER_STATUS_EXCEPTION = 50;

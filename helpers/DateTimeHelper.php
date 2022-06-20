@@ -357,7 +357,7 @@ class DateTimeHelper
 
         return [date('Y-m-d H:i:s', $startTime), date('Y-m-d H:i:s', $endTime)];
     }
-    
+
     /**
      * 获取随机日期
      * @author 青岛开店星信息技术有限公司
@@ -367,13 +367,85 @@ class DateTimeHelper
         // 转换成时间戳格式
         $start = strtotime($startTime);
         $end = strtotime($endTime);
-        
+
         // 计算时间间隔
         $difference = $end - $start;
         // 随机
         $rand = rand(0, $difference);
-        
+
         return date('Y-m-d H:i:s', $start + $rand);
     }
-    
+
+    /**
+     * 获取日期(年月日)带分页
+     * @param int $page
+     * @param int $timeType
+     * @return array
+     * @author 青岛开店星信息技术有限公司
+     */
+    public static function getDateAsPage(int $page = 0, int $timeType = 1): array
+    {
+
+        //算出来一年的时间
+        $now = date('Y-m-d', time());
+
+        $nextyear = mktime(0, 0, 0, date("m"), date("d"), date("Y") + 1);
+
+        $next = date('Y-m-d', $nextyear);
+
+        $allDate = DateTimeHelper::getDateRange($now, $next);
+
+        //判断可售日期
+        $showDates = [];
+        if ($timeType == 1) {
+
+            $showDates = $allDate;
+        }
+
+
+        //定义今天
+        $today = date('Y-m-d', time());
+        //定义明天的日期
+        $afterDay = date('Y-m-d', DateTimeHelper::after(DateTimeHelper::now(), 86400, true));
+        //分页，每次七条
+        $pageSize = 7;
+
+        $page = max(1, $page);
+
+        $pageCount = ceil(count($showDates) / 7);
+        //根据页数切割出需要返回的七条数据
+        $showDates = array_slice($showDates, ($page - 1) * $pageSize, $pageSize);
+
+        $weekMap = [
+            '1' => '周一',
+            '2' => '周二',
+            '3' => '周三',
+            '4' => '周四',
+            '5' => '周五',
+            '6' => '周六',
+            '0' => '周日',
+        ];
+        $dateInfo = [];
+        foreach ($showDates as $k => $v) {
+            if ($v == $today) {
+
+                $text = '今天';
+
+            } elseif ($v == $afterDay) {
+                $text = '明天';
+            } else {
+                $text = $weekMap[date('w', strtotime($v))];
+            }
+
+            $dateInfo[] = [
+                'text' => $text,
+                'date' => date('m-d', strtotime($v)),
+                'timestemp' => date('Y-m-d', strtotime($v)),
+            ];
+
+        }
+
+        return ['date' => $dateInfo, 'page' => $pageCount, 'time' => DateTimeHelper::now()];
+    }
+
 }

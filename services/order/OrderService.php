@@ -14,6 +14,8 @@ namespace shopstar\services\order;
 
 use Exception;
 use shopstar\bases\service\BaseService;
+use shopstar\components\dispatch\bases\DispatchDriverConstant;
+use shopstar\components\dispatch\DispatchComponent;
 use shopstar\components\notice\NoticeComponent;
 use shopstar\components\payment\base\PayOrderTypeConstant;
 use shopstar\components\payment\PayComponent;
@@ -50,6 +52,7 @@ use shopstar\models\core\CoreExpressModel;
 use shopstar\models\finance\RefundLogModel;
 use shopstar\models\goods\GoodsModel;
 use shopstar\models\member\MemberModel;
+use shopstar\models\order\DispatchOrderModel;
 use shopstar\models\order\OrderGoodsModel;
 use shopstar\models\order\OrderModel;
 use shopstar\models\order\OrderPackageModel;
@@ -64,6 +67,7 @@ use shopstar\services\consumeReward\ConsumeRewardLogService;
 use shopstar\services\goods\GoodsService;
 use shopstar\services\member\MemberLevelService;
 use shopstar\services\sale\CouponMemberService;
+use shopstar\services\shop\ShopSettingIntracityLogic;
 use shopstar\services\tradeOrder\TradeOrderService;
 use shopstar\services\wxTransactionComponent\WxTransactionComponentOrderService;
 use shopstar\structs\order\OrderPaySuccessStruct;
@@ -679,6 +683,20 @@ class OrderService extends BaseService
             if ($intracity['enable'] == 0) {
                 return error('同城配送未开启');
             }
+
+            if ($data['city_distribution_type'] == OrderPackageCityDistributionTypeConstant::MERCHANT) {
+                // 判断是否开启商家配送
+                if ($intracity['merchant'] == 0) {
+                    return error('商家配送方式未开启');
+                }
+            }
+
+            if ($data['city_distribution_type'] == OrderPackageCityDistributionTypeConstant::DADA) {
+                // 判断是否开启达达配送
+                if ($intracity['dada']['enable'] == 0) {
+                    return error('达达配送方式未开启');
+                }
+            }
         }
 
         $orderGoodsIds = $data['order_goods_id'];
@@ -815,6 +833,52 @@ class OrderService extends BaseService
                 $rs = OrderModel::updateAll($orderUpdate, ['id' => $orderInfo['id']]);
                 if (!$rs) {
                     throw new Exception('订单信息同步失败');
+                }
+            }
+
+            // 如果是第三方配送订单
+            if ($orderInfo['dispatch_type'] == OrderDispatchExpressConstant::ORDER_DISPATCH_INTRACITY && $data['city_distribution_type'] == OrderPackageCityDistributionTypeConstant::DADA) {
+                $addressInfo = Json::decode($orderInfo['address_info']);
+                //店铺的地址，读取不同缓存
+                $shopInfo = ShopSettings::get('contact');
+
+                // 新增配送订单
+                $config = ShopSettingIntracityLogic::get()['data']['dada'];
+                $thirdType = DispatchDriverConstant::DRIVE_DADA;
+                $thirdData = [
+                    'origin_id' => $orderInfo['order_no'],
+                    'cargo_price' => $orderInfo['pay_price'],
+                    'is_prepay' => 0, // 是否需要垫付
+                    'receiver_name' => $orderInfo['buyer_name'], //收货人姓名
+                    'receiver_address' => $orderInfo['address_province'] . $orderInfo['address_city'] . $orderInfo['address_area'] . $orderInfo['address_detail'],
+                    'receiver_phone' => $orderInfo['buyer_mobile'],
+                    'receiver_lat' => $addressInfo['lat'],
+                    'receiver_lng' => $addressInfo['lng'],
+                    'cargo_weight' => empty(round2(array_sum(array_column($orderInfo['orderGoods'], 'weight'))
+                        / 1000, 2)) ? 1 : round2(array_sum(array_column($orderInfo['orderGoods'], 'weight')) / 1000, 2)
+                ];
+                unset($config['enable']);
+
+                $driver = DispatchComponent::getInstance($thirdType, $config);
+
+                $result = $driver->addOrder($thirdData);
+
+                if (is_error($result)) {
+                    throw new Exception($result['message']);
+                }
+
+                // 新增第三方配送记录
+                $dispatchOrderAttr = [
+                    'type' => $data['city_distribution_type'],
+                    'order_id' => $orderInfo['id'],
+                    'order_no' => $orderInfo['order_no'],
+                ];
+
+                $dispatchOrderModel = new DispatchOrderModel();
+                $dispatchOrderModel->setAttributes($dispatchOrderAttr);
+
+                if (!$dispatchOrderModel->save()) {
+                    throw new Exception($dispatchOrderModel->getErrorMessage());
                 }
             }
 

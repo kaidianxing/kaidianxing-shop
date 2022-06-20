@@ -20,11 +20,12 @@ use shopstar\constants\order\OrderPackageCityDistributionTypeConstant;
 use shopstar\constants\order\OrderStatusConstant;
 use shopstar\exceptions\sysset\IntracityException;
 use shopstar\helpers\StringHelper;
-use shopstar\models\core\CoreSettings;
 use shopstar\models\order\DispatchModel;
 use shopstar\models\order\DispatchOrderModel;
 use shopstar\models\order\OrderModel;
 use shopstar\models\shop\ShopSettings;
+use Throwable;
+use yii\base\InvalidConfigException;
 use yii\helpers\Json;
 
 /**
@@ -33,18 +34,72 @@ use yii\helpers\Json;
 class ShopSettingIntracityLogic
 {
     /**
+     * 同城配送配送状态
+     * @param $args
+     * @return bool
+     * @throws IntracityException
+     * @author 青岛开店星信息技术有限公司
+     */
+    public static function enable($args): bool
+    {
+        // 开启前判断是否设置参数,平台不需要校验
+        if ($args['enable'] == 1) {
+            // 判断店铺地址
+            if (!self::checkShopAddress()) {
+                throw new IntracityException(IntracityException::SHOP_SETTINGS_SHOP_ADDRESS_NOT_EMPTY);
+            }
+        }
+
+        // 关闭前判断是否有开启配送方式
+        if ($args['enable'] == 0) {
+
+            $dispatchEnable = ShopSettings::get('dispatch.express.enable');
+
+            if (empty($dispatchEnable)) {
+                throw new IntracityException(IntracityException::SHOP_SETTINGS_DISPATCH_INTRACITY_ENABLE_INVALID);
+            }
+        }
+
+        ShopSettings::set('dispatch.intracity.enable', $args['enable']);
+
+        // 配送方式排序处理
+        DispatchModel::updateSort($args['enable'], 30);
+
+        return true;
+    }
+
+    /**
+     * 检测店铺地址
+     * @return bool
+     * @author 青岛开店星信息技术有限公司
+     */
+    public static function checkShopAddress(): bool
+    {
+        $shopAddress = ShopSettings::get('contact.address');
+        array_map(function ($value) {
+            if (empty($value)) {
+                return false;
+            }
+        }, $shopAddress);
+
+        return true;
+    }
+
+    /**
      * 读取设置
-     * @param array $args
+     * @param bool $onlySettings 只返回配置
      * @return array
      * @author 青岛开店星信息技术有限公司
      */
-    public static function get(array $args)
+    public static function get(bool $onlySettings = false): array
     {
         $settings = ShopSettings::get('dispatch.intracity');
         // 获取店铺地址
         $address = ShopSettings::get('contact');
-        // 获取码科是否自定义名称
-        $settings['make_diy'] = CoreSettings::get('dispatch.make_diy');
+
+        if ($onlySettings) {
+            return $settings;
+        }
 
         return [
             'data' => $settings,
@@ -65,16 +120,25 @@ class ShopSettingIntracityLogic
         $args = self::init($args);
 
         // 至少开启一种配送方式
-        if (empty($args['merchant'])) {
+        if (empty($args['merchant']) && empty($args['dada']['enable'])) {
             throw new IntracityException(IntracityException::SHOP_SETTINGS_INTRACITY_DISPATCH_INVALID);
+        }
+
+        // 检测达达参数
+        if ($args['dada']['enable']) {
+            if (empty($args['dada']['app_key']) || empty($args['dada']['app_secret']) ||
+                empty($args['dada']['shop_no']) || empty($args['dada']['source_id'] || empty($args['dada']['city_code']))) {
+                throw new IntracityException(IntracityException::SHOP_SETTINGS_INTRACITY_DADA_DISPATCH_PARAMS_INVALID);
+            }
         }
 
         // 检测店铺地址
         if (!self::checkShopAddress()) {
             throw new IntracityException(IntracityException::SHOP_SETTINGS_SHOP_ADDRESS_NOT_EMPTY);
         }
-        if (empty($args['amap_key'])) {
 
+        //检测高德key
+        if (empty($args['amap_key'])) {
             throw new IntracityException(IntracityException::SHOP_SETTINGS_AMAP_KEY_NOT_EMPTY);
         }
 
@@ -185,60 +249,55 @@ class ShopSettingIntracityLogic
         $args['enable'] = (int)$settings['enable'];
         ShopSettings::set('dispatch.intracity', $args);
 
-
         return true;
     }
 
     /**
-     * 同城配送配送状态
-     * @param $args
-     * @return bool
-     * @throws IntracityException
+     * 初始化参数
      * @author 青岛开店星信息技术有限公司
      */
-    public static function enable($args): bool
+    private static function init($params)
     {
-        // 开启前判断是否设置参数,平台不需要校验
-        if ($args['enable'] == 1) {
-            // 判断店铺地址
-            if (!self::checkShopAddress()) {
-                throw new IntracityException(IntracityException::SHOP_SETTINGS_SHOP_ADDRESS_NOT_EMPTY);
-            }
+        foreach ($params as &$item) {
+            StringHelper::isJson($item) && $item = Json::decode($item, true);
         }
 
-        // 关闭前判断是否有开启配送方式
-        if ($args['enable'] == 0) {
-
-            $dispatchEnable = ShopSettings::get('dispatch.express.enable');
-
-            if (empty($dispatchEnable)) {
-                throw new IntracityException(IntracityException::SHOP_SETTINGS_DISPATCH_INTRACITY_ENABLE_INVALID);
-            }
-        }
-
-        ShopSettings::set('dispatch.intracity.enable', $args['enable']);
-
-        // 配送方式排序处理
-        DispatchModel::updateSort($args['enable'], 30);
-
-        return true;
+        return $params;
     }
 
     /**
-     * 检测店铺地址
-     * @return bool
+     * 获取配送组合模式
+     * @param $deliveryArea
+     * @param $divisionWay
+     * @return int
      * @author 青岛开店星信息技术有限公司
      */
-    public static function checkShopAddress(): bool
+    private static function getDeliveryModel($deliveryArea, $divisionWay): int
     {
-        $shopAddress = ShopSettings::get('contact.address');
-        array_map(function ($value) {
-            if (empty($value)) {
-                return false;
-            }
-        }, $shopAddress);
+        // 配送区域 0: 按不同区域 1: 按不同距离 2: 按行政区域
+        // 划分方式 0: 半径 1: 自定义
+        $mode = 0;
+        if ($deliveryArea == 0 && $divisionWay == 0) {
+            $mode = 1;
+        }
 
-        return true;
+        if ($deliveryArea == 0 && $divisionWay == 1) {
+            $mode = 2;
+        }
+
+        if ($deliveryArea == 1 && $divisionWay == 0) {
+            $mode = 3;
+        }
+
+        if ($deliveryArea == 1 && $divisionWay == 1) {
+            $mode = 4;
+        }
+
+        if ($deliveryArea == 2) {
+            $mode = 5;
+        }
+
+        return $mode;
     }
 
     /**
@@ -281,30 +340,26 @@ class ShopSettingIntracityLogic
             $dispatchArea = $intracity['dispatch_barrio'];
         }
 
-        $returnData = [
+        return [
             'delivery_area' => $intracity['delivery_area'],
             'division_way' => $intracity['division_way'],
             'dispatch_area' => $dispatchArea
         ];
-
-        return $returnData;
     }
 
     /**
      * 获取达达配送城市code
      * @param $config
-     * @return bool
-     * @throws \yii\base\InvalidConfigException
+     * @return array|bool
+     * @throws InvalidConfigException
      * @author 青岛开店星信息技术有限公司
      */
-    public static function getDadaCity($config): bool
+    public static function getDadaCity($config): ?array
     {
         /** @var DadaDriver $driver */
         $driver = DispatchComponent::getInstance(DispatchDriverConstant::DRIVE_DADA, $config);
 
-        $result = $driver->cityCode();
-
-        return $result;
+        return $driver->cityCode();
     }
 
     /**
@@ -368,28 +423,28 @@ class ShopSettingIntracityLogic
             $orderNo = $orderItem['order_no'];
             // 拼接订单跟踪
             if (strtotime($orderItem['accepted_time']) > 0) {
-                array_push($orderTrace, [
+                $orderTrace[] = [
                     'status_text' => '骑手已接单',
                     'status_time' => $orderItem['accepted_time'],
-                ]);
+                ];
             }
             if (strtotime($orderItem['delivery_time']) > 0) {
-                array_push($orderTrace, [
+                $orderTrace[] = [
                     'status_text' => '骑手已到店',
                     'status_time' => $orderItem['delivery_time'],
-                ]);
+                ];
             }
             if (strtotime($orderItem['completed_time']) > 0) {
-                array_push($orderTrace, [
+                $orderTrace[] = [
                     'status_text' => '商品已送达',
                     'status_time' => $orderItem['completed_time'],
-                ]);
+                ];
             }
             if (strtotime($orderItem['cancel_time']) > 0) {
-                array_push($orderTrace, [
+                $orderTrace[] = [
                     'status_text' => '订单已取消',
                     'status_time' => $orderItem['cancel_time'],
-                ]);
+                ];
             }
         } elseif ($dispatchType == OrderPackageCityDistributionTypeConstant::MAKE) {
             $config = ShopSettings::get('dispatch.intracity.make');
@@ -401,28 +456,28 @@ class ShopSettingIntracityLogic
             $orderNo = $orderItem['out_order_no'];
             // 拼接订单跟踪
             if (strtotime($orderItem['accepted_time']) > 0) {
-                array_push($orderTrace, [
+                $orderTrace[] = [
                     'status_text' => '骑手已接单',
                     'status_time' => $orderItem['accepted_time'],
-                ]);
+                ];
             }
             if (strtotime($orderItem['delivery_time']) > 0) {
-                array_push($orderTrace, [
+                $orderTrace[] = [
                     'status_text' => '骑手已到店',
                     'status_time' => $orderItem['delivery_time'],
-                ]);
+                ];
             }
             if (strtotime($orderItem['gotoed_time']) > 0) {
-                array_push($orderTrace, [
+                $orderTrace[] = [
                     'status_text' => '商品已送达',
                     'status_time' => $orderItem['gotoed_time'],
-                ]);
+                ];
             }
             if (strtotime($orderItem['cancel_time']) > 0) {
-                array_push($orderTrace, [
+                $orderTrace[] = [
                     'status_text' => '订单已取消',
                     'status_time' => $orderItem['cancel_time'],
-                ]);
+                ];
             }
         } elseif ($dispatchType == OrderPackageCityDistributionTypeConstant::SF) {
             $config = ShopSettings::get('dispatch.intracity.shunfeng');
@@ -436,28 +491,28 @@ class ShopSettingIntracityLogic
             $orderNo = $orderItem['out_order_no'];
 
             if (strtotime($orderItem['accepted_time']) > 0) {
-                array_push($orderTrace, [
+                $orderTrace[] = [
                     'status_text' => '骑手已接单',
                     'status_time' => $orderItem['accepted_time'],
-                ]);
+                ];
             }
             if (strtotime($orderItem['delivery_time']) > 0) {
-                array_push($orderTrace, [
+                $orderTrace[] = [
                     'status_text' => '骑手已到店',
                     'status_time' => $orderItem['delivery_time'],
-                ]);
+                ];
             }
             if (strtotime($orderItem['completed_time']) > 0) {
-                array_push($orderTrace, [
+                $orderTrace[] = [
                     'status_text' => '商品已送达',
                     'status_time' => $orderItem['completed_time'],
-                ]);
+                ];
             }
             if (strtotime($orderItem['cancel_time']) > 0) {
-                array_push($orderTrace, [
+                $orderTrace[] = [
                     'status_text' => '订单已取消',
                     'status_time' => $orderItem['cancel_time'],
-                ]);
+                ];
             }
 
 
@@ -484,28 +539,28 @@ class ShopSettingIntracityLogic
             ];
 
             if (strtotime($orderItem['accepted_time']) > 0) {
-                array_push($orderTrace, [
+                $orderTrace[] = [
                     'status_text' => '骑手已接单',
                     'status_time' => $orderItem['accepted_time'],
-                ]);
+                ];
             }
             if (strtotime($orderItem['delivery_time']) > 0) {
-                array_push($orderTrace, [
+                $orderTrace[] = [
                     'status_text' => '骑手已到店',
                     'status_time' => $orderItem['delivery_time'],
-                ]);
+                ];
             }
             if (strtotime($orderItem['completed_time']) > 0) {
-                array_push($orderTrace, [
+                $orderTrace[] = [
                     'status_text' => '商品已送达',
                     'status_time' => $orderItem['completed_time'],
-                ]);
+                ];
             }
             if (strtotime($orderItem['cancel_time']) > 0) {
-                array_push($orderTrace, [
+                $orderTrace[] = [
                     'status_text' => '订单已取消',
                     'status_time' => $orderItem['cancel_time'],
-                ]);
+                ];
             }
 
         } else {
@@ -522,7 +577,7 @@ class ShopSettingIntracityLogic
 
             $result = $driver->queryStatus($orderNo);
 
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             return error($e->getMessage());
         }
 
@@ -589,54 +644,6 @@ class ShopSettingIntracityLogic
             'dispatch' => $dispatch,
             'order_status' => $orderInfo['status']
         ];
-    }
-
-    /**
-     * 初始化参数
-     * @author 青岛开店星信息技术有限公司
-     */
-    private static function init($params)
-    {
-        foreach ($params as &$item) {
-            StringHelper::isJson($item) && $item = Json::decode($item, true);
-        }
-
-        return $params;
-    }
-
-    /**
-     * 获取配送组合模式
-     * @param $deliveryArea
-     * @param $divisionWay
-     * @return int
-     * @author 青岛开店星信息技术有限公司
-     */
-    private static function getDeliveryModel($deliveryArea, $divisionWay): int
-    {
-        // 配送区域 0: 按不同区域 1: 按不同距离 2: 按行政区域
-        // 划分方式 0: 半径 1: 自定义
-        $mode = 0;
-        if ($deliveryArea == 0 && $divisionWay == 0) {
-            $mode = 1;
-        }
-
-        if ($deliveryArea == 0 && $divisionWay == 1) {
-            $mode = 2;
-        }
-
-        if ($deliveryArea == 1 && $divisionWay == 0) {
-            $mode = 3;
-        }
-
-        if ($deliveryArea == 1 && $divisionWay == 1) {
-            $mode = 4;
-        }
-
-        if ($deliveryArea == 2) {
-            $mode = 5;
-        }
-
-        return $mode;
     }
 
 
