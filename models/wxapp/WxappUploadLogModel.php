@@ -85,7 +85,7 @@ class WxappUploadLogModel extends BaseActiveRecord
      */
     private static function getWxappWxacodeUrlPrefix(): string
     {
-        return 'addons/shop/public/tmp/wxapp';
+        return 'addons/kdx_shop/public/tmp/wxapp';
     }
 
 

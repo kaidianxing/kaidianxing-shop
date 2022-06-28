@@ -1636,6 +1636,9 @@ class ShopSettings extends BaseSettings
 
             // 自定义交易组件
             'wxTransactionComponent' => self::defaultWxTransactionComponentSettings(),
+
+            // 一键发圈
+            'material' => self::defaultMaterialSettings(),
         ];
     }
 
@@ -1662,6 +1665,18 @@ class ShopSettings extends BaseSettings
             'development' => [ // 定向设置
                 'member_id' => 0,
             ],
+        ];
+    }
+
+    /**
+     * 一键发圈默认值
+     * @return string[]
+     * @author 青岛开店星信息技术有限公司
+     */
+    private static function defaultMaterialSettings(): array
+    {
+        return [
+            'status' => '0', // 0 关闭 1 开启
         ];
     }
 }

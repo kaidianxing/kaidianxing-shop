@@ -18,7 +18,7 @@
             (coverSupport ? ', viewport-fit=cover' : '') +
             '" />'
         )</script>
-    <link rel="stylesheet" href="https://at.alicdn.com/t/font_1534025_u0bot6z90v.css">
+    <link rel="stylesheet" href="https://at.alicdn.com/t/font_1534025_a0tl5bh9pd4.css">
     <link rel="stylesheet" href="https://at.alicdn.com/t/font_1872121_xxkupf2vsz.css">
     <link rel="stylesheet" href="https://at.alicdn.com/t/font_2199566_7pueb97i5h.css">
     <link rel="stylesheet" href="https://at.alicdn.com/t/font_2199488_00ye6ht7d6zp.css">
@@ -42,7 +42,7 @@
         #__vconsole .vc-switch,
         #__vconsole .vc-panel {
             z-index: 9999999 !important;
-            display: none!important;
+            /* display: none!important; */
         }
 
         #__vconsole {
@@ -286,7 +286,7 @@
             <p class="good-info"></p></div>
     </div>
 </div>
-<script src="/static/dist/shop_wap/static/js/chunk-vendors.js?v=1653471497981"></script>
-<script src="/static/dist/shop_wap/static/js/index.js?v=1653471497981"></script>
+<script src="/static/dist/shop_wap/static/js/chunk-vendors.js?v=1656294512441"></script>
+<script src="/static/dist/shop_wap/static/js/index.js?v=1656294512441"></script>
 </body>
 </html>

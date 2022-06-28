@@ -21,6 +21,16 @@ return [
         'category' =>  30,
         'sort_by' =>  0,
     ],
+    'material' => [
+        'name' => '一键发圈',
+        'type' => 10,
+        'identity' => 'material',
+        'logo' =>  '/static/dist/shop/plugin_icon/icon-material.png',
+        'description' => '商品图文一键保存，便捷发布朋友圈',
+        'route' =>  '/material/list',
+        'category' =>  30,
+        'sort_by' =>  0,
+    ],
 
     'commentHelper' => [
         'name' => '评价助手',

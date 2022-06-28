@@ -15,6 +15,7 @@ namespace shopstar\mobile\product;
 use shopstar\bases\controller\BaseMobileApiController;
 use shopstar\components\byteDance\helpers\ByteDanceQrcodeHelper;
 use shopstar\components\wechat\helpers\MiniProgramACodeHelper;
+use shopstar\components\wechat\helpers\MiniProgramShortLinkHelper;
 use shopstar\constants\ClientTypeConstant;
 use shopstar\constants\goods\GoodsDeleteConstant;
 use shopstar\constants\goods\GoodsDispatchTypeConstant;
@@ -40,9 +41,14 @@ use shopstar\models\order\OrderGoodsModel;
 use shopstar\models\shop\ShopSettings;
 use shopstar\services\goods\GoodsDetailsActivityHandler;
 use shopstar\services\goods\GoodsService;
+use shopstar\services\material\IndexService;
 use shopstar\services\sale\CouponService;
 use shopstar\services\shop\ShopSettingIntracityLogic;
+use Throwable;
+use yii\base\InvalidConfigException;
+use yii\db\StaleObjectException;
 use yii\helpers\Json;
+use yii\web\Response;
 
 /**
  * @author 青岛开店星信息技术有限公司
@@ -69,11 +75,11 @@ class DetailController extends BaseMobileApiController
     ];
 
     /**
-     * @return \yii\web\Response
-     * @throws GoodsException|\yii\base\InvalidConfigException
+     * @return Response
+     * @throws GoodsException|InvalidConfigException
      * @author 青岛开店星信息技术有限公司
      */
-    public function actionGetDetail(): \yii\web\Response
+    public function actionGetDetail(): Response
     {
         $id = RequestHelper::getInt('id');
         if (empty($id)) {
@@ -161,14 +167,20 @@ class DetailController extends BaseMobileApiController
         if (isset($this->goodsTypeMap[$goods['type']])) {
             $pluginAccount[$this->goodsTypeMap[$goods['type']]] = true;
         }
+
         // 处理主图视频
         if (!empty($goods['content'])) {
             $goods['content'] = VideoHelper::parseRichTextTententVideo($goods['content']);
         }
+
         // 处理封面视频
         if (!empty($goods['video']) && preg_match("/http[s]?:\/\/[\w.]+[\w\/]*[\w.]*\??[\w=&\+\%]*/is", $goods['video'])) {
             $goods['video'] = VideoHelper::getTententVideo($goods['video']);
         }
+
+        // 一键发圈
+        $goods['material'] = IndexService::showMaterial($goods['id']);
+
         $result = [
             'data' => [
                 'goods' => $goods,
@@ -200,6 +212,43 @@ class DetailController extends BaseMobileApiController
         //额外处理
         $this->more($result);
         return $this->success($result);
+    }
+
+    /**
+     * 插件处理
+     * @param $goods
+     * @param array $activity
+     * @author 青岛开店星信息技术有限公司
+     */
+    private function pluginDispose(&$goods, array $activity)
+    {
+        //如果有小程序直播 && 是微信小程序
+        if ($this->clientType == ClientTypeConstant::CLIENT_WXAPP) {
+            $roomId = RequestHelper::getInt('room_id');
+            if (!empty($roomId)) {
+                //增加小程序直播商品浏览量
+                BroadcastRoomGoodsMapModel::updateAllCounters(['pv_count' => 1], [
+                    'room_id' => $roomId,
+                    'goods_id' => $goods['id']
+                ]);
+            }
+        }
+
+        // 需要统计的活动类型
+        $activityType = [
+            'seckill', // 秒杀
+            'groups', // 拼团
+        ];
+
+        $activityKey = array_keys($activity);
+        $intersect = array_intersect($activityKey, $activityType);
+        // 遍历插入
+        if (!empty($intersect)) {
+            foreach ($intersect as $item) {
+                // 活动浏览记录 注: 参数用活动上的 分别统计店铺自己的活动
+                MarketingViewLogModel::insertViewLog($activity[$item]['id'], $this->memberId, $goods['id'], $item);
+            }
+        }
     }
 
     /**
@@ -271,49 +320,12 @@ class DetailController extends BaseMobileApiController
     }
 
     /**
-     * 插件处理
-     * @param $goods
-     * @param array $activity
-     * @author 青岛开店星信息技术有限公司
-     */
-    private function pluginDispose(&$goods, array $activity)
-    {
-        //如果有小程序直播 && 是微信小程序
-        if ($this->clientType == ClientTypeConstant::CLIENT_WXAPP) {
-            $roomId = RequestHelper::getInt('room_id');
-            if (!empty($roomId)) {
-                //增加小程序直播商品浏览量
-                BroadcastRoomGoodsMapModel::updateAllCounters(['pv_count' => 1], [
-                    'room_id' => $roomId,
-                    'goods_id' => $goods['id']
-                ]);
-            }
-        }
-
-        // 需要统计的活动类型
-        $activityType = [
-            'seckill', // 秒杀
-            'groups', // 拼团
-        ];
-
-        $activityKey = array_keys($activity);
-        $intersect = array_intersect($activityKey, $activityType);
-        // 遍历插入
-        if (!empty($intersect)) {
-            foreach ($intersect as $item) {
-                // 活动浏览记录 注: 参数用活动上的 分别统计店铺自己的活动
-                MarketingViewLogModel::insertViewLog($activity[$item]['id'], $this->memberId, $goods['id'], $item);
-            }
-        }
-    }
-
-    /**
      * 获取规格信息
-     * @return \yii\web\Response
+     * @return Response
      * @throws GoodsException
      * @author 青岛开店星信息技术有限公司
      */
-    public function actionGetOption(): \yii\web\Response
+    public function actionGetOption(): Response
     {
         $goodsId = RequestHelper::getInt('goods_id');
         $isOriginalBuy = RequestHelper::getInt('is_original_buy');
@@ -483,9 +495,9 @@ class DetailController extends BaseMobileApiController
 
     /**
      * 收藏
-     * @return array|\yii\web\Response
-     * @throws \Throwable
-     * @throws \yii\db\StaleObjectException
+     * @return array|Response
+     * @throws Throwable
+     * @throws StaleObjectException
      * @author 青岛开店星信息技术有限公司
      */
     public function actionChangeFavorite()
@@ -500,4 +512,27 @@ class DetailController extends BaseMobileApiController
         return $this->result($result);
     }
 
+    /**
+     * 获取小程序短链
+     * @return array|int[]|Response
+     * @author 青岛开店星信息技术有限公司
+     */
+    public function actionGetShortLink()
+    {
+        $path = RequestHelper::post('path');
+
+        if (!$path) {
+            return $this->error('参数错误');
+        }
+
+        $params = [
+            "page_url" => $path,
+            "page_title" => ShopSettings::get('sysset.mall.basic')['name'],
+            "is_permanent" => false,
+        ];
+
+        $url = MiniProgramShortLinkHelper::generate($params);
+
+        return $this->result($url);
+    }
 }
