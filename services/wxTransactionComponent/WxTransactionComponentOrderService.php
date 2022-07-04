@@ -359,13 +359,13 @@ class WxTransactionComponentOrderService
         }
 
         $data = [
-            'out_order_id' => $orderId,
-            'out_aftersale_id' => $refundId,
+            'out_order_id' => (string)$orderId,
+            'out_aftersale_id' => (string)$refundId,
             'openid' => WxTransactionComponentService::getOpenId($memberId),
-            'type' => $refundType,
+            'type' => (int)$refundType,
             'refund_reason' => $content,
             'refund_reason_type' => 12, // todo 微信的退款原因类型，商城现在没有固定写死12
-            'orderamt' => $price * 100,
+            'orderamt' => (int)bcmul($price, 100),
         ];
 
         $orderGoodsList = OrderGoodsModel::find()->where($where)->asArray()->all();
@@ -374,7 +374,7 @@ class WxTransactionComponentOrderService
                 $data['product_info'] = [
                     'out_product_id' => $value['goods_id'],
                     'out_sku_id' => !$value['option_id'] ? $value['goods_id'] : $value['option_id'],
-                    'product_cnt' => $value['total'],
+                    'product_cnt' => (int)$value['total'],
                 ];
             }
         }
