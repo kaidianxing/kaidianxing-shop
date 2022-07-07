@@ -12,9 +12,16 @@
 
 namespace shopstar\models\consumeReward;
 
+use shopstar\bases\model\BaseActiveRecord;
+use shopstar\constants\member\MemberCreditRecordStatusConstant;
+use shopstar\constants\order\OrderStatusConstant;
+use shopstar\models\member\group\MemberGroupMapModel;
+use shopstar\models\member\MemberModel;
+use shopstar\models\member\MemberRedPackageModel;
 use shopstar\models\order\OrderGoodsModel;
 use shopstar\models\order\OrderModel;
 use shopstar\models\order\refund\OrderRefundModel;
+use shopstar\models\sale\CouponModel;
 use yii\helpers\Json;
 
 /**
@@ -32,12 +39,13 @@ use yii\helpers\Json;
  * @property int $is_view 是否已弹窗
  * @property int $is_finish 是否完成 (赠送完成)
  */
-class ConsumeRewardLogModel extends \shopstar\bases\model\BaseActiveRecord
+class ConsumeRewardLogModel extends BaseActiveRecord
 {
+
     /**
      * {@inheritdoc}
      */
-    public static function tableName()
+    public static function tableName(): string
     {
         return '{{%consume_reward_log}}';
     }
@@ -45,7 +53,7 @@ class ConsumeRewardLogModel extends \shopstar\bases\model\BaseActiveRecord
     /**
      * {@inheritdoc}
      */
-    public function rules()
+    public function rules(): array
     {
         return [
 
@@ -59,7 +67,7 @@ class ConsumeRewardLogModel extends \shopstar\bases\model\BaseActiveRecord
     /**
      * {@inheritdoc}
      */
-    public function attributeLabels()
+    public function attributeLabels(): array
     {
         return [
             'id' => 'ID',
@@ -175,6 +183,302 @@ class ConsumeRewardLogModel extends \shopstar\bases\model\BaseActiveRecord
             }
         }
         return $price;
+    }
+
+    /**
+     * 发送奖励
+     * @param int $memberId 会员id
+     * @param int $orderId 订单id
+     * @param int $type 0 订单完成后  1 订单付款后
+     * @return array|bool
+     * @author likexin
+     */
+    public static function sendReward(int $memberId, int $orderId, int $type)
+    {
+        if (empty($orderId)) {
+            return error('参数错误');
+        }
+
+        // 查找订单 （该订单触发）
+        $order = OrderModel::find()
+            ->where([
+                'id' => $orderId,
+            ])
+            ->first();
+
+        // 获取记录
+        $log = self::findOne([
+            'member_id' => $memberId,
+            'order_id' => $orderId,
+        ]);
+        if (empty($log)) {
+            return error('记录不存在');
+        }
+
+        // 获取活动
+        $activity = ConsumeRewardActivityModel::find()
+            ->where([
+                'id' => $log->activity_id,
+                'is_deleted' => 0,
+            ])
+            ->first();
+        if (is_error($activity)) {
+            return error('活动不存在');
+        }
+
+        // 发送结点
+        if ($activity['send_type'] != $type) {
+            return error('发送结点不匹配');
+        }
+
+        //排序奖励，获取满足最高的奖励
+        if ($activity['rules']) {
+            $activity['rules'] = Json::decode($activity['rules']);
+            $activity['rules']['award'] = array_column($activity['rules']['award'], null, 'money');
+            krsort($activity['rules']['award']);
+        }
+
+        //判断用户权限是否允许参与
+        if ($activity['rules'] && $activity['rules']['permission'] != 0) {
+
+            //获取会员信息
+            $member = MemberModel::find()
+                ->where([
+                    'id' => $memberId,
+                ])->select([
+                    'id',
+                    'level_id'
+                ])->first();
+
+            if ($activity['rules']['permission'] == 1 && !in_array($member['level_id'], $activity['rules']['permission_value'] ?? [])) {
+                return error('没有权限');
+            }
+
+            if ($activity['rules']['permission'] == 2) {
+                $memberTag = MemberGroupMapModel::where([
+                    'member_id' => $memberId,
+                ])->select([
+                    'group_id'
+                ])->column();
+
+                // 如果没有会员标签则没有权限
+                if (empty($memberTag)) {
+                    return error('没有权限');
+                }
+
+                // 如果没有交集则没有权限
+                if (!array_intersect($memberTag, $activity['rules']['permission_value'])) {
+                    return error('没有权限');
+                }
+            }
+        }
+
+        // 发送结点 订单完成后
+        if ($activity['send_type'] == 0) {
+            $orderStatus = OrderStatusConstant::ORDER_STATUS_SUCCESS;
+        } else {
+            // 订单付款后
+            $orderStatus = OrderStatusConstant::ORDER_STATUS_WAIT_SEND;
+        }
+        // 支付类型
+        $payType = explode(',', $activity['pay_type']);
+        // 活动限制
+        if (!empty($activity['activity_limit'])) {
+            $activityLimit = explode(',', $activity['activity_limit']);
+        }
+        // 不参与商品
+        if (!empty($activity['goods_limit'])) {
+            $goodsLimit = explode(',', $activity['goods_limit']);
+        }
+
+        // 累计消费
+        if ($activity['type'] == 0) {
+            // 是否参与过
+            $isExists = ConsumeRewardLogModel::find()
+                ->where([
+                    'member_id' => $memberId,
+                    'activity_id' => $activity['id'],
+                    'is_finish' => 1,
+                ])
+                ->exists();
+            if ($isExists) {
+                return error('已参与过活动');
+            }
+            // 查找所有订单
+            $allOrder = OrderModel::find()
+                ->where([
+                    'member_id' => $memberId,
+                ])
+                ->andWhere(['>=', 'create_time', $activity['start_time']])
+                ->andWhere(['>=', 'status', $orderStatus])
+                ->get();
+            $sumPrice = 0; // 累计金额
+            $orderIds = []; // 保存可用的订单id 查询预售订单用
+
+            foreach ($allOrder as $item) {
+                $payPrice = self::checkOrder($item, $payType, $activityLimit ?? [], $goodsLimit ?? []);
+                if (is_error($payPrice)) {
+                    continue;
+                }
+                // 只要没有限制 就算
+                $orderIds[] = $item['id'];
+                $sumPrice += $payPrice;
+            }
+
+            $rewardArray = [];
+            if ($activity['rules']['award']) {
+                foreach ($activity['rules']['award'] as $item) {
+                    if ($sumPrice >= $item['money']) {
+                        $rewardArray = $item;
+                    }
+                }
+            }
+
+            if (empty($rewardArray)) {
+                return error('不满足条件(1)');
+            }
+
+        } else {
+
+            // 单次消费
+            // 如果不能重复参与 检查是否参与过
+            if ($activity['is_repeat'] == 0) {
+                $isExists = ConsumeRewardLogModel::find()
+                    ->where([
+                        'member_id' => $memberId,
+                        'activity_id' => $activity['id'],
+                        'is_finish' => 1,
+                    ])
+                    ->exists();
+                if ($isExists) {
+                    return error('已参与过活动');
+                }
+            }
+
+            $payPrice = self::checkOrder($order, $payType, $activityLimit ?? [], $goodsLimit ?? []);
+            if (is_error($payPrice)) {
+                return $payPrice;
+            }
+
+            $rewardArray = [];
+            if ($activity['rules']['award']) {
+                foreach ($activity['rules']['award'] as $item) {
+                    if ($payPrice >= $item['money']) {
+                        $rewardArray = $item;
+                        break;
+                    }
+                }
+            }
+
+            if (empty($rewardArray)) {
+                return error('不满足条件(2)');
+            }
+        }
+
+        // 如果活动为空
+        if (empty($rewardArray['reward'])) {
+            return error('发送失败');
+        }
+
+        if (in_array('1', $rewardArray['reward'])) {
+
+            if (!is_array($rewardArray['coupon_ids'])) {
+                $rewardArray['coupon_ids_array'] = explode(',', $rewardArray['coupon_ids']);
+            } else {
+                $rewardArray['coupon_ids_array'] = $rewardArray['coupon_ids_array']['coupon_ids'];
+            }
+
+            $coupons = CouponModel::getCouponInfo($rewardArray['coupon_ids_array']);
+
+            // 重置
+            $rewardArray['coupon_ids_array'] = [];
+            foreach ($coupons as $index => $item) {
+                if ($item['stock_type'] == 1 && $item['stock'] - $item['get_total'] <= 0) {
+                    unset($coupons[$index]);
+                } else {
+                    $rewardArray['coupon_ids_array'][] = $item['id'];
+                }
+            }
+
+            if (!empty($coupons)) {
+                $rewardArray['coupon_info'] = array_values($coupons);
+            } else {
+
+                // 如果只有优惠券活动 且 优惠券为空
+                if (count($rewardArray['reward']) == 1) {
+                    return error('无活动');
+                }
+            }
+        }
+
+        // 发送奖励
+        $sendReward = [
+            'reward' => $rewardArray['reward']
+        ];
+
+        // 发送奖励
+        foreach ($rewardArray['reward'] as $reward) {
+            if ($reward == 1) {
+                // 优惠券
+
+                $res = CouponModel::activitySendCoupon($memberId, $rewardArray['coupon_ids_array']);
+                // 发送失败 删除此活动
+                if (is_error($res)) {
+                    unset($rewardArray['reward'][1]);
+                }
+                $sendReward['coupon_ids'] = implode(',', $rewardArray['coupon_ids_array']);
+                $sendReward['member_coupon_ids'] = $res;
+
+            } else if ($reward == 2) {
+
+                // 积分
+                $res = MemberModel::updateCredit($memberId, $rewardArray['credit'], 0, 'credit', 1, '消费奖励', MemberCreditRecordStatusConstant::CONSUME_REWARD_SEND_CREDIT);
+                // 发送失败 删除此活动
+                if (is_error($res)) {
+                    unset($rewardArray['reward_array'][2]);
+                }
+                $sendReward['credit'] = $rewardArray['credit'];
+
+            } else if ($reward == 3) {
+
+                // 余额
+                $res = MemberModel::updateCredit($memberId, $rewardArray['balance'], 0, 'balance', 1, '消费奖励', MemberCreditRecordStatusConstant::CONSUME_REWARD_SEND_BALANCE);
+                // 发送失败 删除此活动
+                if (is_error($res)) {
+                    unset($rewardArray['reward_array'][2]);
+                }
+                $sendReward['balance'] = $rewardArray['balance'];
+
+            } else if ($reward == 4) {
+
+                // 红包
+                $redPackage = $rewardArray['red_package'];
+                MemberRedPackageModel::createLog([
+                    'member_id' => $memberId,
+                    'money' => $redPackage['money'],
+                    'expire_time' => date('Y-m-d H:i:s', time() + $redPackage['expiry'] * 86400),
+                    'scene' => MemberRedPackageModel::SCENE_CONSUME_REWARD,
+                    'scene_id' => $log->id,
+                    'extend' => Json::encode($rewardArray['red_package'])
+                ]);
+
+                $sendReward['red_package'] = $redPackage;
+            }
+        }
+
+        // 记录log
+        $log->reward = Json::encode($sendReward);
+        $log->is_finish = 1;
+        if (!$log->save()) {
+            return error('记录保存失败' . $log->getErrorMessage());
+        }
+
+        // 发送记录 +1
+        ConsumeRewardActivityModel::updateAllCounters(['send_count' => 1], [
+            'id' => $activity['id'],
+        ]);
+
+        return true;
     }
 
 

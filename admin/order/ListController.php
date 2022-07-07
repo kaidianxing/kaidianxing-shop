@@ -27,6 +27,7 @@ use shopstar\models\order\OrderGoodsModel;
 use shopstar\models\order\OrderModel;
 use shopstar\models\order\OrderPackageModel;
 use shopstar\models\order\refund\OrderRefundModel;
+use shopstar\services\groups\GroupsTeamService;
 use shopstar\services\order\OrderExportService;
 
 /**
@@ -69,6 +70,7 @@ class ListController extends KdxAdminApiController
         // 需要校验权限的
         $needPermType = [
             ['key' => OrderActivityTypeConstant::ACTIVITY_TYPE_SECKILL, 'value' => '秒杀订单', 'identity' => 'seckill'],
+            ['key' => OrderActivityTypeConstant::ACTIVITY_TYPE_GROUPS, 'value' => '拼团订单', 'identity' => 'groups'],
         ];
 
         foreach ($needPermType as $item) {
@@ -349,8 +351,6 @@ class ListController extends KdxAdminApiController
         //如果是店铺助手，过滤商品
         if ($this->clientType == ClientTypeConstant::MANAGE_SHOP_ASSISTANT) {
             $andWhere[] = ['not in', 'order_type', [OrderTypeConstant::ORDER_TYPE_VIRTUAL_ACCOUNT]];
-            // 2021-08-06 店铺助手v2优化 同步拼团返利的订单
-            $andWhere[] = ['not in', 'activity_type', [OrderActivityTypeConstant::ACTIVITY_TYPE_PRESELL]];
         }
 
         $leftJoins[] = [OrderRefundModel::tableName() . ' as refund', 'o.id = refund.order_id and refund.is_history = 0'];
@@ -430,6 +430,12 @@ class ListController extends KdxAdminApiController
                     'electronic_sheet' => 0
                 ];
 
+                // 拼团
+                if ($row['activity_type'] == OrderActivityTypeConstant::ACTIVITY_TYPE_GROUPS) {
+                    //获取拼团订单的id
+                    $groupsOrderId[] = $row['id'];
+                }
+
             }
         ]);
 
@@ -504,6 +510,18 @@ class ListController extends KdxAdminApiController
                         $orderItem['icon']['electronic_sheet'] = 1;
                         break;
                     }
+                }
+            }
+        }
+
+        //获取拼团订单信息
+        if (!empty($groupsOrderId)) {
+            $groupsTeamInfo = GroupsTeamService::getGroupsInfo($groupsOrderId);
+
+            //循环塞入订单拼团信息
+            foreach ($orders['list'] as $listIndex => &$listItem) {
+                if ($listItem['activity_type'] == OrderActivityTypeConstant::ACTIVITY_TYPE_GROUPS) {
+                    $listItem['groups_team_info'] = $groupsTeamInfo[$listItem['id']]['team'] ?? [];
                 }
             }
         }

@@ -15,7 +15,10 @@ namespace shopstar\services\goods;
 use shopstar\bases\service\BaseService;
 use shopstar\helpers\DateTimeHelper;
 use shopstar\models\activity\ShopMarketingGoodsMapModel;
+use shopstar\models\activity\ShopMarketingModel;
 use shopstar\models\goods\GoodsActivityModel;
+use shopstar\models\groups\GroupsGoodsModel;
+use yii\helpers\Json;
 
 /**
  * @author 青岛开店星信息技术有限公司
@@ -144,27 +147,55 @@ class GoodsActivityService extends BaseService
 
         // 获取最低价格
         if (!empty($activity)) {
-            // 查找商品
-            $goodsInfo = ShopMarketingGoodsMapModel::find()
-                ->where(['goods_id' => $goodsId, 'activity_id' => $activity['activity_id']])
-                ->get();
 
-            if ($hasOption) {
-                $priceRange = [
-                    'min_price' => $goodsInfo[0]['activity_price'],
-                ];
+            // 拼团
+            if ($activity['activity_type'] == 'groups') {
 
-                foreach ($goodsInfo as $item) {
-                    if ($item['is_join']) {
-                        $priceRange['min_price'] = min($priceRange['min_price'], $item['activity_price']);
-                        $priceRange['max_price'] = max($priceRange['max_price'], $item['activity_price']);
-                    }
+                $activityRules = ShopMarketingModel::find()
+                    ->where([
+                        'id' => $activity['activity_id'],
+                    ])
+                    ->select(['inner_type', 'rules'])
+                    ->first();
+                $rules = Json::decode($activityRules['rules']);
+
+                $activity['inner_type'] = $activityRules['inner_type'];
+
+                $priceRange = GroupsGoodsModel::calculateLadderPrice($activity['activity_id'], $goodsId);
+                if ($priceRange['has_range']) {
+                    $activity['price_range']['min_price'] = $priceRange['min_price'];
+                    $activity['price_range']['max_price'] = $priceRange['max_price'];
+                } else {
+                    $activity['activity_price'] = $priceRange['activity_price'];
                 }
 
-                $activity['price_range'] = $priceRange;
+                $activity['rules']['success_num'] = $rules['success_num'];
             } else {
-                $activity['activity_price'] = $goodsInfo[0]['activity_price'];
+
+                // 查找商品
+                $goodsInfo = ShopMarketingGoodsMapModel::find()
+                    ->where(['goods_id' => $goodsId, 'activity_id' => $activity['activity_id']])
+                    ->get();
+
+                if ($hasOption) {
+                    $priceRange = [
+                        'min_price' => $goodsInfo[0]['activity_price'],
+                    ];
+
+                    foreach ($goodsInfo as $item) {
+                        if ($item['is_join']) {
+                            $priceRange['min_price'] = min($priceRange['min_price'], $item['activity_price']);
+                            $priceRange['max_price'] = max($priceRange['max_price'], $item['activity_price']);
+                        }
+                    }
+
+                    $activity['price_range'] = $priceRange;
+                } else {
+                    $activity['activity_price'] = $goodsInfo[0]['activity_price'];
+                }
+
             }
+
         }
 
         return $activity ?? [];

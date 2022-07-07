@@ -65,6 +65,8 @@ use shopstar\services\commission\CommissionOrderService;
 use shopstar\services\commission\CommissionService;
 use shopstar\services\consumeReward\ConsumeRewardLogService;
 use shopstar\services\goods\GoodsService;
+use shopstar\services\groups\GroupsGoodsService;
+use shopstar\services\groups\GroupsTeamService;
 use shopstar\services\member\MemberLevelService;
 use shopstar\services\sale\CouponMemberService;
 use shopstar\services\shop\ShopSettingIntracityLogic;
@@ -484,13 +486,13 @@ class OrderService extends BaseService
             'member_balance' => MemberModel::getBalance($order->member_id),
         ];
 
-        //消息通知
+        // 消息通知
         $notice = NoticeComponent::getInstance(NoticeTypeConstant::BUYER_ORDER_PAY, $messageData);
         if (!is_error($notice)) {
             $notice->sendMessage($order->member_id);
         }
 
-        //消息通知
+        // 消息通知
         $notice = NoticeComponent::getInstance(NoticeTypeConstant::SELLER_ORDER_PAY, $messageData, '');
         if (!is_error($notice)) {
             $notice->sendMessage();
@@ -540,6 +542,15 @@ class OrderService extends BaseService
                 if ($activity[0]['rules']['is_commission'] == 0) {
                     $isCommission = false;
                 }
+            }
+        }
+
+        // 拼团
+        if ($order->activity_type == OrderActivityTypeConstant::ACTIVITY_TYPE_GROUPS) {
+            // 修改获取拼团订单
+            $result = GroupsTeamService::paySuccess($order, $orderPaySuccessStruct->accountId);
+            if (is_error($result)) {
+                return error($result['message']);
             }
         }
 
@@ -1352,6 +1363,16 @@ class OrderService extends BaseService
 
             StringHelper::isJson($orderInfo['goods_info']) && $orderInfo['goods_info'] = Json::decode($orderInfo['goods_info']);
 
+            //拼团返还redis库存
+            if ($orderInfo['activity_type'] == OrderActivityTypeConstant::ACTIVITY_TYPE_GROUPS) {
+
+                //获取第一个商品
+                $orderGoods = current($orderInfo['goods_info']);
+
+                // 调用拼团方法
+                GroupsGoodsService::restitutionGroupsGoodsStock($orderInfo['id'], $orderGoods['goods_id'], $orderGoods['option_id'], $orderGoods['total']);
+            }
+
             // 退款记录数据
             $refundLogData = [
                 'member_id' => $orderInfo['member_id'],
@@ -1360,16 +1381,10 @@ class OrderService extends BaseService
                 'order_no' => $orderInfo['order_no']
             ];
 
-            // 商家退尾款 预售类型
-            if ($orderInfo['activity_type'] == OrderActivityTypeConstant::ACTIVITY_TYPE_PRESELL) {
-
-                $refundLogData['type'] = RefundLogConstant::TYPE_PRESELL_ORDER_SELLER_FINAL_REFUND;
-            } elseif ($orderInfo['activity_type'] == OrderActivityTypeConstant::ACTIVITY_TYPE_GROUPS) { //拼团退款
-
+            if ($orderInfo['activity_type'] == OrderActivityTypeConstant::ACTIVITY_TYPE_GROUPS) {
+                //拼团退款
                 $refundLogData['type'] = RefundLogConstant::TYPE_GROUPS_REFUND;
-
             } else {
-
                 // 商家正常退款
                 $refundLogData['type'] = RefundLogConstant::TYPE_ORDER_SELLER_REFUND;
             }

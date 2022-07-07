@@ -263,12 +263,13 @@ class DateTimeHelper
      * @return false|int|string
      * @author 青岛开店星信息技术有限公司
      */
-    static function after($startTime, int $timeStamp, bool $isTimeStamp)
+    static function after($startTime, int $timeStamp, bool $isTimeStamp = false)
     {
         if (!is_numeric($startTime)) {
             $startTime = strtotime($startTime);
         }
         $result = $startTime + $timeStamp;
+
         return $isTimeStamp ? $result : date('Y-m-d H:i:s', $result);
     }
 

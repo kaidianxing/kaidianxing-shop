@@ -34,6 +34,7 @@ use shopstar\models\order\OrderPackageModel;
 use shopstar\models\shop\ShopSettings;
 use shopstar\models\virtualAccount\VirtualAccountModel;
 use shopstar\models\virtualAccount\VirtualAccountOrderMapModel;
+use shopstar\services\groups\GroupsTeamService;
 use yii\db\Exception;
 use yii\helpers\Json;
 use yii\web\Response;
@@ -140,6 +141,12 @@ class DetailController extends BaseMobileApiController
         $this->getExpectedDeliveryTime($orderInfo);
         //同城配送显示文案
         $this->getIntracityDispatchText($orderInfo);
+        
+        // 拼团
+        if ($orderInfo['activity_type'] == OrderActivityTypeConstant::ACTIVITY_TYPE_GROUPS) {
+            $groupsTeamInfo = GroupsTeamService::getGroupsInfo($orderId);
+            $orderInfo['groups_data'] = $groupsTeamInfo[$orderId]['team'] ?? [];
+        }
 
         //表单
         $orderInfo['form'] = FormModel::get(FormTypeConstant::FORM_TYPE_ORDER, $this->memberId, false, $orderId);

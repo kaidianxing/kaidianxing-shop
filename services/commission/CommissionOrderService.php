@@ -15,7 +15,6 @@ namespace shopstar\services\commission;
 use shopstar\bases\service\BaseService;
 use shopstar\components\notice\NoticeComponent;
 use shopstar\constants\components\notice\NoticeTypeConstant;
-use shopstar\constants\order\OrderActivityTypeConstant;
 use shopstar\helpers\DateTimeHelper;
 use shopstar\helpers\ExcelHelper;
 use shopstar\models\commission\CommissionAgentModel;
@@ -663,17 +662,9 @@ class CommissionOrderService extends BaseService
                 $row['express_name'] = CoreExpressModel::getNameById($row['express_id']);
                 $row = OrderModel::decode($row);
                 $row = OrderGoodsModel::decode($row);
-                //优惠金额 非预售
-                if ($row['activity_type'] != OrderActivityTypeConstant::ACTIVITY_TYPE_PRESELL) {
-                    $row['discount_price'] = array_sum(array_values($row['extra_price_package'] ?: []));
-                } else {
-                    // 预售
-                    $row['discount_price'] = $row['extra_discount_rules_package'][0]['presell']['actual_deduct'];
-                    if ($row['extra_discount_rules_package'][0]['presell']['presell_type'] == 0) {
-                        $row['pay_price'] += $row['extra_discount_rules_package'][0]['presell']['front_money'];
-                    }
-                }
-
+                
+                // 优惠金额
+                $row['discount_price'] = array_sum(array_values($row['extra_price_package'] ?: []));
 
                 //折扣
                 $extraPriceStr = '';

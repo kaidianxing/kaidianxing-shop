@@ -29,17 +29,12 @@ class OrderActivityTypeConstant extends BaseConstant
     const ACTIVITY_TYPE_NORMAL = 0;
 
     /**
-     * @Text("预售订单")
-     */
-    const ACTIVITY_TYPE_PRESELL = 1;
-
-    /**
      * @Text("秒杀订单")
      */
     const ACTIVITY_TYPE_SECKILL = 2;
 
     /**
-     * @Text("拼团订单") TODO likexin
+     * @Text("拼团订单")
      */
     const ACTIVITY_TYPE_GROUPS = 3;
 

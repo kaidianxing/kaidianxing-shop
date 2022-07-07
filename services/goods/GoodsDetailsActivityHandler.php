@@ -20,6 +20,8 @@ use shopstar\models\commission\CommissionSettings;
 use shopstar\models\goods\category\GoodsCategoryMapModel;
 use shopstar\models\goods\GoodsMemberLevelDiscountModel;
 use shopstar\models\goods\GoodsModel;
+use shopstar\models\groups\GroupsGoodsModel;
+use shopstar\models\groups\GroupsTeamModel;
 use shopstar\models\member\MemberLevelModel;
 use shopstar\models\member\MemberModel;
 use shopstar\models\order\create\OrderCreatorActivityConfig;
@@ -27,6 +29,9 @@ use shopstar\models\shop\ShopSettings;
 use shopstar\models\shoppingReward\ShoppingRewardActivityGoodsRuleModel;
 use shopstar\models\shoppingReward\ShoppingRewardActivityMemberRuleModel;
 use shopstar\models\shoppingReward\ShoppingRewardActivityModel;
+use shopstar\services\groups\GroupsCrewService;
+use shopstar\services\groups\GroupsGoodsService;
+use shopstar\services\groups\GroupsTeamService;
 use yii\helpers\Json;
 
 /**
@@ -45,7 +50,6 @@ class GoodsDetailsActivityHandler
     private $activityList = [
         'groups',
         'seckill',
-        'presell',
     ];
 
     /**
@@ -299,6 +303,85 @@ class GoodsDetailsActivityHandler
     }
 
     /**
+     * 拼团
+     * @return array|bool
+     * @author likexin
+     */
+    public function groups()
+    {
+        $option = [];
+
+        // 看是不是团队来的
+        if (!empty($this->options['team_id'])) {
+            $teamStatus = GroupsTeamModel::getTeamStatus($this->options['team_id']);
+            if (!empty($teamStatus)) {
+                $option = ['not_check_time' => true];
+            }
+        }
+
+        // 获取活动信息
+        $activity = ShopMarketingModel::getActivityInfo($this->goodsInfo['id'], $this->clientType, 'groups', $this->goodsInfo['has_option'], array_merge([
+            'member_id' => $this->memberInfo['id'] ?? 0,
+            'goods_stock' => $this->goodsInfo['stock'],
+            'team_id' => $this->options['team_id'] ?? 0,
+            'activity_id' => $teamStatus['activity_id'] ?? 0,
+        ], $option));
+        if (is_error($activity)) {
+            return $activity;
+        }
+
+        // 拼团的goodsinfo需要走自己的表
+        $activity['goods_info'] = GroupsGoodsService::getGoodsOptionInfo($activity['id'], $this->goodsInfo['id']);
+
+        // 如果是多规格，需要再计算一遍最低价最高价
+        if ($this->goodsInfo['has_option']) {
+            $priceRange = GroupsGoodsModel::calculateLadderPrice($activity['id'], $this->goodsInfo['id']);
+
+            if ($priceRange['has_range']) {
+                $activity['price_range']['min_price'] = $priceRange['min_price'];
+                $activity['price_range']['max_price'] = $priceRange['max_price'];
+            } else {
+                $activity['activity_price'] = $priceRange['activity_price'];
+            }
+        }
+
+        // 如果该商品有拼团活动，查找拼团信息
+        if (!empty($activity)) {
+
+            //查找设置项是否显示团列表
+            $showTeam = ShopSettings::get('activity.groups.team_list');
+
+            if ($showTeam) {
+                //查出五个未成团信息塞入
+                $activityTeam = GroupsTeamService::getGroupsSimpleTeam($activity['id'], $this->goodsInfo['id']);
+
+                $teamId = array_column($activityTeam, 'id');
+
+                $teamMember = GroupsCrewService::getCrewByTeamId($teamId);
+
+                foreach ($activityTeam as $index => $teamInfo) {
+                    foreach ($teamMember as $memberInfo) {
+                        if ($teamInfo['id'] == $memberInfo['team_id'] && $memberInfo['member_id'] == $this->memberInfo['id']) {
+                            $activityTeam[$index]['is_join'] = 1;
+                        }
+                    }
+                }
+
+                $activity['team'] = $activityTeam;
+            }
+
+            if (!empty($this->memberInfo['id'])) {
+                $activity['has_open'] = 0;
+            }
+
+            $this->setActivity('groups', $activity);
+        }
+
+        return true;
+
+    }
+
+    /**
      * 计算会员价，可用于多个规格
      * @param array $options
      * @return bool
@@ -423,7 +506,7 @@ class GoodsDetailsActivityHandler
      * @return array
      * @author 青岛开店星信息技术有限公司
      */
-    private function optionDesignatedMembershipLevel(float $minPrice, float $maxPrice, array $discount)
+    private function optionDesignatedMembershipLevel(float $minPrice, float $maxPrice, array $discount): array
     {
         $goodsDiscountPrice = [];
 
@@ -519,7 +602,7 @@ class GoodsDetailsActivityHandler
      * 余额
      * @author 青岛开店星信息技术有限公司
      */
-    public function balance()
+    public function balance(): bool
     {
         // 获取积分余额抵扣设置
         $settings = $this->getSetting()['basic']['deduct'];
@@ -529,7 +612,7 @@ class GoodsDetailsActivityHandler
         }
 
         if ($this->goodsInfo['deduction_balance_type'] == 0) { //商品不支持余额抵扣
-            return;
+            return false;
         }
 
         $goodsSetting = [
@@ -538,7 +621,8 @@ class GoodsDetailsActivityHandler
         ];
 
         $this->setActivity('balance', $goodsSetting);
-        return;
+
+        return true;
     }
 
     /**
@@ -602,13 +686,12 @@ class GoodsDetailsActivityHandler
      * 获取购物奖励活动
      * @author 青岛开店星信息技术有限公司
      */
-    private function shoppingReward(): bool
+    private function shoppingReward()
     {
-
         $activity = ShoppingRewardActivityModel::getOpenActivity($this->clientType);
 
         if (is_error($activity)) {
-            return false;
+            return;
         }
         // 过滤商品
         if ($activity['goods_type'] != 0) {
@@ -625,17 +708,17 @@ class GoodsDetailsActivityHandler
                 // 取交集
                 $intersect = array_intersect($this->goodsInfo['category_id'], $limitId);
                 if (empty($intersect)) {
-                    return false;
+                    return;
                 }
             } else if ($activity['goods_type'] == 1) {
                 // 允许商品限制
                 if (!in_array($this->goodsInfo['id'], $limitId)) {
-                    return false;
+                    return;
                 }
             } else if ($activity['goods_type'] == 2) {
                 // 不允许商品限制
                 if (in_array($this->goodsInfo['id'], $limitId)) {
-                    return false;
+                    return;
                 }
             }
         }
@@ -646,17 +729,17 @@ class GoodsDetailsActivityHandler
             // 等级限制
             if ($activity['member_type'] == 1) {
                 if (!in_array($this->memberInfo['level_id'], $limitId)) {
-                    return false;
+                    return;
                 }
             } else {
                 // 标签限制
                 $memberGroup = $this->memberInfo->groupsMap;
                 if (empty($memberGroup)) {
-                    return false;
+                    return;
                 }
                 foreach ($memberGroup as $item) {
                     if (!in_array($item['group_id'], $limitId)) {
-                        return false;
+                        return;
                     }
                 }
             }
@@ -683,7 +766,6 @@ class GoodsDetailsActivityHandler
             $this->setActivity('shoppingReward', ['reward' => $reward]);
         }
 
-        return true;
     }
 
 }

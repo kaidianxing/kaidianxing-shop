@@ -13,12 +13,18 @@
 namespace shopstar\mobile\order;
 
 use shopstar\bases\controller\BaseMobileApiController;
+use shopstar\constants\order\OrderActivityTypeConstant;
 use shopstar\helpers\DateTimeHelper;
 use shopstar\helpers\RequestHelper;
+use shopstar\models\order\OrderModel;
 use shopstar\services\shop\ShopSettingIntracityLogic;
 use yii\web\Response;
-use function date;
 
+/**
+ * Class IndexController
+ * @package shopstar\mobile\order
+ * @author likexin
+ */
 class IndexController extends BaseMobileApiController
 {
     /**
@@ -96,4 +102,73 @@ class IndexController extends BaseMobileApiController
 
         return $setting;
     }
+
+    /**
+     * 获取是否成团
+     * @return Response
+     * @author likexin
+     */
+    public function actionGetGroupsSuccess(): Response
+    {
+        $orderId = RequestHelper::getInt('order_id');
+        if (!$orderId) {
+            return $this->error('缺少订单id');
+        }
+
+        /**
+         * @var OrderModel $order
+         */
+        $order = OrderModel::find()
+            ->where([
+                'id' => $orderId,
+            ])
+            ->select('activity_type')
+            ->one();
+        if (!$order) {
+            return $this->error('订单不存在');
+        }
+        $pluginMaps = [
+            OrderActivityTypeConstant::ACTIVITY_TYPE_GROUPS => 'groups',
+        ];
+        $return = false;
+
+        $plugin = $pluginMaps[$order->activity_type];
+        if (!$plugin) {
+            return $this->success(['data' => ['success' => true]]);
+        }
+
+        switch ($plugin) {
+            case 'groups':
+                $crewModel = 'shopstar\models\groups\GroupsCrewModel';
+                $teamModel = 'shopstar\models\groups\GroupsTeamModel';
+                break;
+            default:
+                return $this->error('错误的标识');
+        }
+
+        $team = $teamModel::find()
+            ->alias('team')
+            ->leftJoin($crewModel::tableName() . ' crew', 'crew.team_id = team.id')
+            ->where([
+                'crew.order_id' => $orderId,
+                'crew.is_valid' => 1,
+            ])
+            ->select('team.id, team.success')
+            ->first();
+        if (!$team) {
+            return $this->error('获取拼团信息失败');
+        }
+        if ($team['success']) {
+            $return = true;
+        }
+
+        return $this->success([
+            'data' => [
+                'success' => $return,
+                'plugin' => $plugin,
+                'team_id' => $team['id'],
+            ],
+        ]);
+    }
+
 }

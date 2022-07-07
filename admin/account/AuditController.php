@@ -83,8 +83,6 @@ class AuditController extends KdxAdminAccountApiController
         } catch (\Exception $exception) {
             $tr->rollBack();
 
-            var_dump($exception->getTrace());die();
-
             return $this->error($exception->getMessage());
         }
 

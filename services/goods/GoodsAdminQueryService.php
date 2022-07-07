@@ -31,6 +31,7 @@ use shopstar\models\goods\GoodsPermMapModel;
 use shopstar\models\goods\group\GoodsGroupMapModel;
 use shopstar\models\shoppingReward\ShoppingRewardActivityGoodsRuleModel;
 use shopstar\models\shoppingReward\ShoppingRewardActivityModel;
+use shopstar\services\groups\GroupsGoodsService;
 use yii\helpers\ArrayHelper as YiiArrayHelper;
 use yii\helpers\Json;
 
@@ -455,6 +456,15 @@ class GoodsAdminQueryService extends BaseService
         $activitys = ShopMarketingModel::getActivityInfoById($activityId, $activityType);
         if (is_error($activitys)) {
             return;
+        }
+
+        // 如果是拼团，需要查自己的商品
+        if ($activityType == 'groups') {
+            $groupsGoods = GroupsGoodsService::getAllGoodsOptionInfo($activityId);
+            foreach ($activitys as $k => &$v) {
+                $v['price_range'] = $groupsGoods[$k]['price_range'];
+            }
+            unset($v);
         }
 
         if (!is_error($activitys)) {

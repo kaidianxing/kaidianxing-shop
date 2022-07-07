@@ -26,12 +26,12 @@
             content: "\e7dd";
         }</style>
     <script>window.config = <?php echo $settingsJson ?? ''?>;</script>
-    <link href="/static/dist/shop/css/app.css?v=1656918308101" rel="preload" as="style">
-    <link href="/static/dist/shop/css/chunk-vendors.css?v=1656918308101" rel="preload" as="style">
-    <link href="/static/dist/shop/js/app.js?v=1656918308101" rel="preload" as="script">
-    <link href="/static/dist/shop/js/chunk-vendors.js?v=1656918308101" rel="preload" as="script">
-    <link href="/static/dist/shop/css/chunk-vendors.css?v=1656918308101" rel="stylesheet">
-    <link href="/static/dist/shop/css/app.css?v=1656918308101" rel="stylesheet">
+    <link href="/static/dist/shop/css/app.css?v=1655195653026" rel="preload" as="style">
+    <link href="/static/dist/shop/css/chunk-vendors.css?v=1655195653026" rel="preload" as="style">
+    <link href="/static/dist/shop/js/app.js?v=1655195653026" rel="preload" as="script">
+    <link href="/static/dist/shop/js/chunk-vendors.js?v=1655195653026" rel="preload" as="script">
+    <link href="/static/dist/shop/css/chunk-vendors.css?v=1655195653026" rel="stylesheet">
+    <link href="/static/dist/shop/css/app.css?v=1655195653026" rel="stylesheet">
 </head>
 <body>
 <div class="app-loading" id="app-loading">
@@ -53,7 +53,7 @@
         )
     })()</script>
 <script src="https://cdn.bootcdn.net/ajax/libs/three.js/r83/three.min.js" async></script>
-<script src="/static/dist/shop/js/chunk-vendors.js?v=1656918308101"></script>
-<script src="/static/dist/shop/js/app.js?v=1656918308101"></script>
+<script src="/static/dist/shop/js/chunk-vendors.js?v=1655195653026"></script>
+<script src="/static/dist/shop/js/app.js?v=1655195653026"></script>
 </body>
 </html>

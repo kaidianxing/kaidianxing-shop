@@ -145,8 +145,8 @@ class DetailController extends BaseMobileApiController
         //插件处理
         $this->pluginDispose($goods, $activity);
 
-        //获取商品优惠券 TODO 优化 根据活动查 不然多余执行
-        $categoryId = isset($goods['category_id'][0]) ? $goods['category_id'][0] : 0;
+        // 获取商品优惠券
+        $categoryId = $goods['category_id'][0] ?? 0;
         $goodsCoupon = CouponService::getGoodsCoupon($this->memberId, $id, $categoryId);
 
         $expressEnable = ShopSettings::get('dispatch.express.enable');
@@ -388,7 +388,7 @@ class DetailController extends BaseMobileApiController
                 }
             }
 
-            //拼团
+            // 拼团
             if (!empty($activity['groups'])) {
                 $discountPrice = $activity['groups'];
                 foreach ($options as &$item) {

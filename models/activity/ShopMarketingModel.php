@@ -12,8 +12,8 @@
 
 namespace shopstar\models\activity;
 
+use shopstar\bases\model\BaseActiveRecord;
 use shopstar\constants\activity\ActivityConstant;
-
 use shopstar\helpers\ArrayHelper;
 use shopstar\helpers\DateTimeHelper;
 use shopstar\models\goods\GoodsModel;
@@ -23,11 +23,11 @@ use shopstar\models\order\OrderGoodsModel;
 use yii\helpers\Json;
 
 /**
- * This is the model class for table "{{%activity}}".
+ * This is the model class for table "{{%marketing}}".
  *
  * @property string $id
  * @property string $type 活动类型
- * @property int $inner_type 活动的活动类型: 拼团：0普通拼团 1阶梯拼团
+ * @property int $inner_type 活动的活动类型: 拼团：0普通拼团
  * @property string $title 活动标题
  * @property int $status  活动状态 0 未开始或进行中  -1停止 -2手动停止
  * @property string $start_time 活动开始时间
@@ -44,12 +44,13 @@ use yii\helpers\Json;
  * @property string $updated_at 更新时间
  * @property string $goods_join_type 商品参与类型
  */
-class ShopMarketingModel extends \shopstar\bases\model\BaseActiveRecord
+class ShopMarketingModel extends BaseActiveRecord
 {
+
     /**
      * {@inheritdoc}
      */
-    public static function tableName()
+    public static function tableName(): string
     {
         return '{{%marketing}}';
     }
@@ -57,7 +58,7 @@ class ShopMarketingModel extends \shopstar\bases\model\BaseActiveRecord
     /**
      * {@inheritdoc}
      */
-    public function rules()
+    public function rules(): array
     {
         return [
             [['is_deleted', 'status', 'is_preheat', 'inner_type', 'goods_join_type'], 'integer'],
@@ -70,12 +71,12 @@ class ShopMarketingModel extends \shopstar\bases\model\BaseActiveRecord
     /**
      * {@inheritdoc}
      */
-    public function attributeLabels()
+    public function attributeLabels(): array
     {
         return [
             'id' => 'ID',
             'type' => '活动类型',
-            'inner_type' => '活动的活动类型: 拼团：0普通拼团 1阶梯拼团',
+            'inner_type' => '活动的活动类型: 拼团：0普通拼团',
             'title' => '活动标题',
             'start_time' => '活动开始时间',
             'end_time' => '活动结束时间',
@@ -642,7 +643,7 @@ class ShopMarketingModel extends \shopstar\bases\model\BaseActiveRecord
      * @return bool true 支持  false 不支持
      * @author 青岛开店星信息技术有限公司
      */
-    public static function checkGoodsCommission($goodsId, int $clientType = 0)
+    public static function checkGoodsCommission($goodsId, int $clientType = 0): bool
     {
         $query = self::find()
             ->select('rules, type')

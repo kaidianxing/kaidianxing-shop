@@ -26,9 +26,11 @@ use shopstar\exceptions\tradeOrder\TradeOrderPayException;
 use shopstar\helpers\RequestHelper;
 use shopstar\models\member\MemberWechatModel;
 use shopstar\models\member\MemberWxappModel;
+use shopstar\models\order\OrderActivityModel;
 use shopstar\models\order\OrderGoodsModel;
 use shopstar\models\order\OrderModel;
 use shopstar\models\shop\ShopSettings;
+use shopstar\services\groups\GroupsGoodsService;
 use shopstar\services\order\OrderService;
 use shopstar\services\tradeOrder\TradeOrderService;
 use shopstar\services\wxTransactionComponent\WxTransactionComponentOrderService;
@@ -134,18 +136,34 @@ class IndexController extends BaseMobileApiController
             throw new OrderException(OrderException::ORDER_MANAGE_OP_PAY_ORDER_NOT_FOUND_ERROR);
         }
 
-        /** 解析活动规则，处理预售订单 **/
-        // // TODO 青岛开店星信息技术有限公司 拿出去
-        $extraPricePackage = Json::decode($order[0]->extra_discount_rules_package);
-        // 商品预售 定金预售
-        $presellPayType = 0; // 预售支付类型 0不是预售订单 1 定金  2 尾款 3 全款
-        $presellOrder = [];
+        /** 拼团检测活动库存 **/
+        if ($order[0]->activity_type == OrderActivityTypeConstant::ACTIVITY_TYPE_GROUPS) {
+            // 查询订单活动表
+            $orderActivity = OrderActivityModel::find()
+                ->where([
+                    'order_id' => $orderId,
+                    'activity_type' => 'groups',
+                ])
+                ->select([
+                    'order_id',
+                    'activity_id'
+                ])
+                ->first();
+
+            // 获取第一个订单商品
+            $orderGoods = current($order)['goods_info'];
+            $orderGoods = Json::decode($orderGoods);
+            $orderGoods = current($orderGoods);
+
+            // 判断拼团库存是否充足
+            $result = GroupsGoodsService::orderPayCheckGroupsGoodsStock($orderActivity['activity_id'], $orderGoods['goods_id'], $orderGoods['option_id'], $orderGoods['total']);
+            if (is_error($result)) {
+                throw new OrderException(OrderException::ORDER_PAY_GROUPS_STOCK_ERROR);
+            }
+        }
 
         /** 货到付款处理逻辑块 **/
         if ($payTypeCode == PayTypeConstant::PAY_TYPE_DELIVERY) {
-            if (!empty($presellOrder)) {
-                throw new OrderException(OrderException::ORDER_MANAGE_OP_PAY_PRESELL_ORDER_PAY_NOT_DELIVERY);
-            }
 
             if ($order[0]['create_from'] >= 30 && $order[0]['create_from'] <= 32) {
                 throw new PaymentException(PaymentException::PAY_CHANNEL_ERROR);
@@ -172,7 +190,6 @@ class IndexController extends BaseMobileApiController
             return $this->success();
         }
 
-
         // 根据渠道获取会员openid
         $openid = '';
         if ($this->clientType == ClientTypeConstant::CLIENT_WECHAT) {
@@ -186,8 +203,8 @@ class IndexController extends BaseMobileApiController
         foreach ($order as $orderItem) {
             $payMultiOrder[] = [
                 'orderId' => $orderItem->id,
-                'orderNo' => $presellPayType == 1 ? $presellOrder['order_no'] : $orderItem->order_no,   // 预售支付定金时，使用预售的订单号以及支付金额
-                'orderPrice' => $presellPayType == 1 ? $presellOrder['front_price'] : $orderItem->pay_price,
+                'orderNo' => $orderItem->order_no,
+                'orderPrice' => $orderItem->pay_price,
             ];
         }
 
@@ -240,51 +257,33 @@ class IndexController extends BaseMobileApiController
             return $this->error('参数错误');
         }
 
-        // 查询预售状态(预售订单有定金、尾款，需要使用额外参数来查询支付状态)，1: 定金 2: 尾款
-        $presellStatus = RequestHelper::postInt('presell_status');
-
         // string转为int
         $payTypeCode = PayTypeConstant::getPayTypeCodeByIdentity($payType);
         if (empty($payTypeCode)) {
             return $this->error('不支持的支付类型');
         }
 
-        // 查询订单是否是预售订单
-        $isPresellOrder = OrderModel::find()->where([
-            'id' => $orderId,
-            'status' => OrderStatusConstant::ORDER_STATUS_WAIT_PAY,
-            'activity_type' => OrderActivityTypeConstant::ACTIVITY_TYPE_PRESELL,
-        ])->count();
-
-        if (!empty($isPresellOrder)) {
-
-            if (!in_array($presellStatus, [1, 2])) {
-                return $this->error('参数presell_status错误');
-            }
-        } else {
-
-            // 此处直接查询业务订单
-            $payOrderData = OrderModel::find()
-                ->where([
-                    'id' => $orderId,
+        // 此处直接查询业务订单
+        $payOrderData = OrderModel::find()
+            ->where([
+                'id' => $orderId,
 //                    'pay_type' => $payTypeCode,
-                ])
-                ->select(['status', 'pay_type'])
-                ->andWhere(['!=', 'status', OrderStatusConstant::ORDER_STATUS_WAIT_PAY])
-                ->get();
+            ])
+            ->select(['status', 'pay_type'])
+            ->andWhere(['!=', 'status', OrderStatusConstant::ORDER_STATUS_WAIT_PAY])
+            ->get();
 
-            $payOrder = array_column($payOrderData, 'status');
-            $payTypeOrder = array_column($payOrderData, 'pay_type');
+        $payOrder = array_column($payOrderData, 'status');
+        $payTypeOrder = array_column($payOrderData, 'pay_type');
 
-            // 判断订单状态与支付类型
-            if (in_array(OrderStatusConstant::ORDER_STATUS_CLOSE, $payOrder)) {
-                throw new OrderException(OrderException::ORDER_STATUS_CLOSE_ERROR);
-            } else if (!in_array($payTypeCode, $payTypeOrder)) {
-                throw new OrderException(OrderException::ORDER_PAY_TYPE_ERROR);
-            }
-
-            $payOrder = count($payOrderData);
+        // 判断订单状态与支付类型
+        if (in_array(OrderStatusConstant::ORDER_STATUS_CLOSE, $payOrder)) {
+            throw new OrderException(OrderException::ORDER_STATUS_CLOSE_ERROR);
+        } else if (!in_array($payTypeCode, $payTypeOrder)) {
+            throw new OrderException(OrderException::ORDER_PAY_TYPE_ERROR);
         }
+
+        $payOrder = count($payOrderData);
 
         //判断数量是否相等
         if ($payOrder !== count((array)$orderId)) {

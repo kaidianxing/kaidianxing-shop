@@ -47,9 +47,11 @@ class CoreAppService
     }
 
     /**
-     * @throws \ReflectionException
+     * @param $type
+     * @param array $options
+     * @return array
      */
-    public static function getAppListCacheNew($type, $options = []): array
+    public static function getAppListCacheNew($type, array $options = []): array
     {
         $list = self::getAppListNew($type);
         if ($searchName = $options['search_name']) {

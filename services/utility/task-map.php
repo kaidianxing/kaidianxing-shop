@@ -56,7 +56,7 @@ return [
 
     // 拼团数据统计
     'plugin_groups_statistics' => [
-        'class' => ['\shopstar\models\activity\MarketingStatisticsModel', 'createDayStatistic'],
+        'class' => ['\shopstar\models\activity\MarkdoetingStatisticsModel', 'createDayStatistic'],
         'settings_key' => 'plugin_groups_statistics',
         'options' => ['activity_type' => 'groups'], // 扩展参数
     ],

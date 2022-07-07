@@ -12,10 +12,12 @@
 
 namespace shopstar\mobile\commission;
 
+use shopstar\constants\order\OrderActivityTypeConstant;
 use shopstar\constants\OrderConstant;
 use shopstar\models\commission\CommissionOrderDataModel;
 use shopstar\models\member\MemberModel;
 use shopstar\models\order\OrderModel;
+use shopstar\services\groups\GroupsTeamService;
 
 /**
  * 分销订单
@@ -124,8 +126,17 @@ class OrderController extends CommissionClientApiController
             ],
         ];
 
-        return CommissionOrderDataModel::getColl($params, [
-            'callable' => function (&$row) {
+        // 拼团订单ID
+        $groupsOrderId = [];
+
+        $list = CommissionOrderDataModel::getColl($params, [
+            'callable' => function (&$row) use (&$groupsOrderId) {
+
+                // 拼团
+                if ($row['activity_type'] == OrderActivityTypeConstant::ACTIVITY_TYPE_GROUPS) {
+                    // 获取拼团订单的id
+                    $groupsOrderId[] = $row['order_id'];
+                }
 
                 // 佣金
                 foreach ($row['orderGoods'] as &$item) {
@@ -147,6 +158,19 @@ class OrderController extends CommissionClientApiController
                 unset($item);
             }
         ]);
+
+        // 获取拼团订单信息
+        if (!empty($groupsOrderId)) {
+            $groupsTeamInfo = GroupsTeamService::getGroupsInfo($groupsOrderId);
+            // 循环塞入订单拼团信息
+            foreach ($list['list'] as $listIndex => &$listItem) {
+                if ($listItem['activity_type'] == OrderActivityTypeConstant::ACTIVITY_TYPE_GROUPS) {
+                    $listItem['groups_team_info'] = $groupsTeamInfo[$listItem['order_id']]['team'] ?? [];
+                }
+            }
+        }
+
+        return $list;
     }
 
 }

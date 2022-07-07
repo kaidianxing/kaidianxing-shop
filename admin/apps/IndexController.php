@@ -28,6 +28,7 @@ class IndexController extends KdxAdminApiController
     /**
      * 获取应用列表
      * @return array|\yii\web\Response
+     * @throws \ReflectionException
      * @author likexin
      */
     public function actionIndex()

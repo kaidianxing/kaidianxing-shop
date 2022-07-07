@@ -10,7 +10,6 @@
  * @warning 未经许可禁止私自删除版权信息
  */
 return [
-
     'broadcast' => [
         'name' => '小程序直播',
         'type' => 10,
@@ -51,6 +50,16 @@ return [
         'route' =>  '/commission/index',
         'category' =>  11,
         'sort_by' =>  0,
+    ],
+    'groups' => [
+        'name' => '多人拼团',
+        'type' => 10,
+        'identity' => 'groups',
+        'logo' =>  '/static/dist/shop/plugin_icon/icon-groups.png',
+        'description' => '多种拼团玩法，拉新转化翻倍',
+        'route' =>  '/groups/activity/list',
+        'category' =>  20,
+        'sort_by' =>  99,
     ],
     'consumeReward' => [
         'name' => '消费奖励',

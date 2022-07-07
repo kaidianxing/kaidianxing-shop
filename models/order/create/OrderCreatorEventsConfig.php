@@ -15,6 +15,7 @@ namespace shopstar\models\order\create;
 use shopstar\events\OrderCreatorEvents;
 use shopstar\models\order\create\activityProcessor\BalanceActivity;
 use shopstar\models\order\create\activityProcessor\CreditActivity;
+use shopstar\services\groups\GroupsTeamService;
 
 /**
  * 创建订单事件配置
@@ -65,14 +66,13 @@ class OrderCreatorEventsConfig
      */
     private function EVENT_AFTER_CREATE()
     {
+        // 拼团
+        OrderCreatorEventAssistant::register(OrderCreatorEvents::EVENT_AFTER_CREATE, [GroupsTeamService::class, 'afterCreator']);
 
-        //满减折
-        OrderCreatorEventAssistant::register(OrderCreatorEvents::EVENT_AFTER_CREATE, [FullReduceActivityService::class, 'afterCreator']);
-
-        //余额抵扣
+        // 余额抵扣
         OrderCreatorEventAssistant::register(OrderCreatorEvents::EVENT_AFTER_CREATE, [BalanceActivity::class, 'afterCreator']);
 
-        //积分抵扣
+        // 积分抵扣
         OrderCreatorEventAssistant::register(OrderCreatorEvents::EVENT_AFTER_CREATE, [CreditActivity::class, 'afterCreator']);
     }
 
@@ -83,7 +83,6 @@ class OrderCreatorEventsConfig
     private function EVENT_AFTER_CREATE_COMMIT()
     {
         OrderCreatorEventAssistant::register(OrderCreatorEvents::EVENT_AFTER_CREATE_COMMIT, [OrderCreatorEvents::class, 'autoCloseOrder']);
-//        OrderCreatorEventAssistant::register(OrderCreatorEvents::EVENT_AFTER_CREATE_COMMIT, [OrderCreatorEvents::class, 'AutoReceiveOrder']);
     }
 
     /**

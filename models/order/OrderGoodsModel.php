@@ -217,7 +217,7 @@ class OrderGoodsModel extends BaseActiveRecord
                 ['order_goods.goods_id' => $goodsId],
                 ['>=', 'order_goods.status', OrderStatusConstant::ORDER_STATUS_WAIT_PAY],
                 ['order_goods.refund_type' => 0],
-                ['<>', 'order.activity_type', [OrderActivityTypeConstant::ACTIVITY_TYPE_PRESELL, OrderActivityTypeConstant::ACTIVITY_TYPE_SECKILL]], // 不统计的订单类型 预售 秒杀
+                ['<>', 'order.activity_type', [OrderActivityTypeConstant::ACTIVITY_TYPE_SECKILL]], // 不统计的订单类型 预售 秒杀
                 ['order_goods.shop_goods_id' => 0]
             ])
             ->leftJoin(OrderModel::tableName() . ' order', 'order.id = order_goods.order_id')

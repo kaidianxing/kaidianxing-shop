@@ -26,13 +26,23 @@ class OrderCreatorActivityConfig
      */
     private static $rules = [
 
+        // 秒杀
         'seckill' => [
             'sequence' => 231,
             'coexist' => ['credit', 'balance'],
             'is_order_level' => false,
             'class' => 'shopstar\models\seckill\SeckillActivity',
         ],
-        //会员价
+
+        //拼团
+        'groups' => [
+            'sequence' => 229,
+            'coexist' => ['coupon'],
+            'is_order_level' => false,
+            'class' => 'shopstar\services\groups\GroupsActivity',
+        ],
+
+        // 会员价
         'member_price' => [
             'sequence' => 240, //优先级 越小越在前
             'coexist' => ['coupon', 'credit', 'balance', 'full_free_dispatch', 'gift_card'],// 必须明确指定哪些活动标识允许与限时购共存，只需指定优先级低的活动
@@ -114,7 +124,7 @@ class OrderCreatorActivityConfig
      * @throws \ReflectionException
      * @author 青岛开店星信息技术有限公司
      */
-    public static function loadActivityProcessorList(array $goodsIds, array $optionIds, int $clientType, int $isOriginalBuy, int $activityId = 0)
+    public static function loadActivityProcessorList(array $goodsIds, array $optionIds, int $clientType, int $isOriginalBuy, int $activityId = 0): array
     {
         $activityGroup = $orderLevelTypes = [];
 

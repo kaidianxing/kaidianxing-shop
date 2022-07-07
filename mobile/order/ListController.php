@@ -20,6 +20,7 @@ use shopstar\helpers\ValueHelper;
 use shopstar\models\order\OrderModel;
 use shopstar\models\order\refund\OrderRefundModel;
 use shopstar\models\shop\ShopSettings;
+use shopstar\services\groups\GroupsTeamService;
 use yii\helpers\Json;
 use yii\web\Response;
 
@@ -134,7 +135,8 @@ class ListController extends BaseMobileApiController
             }
         ]);
 
-        $subShop = [];
+        // 拼团订单ID
+        $groupsOrderId = [];
 
         // 核销订单的商户id
         foreach ($list['list'] as $listKey => $listItem) {
@@ -142,9 +144,15 @@ class ListController extends BaseMobileApiController
             if (!empty($listItem['goods_info']) && is_string($listItem['goods_info'])) {
                 $listItem['goods_info'] = Json::decode($listItem['goods_info']);
             }
-            //补充商品信息
 
+            //补充商品信息
             $goodsInfoMap = array_column($listItem['goods_info'] ?: [], NULL, 'goods_id');
+
+            // 拼团
+            if ($listItem['activity_type'] == OrderActivityTypeConstant::ACTIVITY_TYPE_GROUPS) {
+                // 获取拼团订单的id
+                $groupsOrderId[] = $listItem['id'];
+            }
 
             //商品信息
             $orderGoods = [];
@@ -211,7 +219,18 @@ class ListController extends BaseMobileApiController
                 // 使用完销毁
                 unset($list['list'][$listKey]['refunds']);
             }
+        }
 
+        //获取拼团订单信息
+        if (!empty($groupsOrderId)) {
+            $groupsTeamInfo = GroupsTeamService::getGroupsInfo($groupsOrderId);
+
+            // 循环塞入订单拼团信息
+            foreach ($list['list'] as $listIndex => &$listItem) {
+                if ($listItem['activity_type'] == OrderActivityTypeConstant::ACTIVITY_TYPE_GROUPS) {
+                    $listItem['groups_team_info'] = $groupsTeamInfo[$listItem['id']]['team'] ?? [];
+                }
+            }
         }
 
         $list['list'] = array_values($list['list']);

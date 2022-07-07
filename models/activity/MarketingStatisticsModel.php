@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 开店星新零售管理系统
  * @description 基于Yii2+Vue2.0+uniapp研发，H5+小程序+公众号全渠道覆盖，功能完善开箱即用，框架成熟易扩展二开
@@ -13,14 +12,13 @@
 
 namespace shopstar\models\activity;
 
+use shopstar\bases\model\BaseActiveRecord;
 use shopstar\constants\ClientTypeConstant;
 use shopstar\constants\order\OrderActivityTypeConstant;
-
 use shopstar\helpers\DateTimeHelper;
 use shopstar\models\order\OrderActivityModel;
 use shopstar\models\order\OrderModel;
 use yii\helpers\Json;
-
 
 /**
  * This is the model class for table "{{%activity_statistics}}".
@@ -42,12 +40,13 @@ use yii\helpers\Json;
  * @property string $refund_price_sum 累计退款数量
  * @property string $pay_member_count 累计支付人数
  */
-class MarketingStatisticsModel extends \shopstar\bases\model\BaseActiveRecord
+class MarketingStatisticsModel extends BaseActiveRecord
 {
+
     /**
      * {@inheritdoc}
      */
-    public static function tableName()
+    public static function tableName(): string
     {
         return '{{%marketring_statistics}}';
     }
@@ -55,7 +54,7 @@ class MarketingStatisticsModel extends \shopstar\bases\model\BaseActiveRecord
     /**
      * {@inheritdoc}
      */
-    public function rules()
+    public function rules(): array
     {
         return [
             [['id'], 'required'],
@@ -69,7 +68,7 @@ class MarketingStatisticsModel extends \shopstar\bases\model\BaseActiveRecord
     /**
      * {@inheritdoc}
      */
-    public function attributeLabels()
+    public function attributeLabels(): array
     {
         return [
             'id' => 'ID',

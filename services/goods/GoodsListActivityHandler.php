@@ -19,8 +19,10 @@ use shopstar\models\commission\CommissionGoodsModel;
 use shopstar\models\commission\CommissionSettings;
 use shopstar\models\goods\GoodsActivityModel;
 use shopstar\models\goods\GoodsMemberLevelDiscountModel;
+use shopstar\models\groups\GroupsGoodsModel;
 use shopstar\models\member\MemberLevelModel;
 use shopstar\models\member\MemberModel;
+use shopstar\services\groups\GroupsGoodsService;
 
 class GoodsListActivityHandler
 {
@@ -137,7 +139,11 @@ class GoodsListActivityHandler
     public function automation(): bool
     {
 
+        // 秒杀
         $this->seckill();
+
+        // 拼团
+        $this->groups();
 
         /**
          * 查询预热活动
@@ -319,12 +325,54 @@ class GoodsListActivityHandler
 
         return true;
     }
+
+    /**
+     * 拼团
+     * @return bool
+     * @author likexin
+     */
+    public function groups(): bool
+    {
+        $groups = [];
+
+        foreach ($this->goodsActivity as $goodsId => $item) {
+            if ($item['activity_type'] == 'groups') {
+
+                // 获取包含商品的活动
+                $activity = ShopMarketingModel::getActivityInfo($goodsId, $this->clientType, 'groups', $this->goodsInfo[$goodsId]['has_option'], ['activity_id' => $this->activityId]);
+                $activity['ladder_info'] = $activity['rules'];
+                if (!is_error($activity)) {
+
+                    $activity['goods_info'] = GroupsGoodsService::getGoodsOptionInfo($activity['id'], $activity['goods_ids']);
+
+                    //如果是阶梯团，需要再计算一遍最低价最高价
+                    if ($activity['inner_type'] || $this->goodsInfo['has_option']) {
+                        $priceRange = GroupsGoodsModel::calculateLadderPrice($activity['id'], $item['goods_id']);
+
+                        if ($priceRange['has_range']) {
+                            $activity['price_range']['min_price'] = $priceRange['min_price'];
+                            $activity['price_range']['max_price'] = $priceRange['max_price'];
+                        } else {
+                            $activity['activity_price'] = $priceRange['activity_price'];
+                        }
+                    }
+
+                    $groups[$goodsId] = $activity;
+                }
+            }
+        }
+
+        $this->setActivity($groups, 'groups');
+
+        return true;
+    }
+
     /**
      * 预热活动
      * @return bool
      * @author 青岛开店星信息技术有限公司
      */
-    public function preheat()
+    public function preheat(): bool
     {
         $preheatActivity = [];
         foreach ($this->goodsInfo as $goods) {
