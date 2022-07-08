@@ -13,6 +13,7 @@
 namespace shopstar\admin\sysset\mall;
 
 use shopstar\bases\KdxAdminApiController;
+use shopstar\components\wechat\helpers\MiniProgramWxTransactionComponentHelper;
 use shopstar\exceptions\sysset\MallException;
 use shopstar\helpers\RequestHelper;
 use shopstar\models\shop\ShopSettings;
@@ -93,6 +94,22 @@ class ContactController extends KdxAdminApiController
             $contact['address']['lng'] = $params['lng'];
             $contact['address']['lat'] = $params['lat'];
         }
+
+        // 更新视频号交易组件商家信息
+        $data = [
+            'service_agent_phone' => $params['tel1'],
+            'service_agent_type' => [0, 2], // 默认更新未 小程序客服 与 联系电话
+            'default_receiving_address' => [
+                'receiver_name' => $params['contact'],
+                'detailed_address' => $params['detail'],
+                'tel_number' => $params['tel1'],
+                'province' => $params['province'],
+                'city' => $params['city'],
+                'town' => $params['area'],
+            ],
+        ];
+        MiniProgramWxTransactionComponentHelper::updateAccountInfo($data);
+
         $address = $contact['address'];
         $originAddress = ShopSettings::get('contact.address');
         if (array_diff($originAddress, $address)) {

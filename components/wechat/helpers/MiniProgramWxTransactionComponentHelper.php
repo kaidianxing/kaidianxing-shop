@@ -781,4 +781,29 @@ class MiniProgramWxTransactionComponentHelper
 
         return Wechat::apiError($result, 'wx_transaction_component');
     }
+
+    /**
+     * 更新商家信息
+     * @param array $data
+     * @return array|bool|mixed
+     * @author 青岛开店星信息技术有限公司
+     */
+    public static function updateAccountInfo(array $data = [])
+    {
+        try {
+            $token = WechatComponent::getInstance(WechatChannelConstant::CHANNEL_MINI_PROGRAM, [])->factory->access_token->getToken();
+            // 微信开放平台参数兼容
+            $token['access_token'] = $token['authorizer_access_token'] ?? $token['access_token'];
+
+            $result = HttpHelper::postJson(self::$baseUrl . 'account/update_info?access_token=' . $token['access_token'], Json::encode($data), [
+                'headers' => [
+                    'Content-Type' => 'application/json'
+                ]
+            ]);
+        } catch (\Exception $exception) {
+            $result = $exception;
+        }
+
+        return Wechat::apiError($result, 'wx_transaction_component');
+    }
 }
