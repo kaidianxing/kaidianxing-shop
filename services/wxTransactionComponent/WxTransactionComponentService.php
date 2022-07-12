@@ -706,7 +706,7 @@ class WxTransactionComponentService
                 'detailed_address' => $order['address_province'] . $order['address_city'] . $order['address_area'] . $order['address_detail'],
                 'tel_number' => $order['buyer_mobile'],
             ],
-            'fund_type' => 1,// todo miaobowen 视频号暂时写死
+            'fund_type' => 1,// 视频号暂时写死
             'expire_time' => $order['auto_close_time'] != DateTimeHelper::DEFAULT_DATE_TIME ? strtotime($order['auto_close_time']) : $time + 60 * 30,// 关闭订单的时间, 默认30分钟
         ];
 

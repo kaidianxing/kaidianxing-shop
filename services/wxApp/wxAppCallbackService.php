@@ -388,7 +388,7 @@ class wxAppCallbackService
         ];
 
         // 参数错误
-        if (empty($data['order_id']) || empty($data['refund_type']) || empty($data['content'])) {
+        if (empty($data['order_id']) || empty($data['refund_type'])) {
             throw new RefundException(RefundException::REFUND_SUBMIT_PARAMS_ERROR);
         }
 
