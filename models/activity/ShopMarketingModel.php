@@ -120,7 +120,8 @@ class ShopMarketingModel extends BaseActiveRecord
             'activity.stop_time',
             'activity.status',
             'activity.goods_ids',
-            'if(activity.stop_time=0, 1, 2) as level'
+            'activity.is_preheat',
+            'if(activity.stop_time=0, 1, 2) as level',
         ];
 
         $leftJoins = [];

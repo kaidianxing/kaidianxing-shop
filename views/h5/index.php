@@ -286,7 +286,7 @@
             <p class="good-info"></p></div>
     </div>
 </div>
-<script src="/static/dist/shop_wap/static/js/chunk-vendors.js?v=1657159060421"></script>
-<script src="/static/dist/shop_wap/static/js/index.js?v=1657159060421"></script>
+<script src="/static/dist/shop_wap/static/js/chunk-vendors.js?v=1657767664432"></script>
+<script src="/static/dist/shop_wap/static/js/index.js?v=1657767664432"></script>
 </body>
 </html>

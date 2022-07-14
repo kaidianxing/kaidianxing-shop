@@ -193,7 +193,10 @@ class OrderController extends KdxAdminApiController
         $commissionInfo['is_can_edit'] = CommissionOrderModel::isCanEditCommission($memberId, $orderId);
         // 取所有订单商品
         $orderGoods = OrderGoodsModel::find()
-            ->where(['is_count' => 1])
+            ->where([
+                'order_id' => $orderId,
+                'is_count' => 1,
+            ])
             ->get();
         // 获取下单用户信息
         $commissionInfo['member_info'] = MemberModel::find()->select('id, nickname, avatar, realname, mobile')->where(['id' => $memberId])->first();
