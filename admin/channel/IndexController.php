@@ -147,6 +147,19 @@ class IndexController extends KdxAdminApiController
     }
 
     /**
+     * 获取信息
+     * @return array
+     * @author 青岛开店星信息技术有限公司
+     */
+    private function getPcInfo()
+    {
+        return [
+            'is_open' => ShopSettings::get('channel.' . ClientTypeConstant::getIdentify(ClientTypeConstant::CLIENT_PC), 0),
+            'url' => ShopUrlHelper::pc('/', [], true) . '/',
+        ];
+    }
+
+    /**
      * 设置店铺渠道状态
      * @return \yii\web\Response
      * @author 青岛开店星信息技术有限公司

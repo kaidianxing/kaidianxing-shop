@@ -478,7 +478,7 @@ class IndexController extends BaseMobileApiController
                 'mobile' => $mobile,
                 'salt' => $salt,
                 'password' => $pass,
-                'source' => ClientTypeConstant::CLIENT_H5,
+                'source' => $this->clientType,
                 'is_bind_mobile' => 1,
                 'nickname' => $mobile,
             ]);

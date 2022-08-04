@@ -234,7 +234,10 @@ class VirtualAccountDataModel extends BaseActiveRecord
             $virtualAccountData = VirtualAccountDataModel::findOne(['id' => $id]);
             if ($virtualAccountData) {
                 $virtualAccountId = $virtualAccountData->virtual_account_id;
-                $count = count($id);
+
+                $ids = is_array($id) ? $id : (array)$id;
+                $count = count($ids);
+
                 // 减少卡密库库存
                 VirtualAccountModel::updateReduceCount($virtualAccountId, $count);
                 // 处理单规格商品库存

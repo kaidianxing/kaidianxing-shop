@@ -110,6 +110,7 @@ class InstallService
         // 调用kdx-cloud自动注册站点
         $response = KdxCloudHelper::post('/install/site/register', [
             'site_domain' => \Yii::$app->request->hostName,
+            'source' => 10,
         ]);
         if (is_error($response)) {
             return $response;

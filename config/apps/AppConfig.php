@@ -233,4 +233,14 @@ return [
         'category' =>  0,
         'sort_by' =>  0,
     ],
+    'pc' => [
+        'name' => 'PC版',
+        'type' => 20,
+        'identity' => 'pc',
+        'logo' =>  '/static/dist/shop/channel_icon/icon_pc.png',
+        'description' => '通过PC浏览器访问您的店铺',
+        'route' =>  '',
+        'category' =>  0,
+        'sort_by' =>  0,
+    ],
 ];

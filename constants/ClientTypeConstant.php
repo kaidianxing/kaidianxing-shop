@@ -87,4 +87,11 @@ class ClientTypeConstant extends BaseConstant
      */
     public const MANAGE_SHOP_ASSISTANT = 51;
 
+    /**
+     * @Text("PC")
+     * @Identify("pc")
+     * @AppIdentify("pc")
+     */
+    public const CLIENT_PC = 70;
+
 }

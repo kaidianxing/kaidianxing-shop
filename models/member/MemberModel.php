@@ -21,6 +21,7 @@ use shopstar\models\commission\CommissionAgentModel;
 use shopstar\models\commission\CommissionLevelModel;
 use shopstar\models\member\group\MemberGroupMapModel;
 use shopstar\models\member\group\MemberGroupModel;
+use shopstar\models\pc\MemberWechatPcModel;
 use shopstar\models\sale\CouponMemberModel;
 use shopstar\models\shop\ShopSettings;
 use yii\db\ActiveQuery;
@@ -561,6 +562,10 @@ class MemberModel extends BaseActiveRecord
                 'source' => ClientTypeConstant::CLIENT_BYTE_DANCE_TOUTIAO_LITE,
                 'is_register' => 0,
             ],
+            ClientTypeConstant::CLIENT_PC => [ // pc
+                'source' => ClientTypeConstant::CLIENT_PC,
+                'is_register' => 0,
+            ],
         ];
 
         // H5 只要绑定手机号  就算
@@ -591,6 +596,11 @@ class MemberModel extends BaseActiveRecord
         $isDouyin = MemberDouyinModel::findOne(['member_id' => $memberId, 'is_deleted' => 0]);
         if (!empty($isDouyin)) {
             $all[ClientTypeConstant::CLIENT_BYTE_DANCE_DOUYIN]['is_register'] = 1;
+        }
+        // PC
+        $isPc = MemberWechatPcModel::findOne(['member_id' => $memberId,  'is_deleted' => 0]);
+        if (!empty($isPc)) {
+            $all[ClientTypeConstant::CLIENT_PC]['is_register'] = 1;
         }
 
 
