@@ -13,12 +13,13 @@
 namespace shopstar\models\wechat;
 
 use shopstar\bases\model\BaseActiveRecord;
+use shopstar\constants\wechat\WechatSyncTaskStatusConstant;
+use shopstar\constants\wechat\WechatSyncTaskTypeConstant;
 use shopstar\helpers\DateTimeHelper;
 use shopstar\helpers\LogHelper;
 use shopstar\helpers\QueueHelper;
 use shopstar\jobs\wechat\WechatSyncJob;
-use shopstar\wechat\constants\WechatSyncTaskStatusConstant;
-use shopstar\wechat\constants\WechatSyncTaskTypeConstant;
+use yii\base\Exception;
 
 /**
  * This is the model class for table "{{%wechat_sync_task}}".
@@ -35,11 +36,10 @@ use shopstar\wechat\constants\WechatSyncTaskTypeConstant;
  */
 class WechatSyncTaskModel extends BaseActiveRecord
 {
-
     /**
      * {@inheritdoc}
      */
-    public static function tableName()
+    public static function tableName(): string
     {
         return '{{%wechat_sync_task}}';
     }
@@ -47,7 +47,7 @@ class WechatSyncTaskModel extends BaseActiveRecord
     /**
      * {@inheritdoc}
      */
-    public function rules()
+    public function rules(): array
     {
         return [
             [['type', 'status'], 'integer'],
@@ -59,14 +59,11 @@ class WechatSyncTaskModel extends BaseActiveRecord
     /**
      * {@inheritdoc}
      */
-    public function attributeLabels()
+    public function attributeLabels(): array
     {
         return [
             'id' => 'ID',
-            'type' => '任务类型
-1:粉丝
-2:粉丝标签
-3:素材',
+            'type' => '任务类型 1:粉丝 2:粉丝标签 3:素材',
             'created_at' => '任务添加时间',
             'status' => '状态 1成功 2失败 0未执行',
             'finish_time' => '任务完成时间',
@@ -78,7 +75,7 @@ class WechatSyncTaskModel extends BaseActiveRecord
      * 投递异步任务
      * @param int $type
      * @param array $options
-     * @return mixed
+     * @return array|int
      * @author 青岛开店星信息技术有限公司.
      */
     public static function sendTask(int $type, array $options = [])
@@ -113,6 +110,7 @@ class WechatSyncTaskModel extends BaseActiveRecord
      * @param int $type
      * @param array $options
      * @return bool
+     * @throws Exception
      * @author 青岛开店星信息技术有限公司.
      */
     public static function sync(int $taskId, int $type, array $options = []): bool
@@ -168,6 +166,4 @@ class WechatSyncTaskModel extends BaseActiveRecord
 
         return $task['created_at'] ?? DateTimeHelper::DEFAULT_DATE_TIME;
     }
-
-
 }

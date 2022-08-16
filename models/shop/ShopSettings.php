@@ -1536,14 +1536,6 @@ class ShopSettings extends BaseSettings
                 'active_limit_num' => '0', // 每天激活数量
                 'active_note' => '', // 激活说明
             ],
-
-            'plugin_credit_shop' => [ // 积分商城设置
-                'status' => '0',
-                'refund_type' => '0',
-                'finish_order_refund_type' => '0',
-                'finish_order_refund_days' => '0',
-                'refund_rule' => '0'
-            ],
             // 店铺笔记设置
             'plugin_article' => [
                 'title' => '专题文章',// 专题页面自定义title
@@ -1639,6 +1631,9 @@ class ShopSettings extends BaseSettings
 
             // 一键发圈
             'material' => self::defaultMaterialSettings(),
+
+            // 积分商城
+            'credit_shop' => self::defaultCreditShopSettings(),
         ];
     }
 
@@ -1677,6 +1672,22 @@ class ShopSettings extends BaseSettings
     {
         return [
             'status' => '0', // 0 关闭 1 开启
+        ];
+    }
+
+    /**
+     * 积分商城默认值
+     * @return string[]
+     * @author 青岛开店星信息技术有限公司
+     */
+    private static function defaultCreditShopSettings(): array
+    {
+        return [
+            'status' => '0',
+            'refund_type' => '0',
+            'finish_order_refund_type' => '0',
+            'finish_order_refund_days' => '0',
+            'refund_rule' => '0'
         ];
     }
 }

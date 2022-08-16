@@ -229,10 +229,15 @@ class IndexController extends BaseMobileApiController
 
             // 1. 判断场景值或者是开发会员
             if ($order[0]['scene'] == OrderSceneConstant::ORDER_SCENE_VIDEO_NUMBER_BROADCAST || $developmentMemberId == $this->memberId) {
-                $data = WxTransactionComponentOrderService::callback($openid, $order[0], $result['pay_params']);
+                $wxTransactionPayResult = WxTransactionComponentOrderService::callback($openid, $order[0], $result['pay_params']);
 
-                if (is_error($data)) {
-                    return $this->error($data['message']);
+                if (is_error($wxTransactionPayResult)) {
+                    return $this->error($wxTransactionPayResult['message']);
+                }
+
+                // 判断是否请求视频号订单成功(如果成功将返回视频号支付参数)
+                if ($wxTransactionPayResult) {
+                    $data = $wxTransactionPayResult;
                 }
             }
         }

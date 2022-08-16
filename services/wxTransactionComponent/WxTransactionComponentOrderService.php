@@ -48,6 +48,10 @@ class WxTransactionComponentOrderService
             return error($wxTransactionComponentResult['message'], $wxTransactionComponentResult['error']);
         }
 
+        if (!$wxTransactionComponentResult) {
+            return false;
+        }
+
         // 生成支付参数 getPaymentParams
         $wxTransactionComponentPayResult = self::getPaymentParams($openId, $wxTransactionComponentResult['out_order_id'] ?: '', $wxTransactionComponentResult['order_id'] ?: '');
 
@@ -66,18 +70,17 @@ class WxTransactionComponentOrderService
     {
         $data = WxTransactionComponentService::uploadOrderProcess($order['id'], $ret);
         if (!$data) {
+            // 更改订单场景值(没有数据将视为不是视频号订单)
+            OrderModel::updateAll(['scene' => 0], ['id' => $order['id']]);
+
             return false;
         }
 
         $result = MiniProgramWxTransactionComponentHelper::uploadOrder($data);
 
         if (isset($result['errcode']) ? $result['errcode'] == 0 : $result['error'] == 0) {
-            //更改订单场景值
-            OrderModel::updateAll([
-                'scene' => OrderSceneConstant::ORDER_SCENE_VIDEO_NUMBER_BROADCAST
-            ], [
-                'id' => $order['id'],
-            ]);
+            // 更改订单场景值
+            OrderModel::updateAll(['scene' => OrderSceneConstant::ORDER_SCENE_VIDEO_NUMBER_BROADCAST], ['id' => $order['id']]);
 
             return $result['data'] ?: [];
         }

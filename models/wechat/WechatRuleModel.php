@@ -12,9 +12,14 @@
 
 namespace shopstar\models\wechat;
 
+use Exception;
+use ReflectionException;
 use shopstar\bases\model\BaseActiveRecord;
-use shopstar\helpers\DateTimeHelper;
 use shopstar\exceptions\wechat\WechatException;
+use shopstar\helpers\DateTimeHelper;
+use Yii;
+use yii\base\InvalidConfigException;
+use yii\db\ActiveRecord;
 
 /**
  * This is the model class for table "{{%wechat_rule}}".
@@ -36,7 +41,7 @@ class WechatRuleModel extends BaseActiveRecord
     /**
      * {@inheritdoc}
      */
-    public static function tableName()
+    public static function tableName(): string
     {
         return '{{%wechat_rule}}';
     }
@@ -44,7 +49,7 @@ class WechatRuleModel extends BaseActiveRecord
     /**
      * {@inheritdoc}
      */
-    public function rules()
+    public function rules(): array
     {
         return [
             [['unionid', 'displayorder', 'reply_setting', 'status'], 'integer'],
@@ -58,7 +63,7 @@ class WechatRuleModel extends BaseActiveRecord
     /**
      * {@inheritdoc}
      */
-    public function attributeLabels()
+    public function attributeLabels(): array
     {
         return [
             'id' => 'ID',
@@ -78,10 +83,13 @@ class WechatRuleModel extends BaseActiveRecord
     /**
      * 事件专用查询
      * 根据类型查询回复内容
-     * @return array|null
+     * @param $event
+     * @param string $module
+     * @param string $eventKey
+     * @return array
      * @author 青岛开店星信息技术有限公司
      */
-    public static function getEvent($event, $module = 'wechat', $eventKey = '')
+    public static function getEvent($event, string $module = 'wechat', string $eventKey = ''): array
     {
         // 扫码事件特殊处理
         if ($event == 'subscribe') {
@@ -127,20 +135,21 @@ class WechatRuleModel extends BaseActiveRecord
                     break;
             }
         }
+
         // 为了适配外层多匹配解读方法
         return [[$result]];
     }
 
     /**
      * 删除
-     * @param $id
+     * @param int $id
      * @return bool
      * @throws WechatException
      * @author 青岛开店星信息技术有限公司
      */
-    public static function deleteData($id)
+    public static function deleteData(int $id): bool
     {
-        $transaction = \Yii::$app->db->beginTransaction();
+        $transaction = Yii::$app->db->beginTransaction();
         // 物理删除
         try {
             // 删除规则表
@@ -152,10 +161,11 @@ class WechatRuleModel extends BaseActiveRecord
             // 删除相关联的关键词回复图片内容
             WechatRuleImagesReplyModel::deleteAll(['rule_id' => $id]);
             $transaction->commit();
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $transaction->rollBack();
             throw new WechatException(WechatException::DELETE_FAILURE_ERROR);
         }
+
         return true;
     }
 
@@ -166,9 +176,9 @@ class WechatRuleModel extends BaseActiveRecord
      * @throws WechatException
      * @author 青岛开店星信息技术有限公司
      */
-    public static function addAllData(array $params)
+    public static function addAllData(array $params): bool
     {
-        $transaction = \Yii::$app->db->beginTransaction();
+        $transaction = Yii::$app->db->beginTransaction();
         try {
             $data = [
                 'unionid' => 0,
@@ -182,13 +192,16 @@ class WechatRuleModel extends BaseActiveRecord
                 'containtype' => implode(',', array_unique($params['containtype'])),
                 'created_at' => DateTimeHelper::now(),
             ];
+
             $model = new self();
             $model->setAttributes($data);
             if (!$model->save()) {
                 throw new WechatException(WechatException::CHANNEL_MANAGE_WECHAT_MEDIA_UPLOAD_IMAGE_PARAMS_ERROR, $model->getErrorMessage());
             }
+
             // 关键词
             WechatRuleKeywordModel::addData($params['ruleKeywordData'], $model->id);
+
             foreach ($params['containtype'] as $value) {
                 // 文本
                 if ($value == 'text') {
@@ -199,11 +212,13 @@ class WechatRuleModel extends BaseActiveRecord
                     WechatRuleImagesReplyModel::addData($params['ruleContent'], $model->id);
                 }
             }
+
             $transaction->commit();
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $transaction->rollBack();
             throw new WechatException(WechatException::SAVE_FAILURE_ERROR, $e->getMessage());
         }
+
         return true;
     }
 
@@ -213,23 +228,28 @@ class WechatRuleModel extends BaseActiveRecord
      * @param array $params
      * @param string $flag
      * @return bool
+     * @throws InvalidConfigException
      * @throws WechatException
-     * @throws \yii\base\InvalidConfigException
+     * @throws ReflectionException
      * @author 青岛开店星信息技术有限公司
      */
-    public static function updateAllData(int $ruleId, array $params, $flag = '')
+    public static function updateAllData(int $ruleId, array $params, string $flag = ''): bool
     {
         $model = self::findOne(['id' => $ruleId]);
+
         $model->setAttributes([
             'name' => $params['name'],
             'reply_setting' => $params['reply_setting'],
             'containtype' => implode(',', array_unique($params['containtype'])),
         ]);
+
         if (!$model->save()) {
             throw new WechatException(WechatException::UPDATE_FAILURE_ERROR);
         }
+
         // 关键词
         WechatRuleKeywordModel::updateData($params['ruleKeywordData'], $ruleId);
+
         // 文本
         foreach ($params['ruleContent'] as $value) {
             if ($value['containtype'] == 'text') {
@@ -246,7 +266,7 @@ class WechatRuleModel extends BaseActiveRecord
     /**
      * 获取单一信息
      * @param int $ruleId
-     * @return array|int|string|\yii\db\ActiveRecord[]
+     * @return array|int|string|ActiveRecord[]
      * @author 青岛开店星信息技术有限公司
      */
     public static function getInfo(int $ruleId)
@@ -329,7 +349,7 @@ class WechatRuleModel extends BaseActiveRecord
      * @return array
      * @author 青岛开店星信息技术有限公司
      */
-    public static function getKeywordContent($keyword)
+    public static function getKeywordContent($keyword): array
     {
         $result = WechatRuleKeywordModel::getKeywordList($keyword);
         // 匹中多个规则

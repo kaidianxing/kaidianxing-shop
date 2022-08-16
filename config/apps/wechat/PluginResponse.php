@@ -12,6 +12,7 @@
 
 namespace shopstar\config\apps\wechat;
 
+use Exception;
 use shopstar\constants\poster\PosterPushTypeConstant;
 use shopstar\helpers\LogHelper;
 use shopstar\helpers\QueueHelper;
@@ -28,32 +29,31 @@ use shopstar\models\wechat\WechatRuleModel;
  */
 class PluginResponse implements PluginProcessorInterface
 {
-
     /**
      * @var string 事件类型 text scan subscribe
      */
-    public $type;
+    public string $type;
 
     /**
      * @var array 消息体
      */
-    public $message;
+    public array $message;
 
     /**
      * @var array 配置项
      */
-    public $messageData;
+    public array $messageData;
 
     /**
      * @var string 关注者openid
      */
-    public $from_openid;
+    public string $from_openid;
 
     /**
      * 类型的映射
      * @var array
      */
-    private static $typeMap = [
+    private static array $typeMap = [
         'text' => PosterPushTypeConstant::POSTER_PUSH_TYPE_TEXT,
         'images' => PosterPushTypeConstant::POSTER_PUSH_TYPE_IMAGES,
     ];
@@ -62,7 +62,7 @@ class PluginResponse implements PluginProcessorInterface
      * 根据类型的消息取值映射
      * @var array
      */
-    private static $messageMap = [
+    private static array $messageMap = [
         PosterPushTypeConstant::POSTER_PUSH_TYPE_TEXT => 'content',
         PosterPushTypeConstant::POSTER_PUSH_TYPE_IMAGES => 'media_id',
     ];
@@ -70,9 +70,10 @@ class PluginResponse implements PluginProcessorInterface
     /**
      * 开始处理
      * @return bool
+     * @throws \yii\base\Exception
      * @author 青岛开店星信息技术有限公司
      */
-    public function respond()
+    public function respond(): bool
     {
         // 初始化
         $this->init();
@@ -88,9 +89,9 @@ class PluginResponse implements PluginProcessorInterface
                         $result = WechatFansModel::changeFollowStatus($this->from_openid);
 
                         if (is_error($result)) {
-                            throw new \Exception($result['message']);
+                            throw new Exception($result['message']);
                         }
-                    } catch (\Exception $exception) {
+                    } catch (Exception $exception) {
                         LogHelper::error('[WECHAT SUBSCRIBE FANS ERROR]', [
                             'message' => $exception->getMessage()
                         ]);
@@ -107,9 +108,9 @@ class PluginResponse implements PluginProcessorInterface
                         $result = WechatFansModel::changeFollowStatus($this->from_openid, false);
 
                         if (is_error($result)) {
-                            throw new \Exception($result['message']);
+                            throw new Exception($result['message']);
                         }
-                    } catch (\Exception $exception) {
+                    } catch (Exception $exception) {
                         LogHelper::error('[WECHAT UNSUBSCRIBE FANS ERROR]', [
                             'message' => $exception->getMessage()
                         ]);
@@ -165,6 +166,5 @@ class PluginResponse implements PluginProcessorInterface
 
         // 拆分配置
         $this->messageData = $this->message['message'];
-
     }
 }

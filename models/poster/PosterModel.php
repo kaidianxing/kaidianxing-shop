@@ -19,8 +19,6 @@ use shopstar\helpers\ImageHelper;
 use shopstar\models\core\CoreRuleModel;
 use shopstar\models\sale\CouponModel;
 use shopstar\constants\poster\PosterTypeConstant;
-
-use shopstar\wechat\constants\WechatRuleKeywordConstant;
 use shopstar\models\wechat\WechatRuleKeywordModel;
 use shopstar\models\wechat\WechatRuleModel;
 

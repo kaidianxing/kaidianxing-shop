@@ -15,7 +15,7 @@ namespace shopstar\models\wechat;
 use shopstar\bases\model\BaseActiveRecord;
 use shopstar\components\wechat\helpers\OfficialAccountFansHelper;
 use shopstar\helpers\DateTimeHelper;
-
+use yii\db\Exception;
 
 /**
  * This is the model class for table "{{%wechat_fans_tag}}".
@@ -30,7 +30,7 @@ class WechatFansTagModel extends BaseActiveRecord
     /**
      * {@inheritdoc}
      */
-    public static function tableName()
+    public static function tableName(): string
     {
         return '{{%wechat_fans_tag}}';
     }
@@ -38,7 +38,7 @@ class WechatFansTagModel extends BaseActiveRecord
     /**
      * {@inheritdoc}
      */
-    public function rules()
+    public function rules(): array
     {
         return [
             [['wechat_tag_id'], 'required'],
@@ -52,7 +52,7 @@ class WechatFansTagModel extends BaseActiveRecord
     /**
      * {@inheritdoc}
      */
-    public function attributeLabels()
+    public function attributeLabels(): array
     {
         return [
             'id' => 'ID',
@@ -66,7 +66,7 @@ class WechatFansTagModel extends BaseActiveRecord
      * 同步
      * @param array $options
      * @return bool
-     * @throws \yii\db\Exception
+     * @throws Exception
      * @author 青岛开店星信息技术有限公司.
      */
     public static function sync(array $options = []): bool
@@ -85,6 +85,10 @@ class WechatFansTagModel extends BaseActiveRecord
         $tagList = OfficialAccountFansHelper::getTagList();
 
         if (empty($tagList)) {
+            return true;
+        }
+
+        if (is_error($tagList)) {
             return true;
         }
 

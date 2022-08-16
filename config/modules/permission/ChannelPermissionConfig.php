@@ -54,8 +54,6 @@ class ChannelPermissionConfig extends BasePermissionConfig
                 ]
             ],
         ],
-
-
         'channel/index' => [
             'title' => 'H5',
             'alias' => 'channel.wap',
@@ -69,7 +67,6 @@ class ChannelPermissionConfig extends BasePermissionConfig
                 ]
             ]
         ],
-
         'apps/wechat/index' => [
             'title' => '微信公众号',
             'alias' => 'channel.wechat',

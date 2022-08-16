@@ -10,13 +10,13 @@
  * @warning 未经许可禁止私自删除版权信息
  */
 
-namespace shopstar\wechat\constants;
+namespace shopstar\constants\wechat;
 
 use shopstar\bases\constant\BaseConstant;
 
 /**
  * Class WechatSyncTaskTypeConstant
- * @package shopstar\wechat\constants
+ * @package shopstar\constants\wechat
  * @method getClass($type) static string
  * @author 青岛开店星信息技术有限公司.
  */

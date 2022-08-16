@@ -14,6 +14,8 @@ namespace shopstar\models\wechat;
 
 use shopstar\bases\model\BaseActiveRecord;
 use shopstar\exceptions\wechat\WechatException;
+use yii\db\ActiveRecord;
+use yii\db\Exception;
 
 /**
  * This is the model class for table "{{%wechat_rule_text_reply}}".
@@ -27,7 +29,7 @@ class WechatRuleTextReplyModel extends BaseActiveRecord
     /**
      * {@inheritdoc}
      */
-    public static function tableName()
+    public static function tableName(): string
     {
         return '{{%wechat_rule_text_reply}}';
     }
@@ -35,7 +37,7 @@ class WechatRuleTextReplyModel extends BaseActiveRecord
     /**
      * {@inheritdoc}
      */
-    public function rules()
+    public function rules(): array
     {
         return [
             [['rule_id'], 'integer'],
@@ -46,7 +48,7 @@ class WechatRuleTextReplyModel extends BaseActiveRecord
     /**
      * {@inheritdoc}
      */
-    public function attributeLabels()
+    public function attributeLabels(): array
     {
         return [
             'id' => 'ID',
@@ -60,11 +62,11 @@ class WechatRuleTextReplyModel extends BaseActiveRecord
      * @param array $params
      * @param int $ruleId
      * @return bool
-     * @throws \yii\db\Exception
      * @throws WechatException
+     * @throws Exception
      * @author 青岛开店星信息技术有限公司
      */
-    public static function addData(array $params, int $ruleId)
+    public static function addData(array $params, int $ruleId): bool
     {
         foreach ($params as $value) {
             if ($value['containtype'] == 'images') {
@@ -76,9 +78,11 @@ class WechatRuleTextReplyModel extends BaseActiveRecord
             ];
         }
         $result = self::batchInsert(array_keys($data[0]), $data);
+
         if (!$result) {
             throw new WechatException(WechatException::SAVE_FAILURE_ERROR);
         }
+
         return true;
     }
 
@@ -96,33 +100,42 @@ class WechatRuleTextReplyModel extends BaseActiveRecord
     /**
      * 更新回复文本数据
      * @param array $params
+     * @param int $ruleId
+     * @param string $flag
      * @return bool
      * @throws WechatException
      * @author 青岛开店星信息技术有限公司
      */
-    public static function updateData(array $params, int $ruleId, $flag = '')
+    public static function updateData(array $params, int $ruleId, string $flag = ''): bool
     {
+        $modelIds = [];
+
         foreach ($params as $value) {
             if ($value['containtype'] == 'images') {
                 continue;
             }
+
             $info = self::findOne(['id' => $value['id'], 'rule_id' => $ruleId]);
             if (!$info) {
                 $info = new self();
             }
+
             $info->setAttributes([
                 'content' => $value['content'],
                 'rule_id' => $ruleId,
             ]);
+
             if (!$info->save()) {
                 throw new WechatException(WechatException::UPDATE_FAILURE_ERROR);
             }
+
             $modelIds[] = $info->id;
         }
+
         self::deleteAll([
             'and',
             ['rule_id' => $ruleId],
-            ['not in', 'id', $modelIds]
+            ['not in', 'id', $modelIds],
         ]);
 
         return true;
@@ -131,13 +144,15 @@ class WechatRuleTextReplyModel extends BaseActiveRecord
     /**
      * 根据rule_id查询下面的content
      * @param int $ruleId
+     * @param $type
      * @param string $count
-     * @return array|\yii\db\ActiveRecord[]|null
+     * @return array|ActiveRecord[]|null
      * @author 青岛开店星信息技术有限公司
      */
-    public static function getinfoByRuleId($ruleId, $type, $count = '')
+    public static function getinfoByRuleId(int $ruleId, $type, string $count = ''): ?array
     {
         $query = self::find()->where(['rule_id' => $ruleId])->select(['content']);
+
         if ($count == 'all') {
             $result = $query->asArray()->all();
             foreach ($result as &$value) {
@@ -147,6 +162,7 @@ class WechatRuleTextReplyModel extends BaseActiveRecord
             $result = $query->first();
             $result['type'] = $type;
         }
+
         return $result;
     }
 }

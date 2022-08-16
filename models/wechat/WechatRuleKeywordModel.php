@@ -17,7 +17,9 @@ use shopstar\constants\poster\PosterTypeConstant;
 use shopstar\exceptions\wechat\WechatException;
 use shopstar\helpers\DateTimeHelper;
 use shopstar\models\poster\PosterModel;
-use shopstar\wechat\constants\WechatRuleKeywordConstant;
+use shopstar\constants\wechat\WechatRuleKeywordConstant;
+use yii\db\ActiveRecord;
+use yii\db\Exception;
 
 /**
  * This is the model class for table "{{%wechat_rule_keyword}}".
@@ -36,7 +38,7 @@ class WechatRuleKeywordModel extends BaseActiveRecord
     /**
      * {@inheritdoc}
      */
-    public static function tableName()
+    public static function tableName(): string
     {
         return '{{%wechat_rule_keyword}}';
     }
@@ -44,7 +46,7 @@ class WechatRuleKeywordModel extends BaseActiveRecord
     /**
      * {@inheritdoc}
      */
-    public function rules()
+    public function rules(): array
     {
         return [
             [['rule_id', 'type', 'displayorder', 'status', 'unionid'], 'integer'],
@@ -56,7 +58,7 @@ class WechatRuleKeywordModel extends BaseActiveRecord
     /**
      * {@inheritdoc}
      */
-    public function attributeLabels()
+    public function attributeLabels(): array
     {
         return [
             'id' => 'ID',
@@ -75,11 +77,11 @@ class WechatRuleKeywordModel extends BaseActiveRecord
      * @param array $params
      * @param int $ruleId
      * @return bool
-     * @throws \yii\db\Exception
+     * @throws Exception
      * @throws WechatException
      * @author 青岛开店星信息技术有限公司
      */
-    public static function addData(array $params, int $ruleId)
+    public static function addData(array $params, int $ruleId): bool
     {
         foreach ($params as $value) {
             $data[] = [
@@ -97,6 +99,7 @@ class WechatRuleKeywordModel extends BaseActiveRecord
         if (!$result) {
             throw new WechatException(WechatException::SAVE_FAILURE_ERROR);
         }
+
         return true;
     }
 
@@ -119,41 +122,51 @@ class WechatRuleKeywordModel extends BaseActiveRecord
      * @throws WechatException
      * @author 青岛开店星信息技术有限公司
      */
-    public static function updateData(array $params, int $ruleId)
+    public static function updateData(array $params, int $ruleId): bool
     {
+        $modelIds = [];
+
         foreach ($params as $value) {
             $info = self::findOne(['id' => $value['id'], 'rule_id' => $ruleId]);
+
             if (!$info) {
                 $info = new self();
                 $info->setAttributes([
                     'rule_id' => $ruleId,
                 ]);
             }
+
             $info->setAttributes([
                 'keyword' => $value['keyword'],
                 'type' => $value['type'],
             ]);
+
             if (!$info->save()) {
                 throw new WechatException(WechatException::UPDATE_FAILURE_ERROR);
             }
+
             $modelIds[] = $info->id;
         }
+
         self::deleteAll([
             'and',
             ['rule_id' => $ruleId],
             ['not in', 'id', $modelIds]
         ]);
+
         return true;
     }
 
     /**
      * 根据关键字查询
-     * @return array
+     * @param $keyword
+     * @return array|int|string|ActiveRecord[]
      * @author 青岛开店星信息技术有限公司
      */
     public static function getKeywordList($keyword)
     {
         if (is_null($keyword)) return [];
+
         $result = self::getColl([
             'alias' => 'rule_keyword',
             'leftJoin' => [WechatRuleModel::tableName() . ' rule', 'rule.id=rule_keyword.rule_id'],
@@ -181,18 +194,20 @@ class WechatRuleKeywordModel extends BaseActiveRecord
             'onlyList' => true,
             'pager' => false,
         ]);
+
         if (is_array($result)) {
             foreach ($result as &$value) {
                 // 判断是否是关注海报 适配海报的规则id
                 if ($value['type'] == 'poster' && $value['event'] == 'SCAN') {
-                    $posterinfo = PosterModel::findOne(['keyword' => $keyword, 'status' => 1, 'is_deleted' => 0, 'type' => PosterTypeConstant::POSTER_TYPE_ATTENTION]);
-                    if (!$posterinfo) {
+                    $posterInfo = PosterModel::findOne(['keyword' => $keyword, 'status' => 1, 'is_deleted' => 0, 'type' => PosterTypeConstant::POSTER_TYPE_ATTENTION]);
+                    if (!$posterInfo) {
                         return [];
                     }
-                    $value['rule_id'] = $posterinfo->id;
+                    $value['rule_id'] = $posterInfo->id;
                 }
             }
         }
+
         return $result ?? [];
     }
 
@@ -201,18 +216,20 @@ class WechatRuleKeywordModel extends BaseActiveRecord
      * @param $keyword
      * @param $ruleId
      * @return bool
-     * @throws \yii\db\Exception
+     * @throws Exception
      * @throws WechatException
      * @author 青岛开店星信息技术有限公司
      */
-    public static function createOrUpdateRuleKeyword($keyword, $ruleId)
+    public static function createOrUpdateRuleKeyword($keyword, $ruleId): bool
     {
         $model = self::findOne(['rule_id' => $ruleId]);
+
         if ($model) {
             $model->setAttributes([
                 'keyword' => $keyword,
                 'type' => WechatRuleKeywordConstant::WECHAT_RULE_KEYWORD_TYPE_ALL,
             ]);
+
             $model->save();
         } else {
             $params = [
@@ -221,8 +238,10 @@ class WechatRuleKeywordModel extends BaseActiveRecord
                     'type' => WechatRuleKeywordConstant::WECHAT_RULE_KEYWORD_TYPE_ALL,
                 ]
             ];
+
             self::addData($params, $ruleId);
         }
+
         return true;
     }
 }

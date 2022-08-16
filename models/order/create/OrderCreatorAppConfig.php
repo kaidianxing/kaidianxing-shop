@@ -22,17 +22,17 @@ class OrderCreatorAppConfig
     /**
      * @var array 应用规则列表
      */
-    protected static $appRules = [
+    protected static array $appRules = [
 //        // 积分商城
         'creditShop' => [
-            'handlers' => [ //复写订单主体处理器 // TODO 青岛开店星信息技术有限公司 所有多商户或单店的判断都在里面控制
-                'init_handler' => 'apps\creditShop\services\handler\InitHandler',
-                'goods_handler' => 'apps\creditShop\services\handler\GoodsHandler',
-                'dispatch_handler' => 'apps\creditShop\services\handler\DispatchHandler',
-                'collect_data_handler' => 'apps\creditShop\services\handler\CollectDataHandler',
-                'order_save_handler' => 'apps\creditShop\services\handler\OrderSaveHandler',
+            'handlers' => [ //复写订单主体处理器 // TODO 青岛开店星信息技术有限公司 所有店铺的判断都在里面控制
+                'init_handler' => 'shopstar\services\creditShop\handler\InitHandler',
+                'goods_handler' => 'shopstar\services\creditShop\handler\GoodsHandler',
+                'dispatch_handler' => 'shopstar\services\creditShop\handler\DispatchHandler',
+                'collect_data_handler' => 'shopstar\services\creditShop\handler\CollectDataHandler',
+                'order_save_handler' => 'shopstar\services\creditShop\handler\OrderSaveHandler',
             ],
-            'activity_module' => 'apps\creditShop\services\OrderCreatorActivity',
+            'activity_module' => 'shopstar\services\creditShop\OrderCreatorActivity',
         ],
     ];
 

@@ -12,10 +12,13 @@
 
 namespace shopstar\models\wechat;
 
+use ReflectionException;
 use shopstar\bases\model\BaseActiveRecord;
 use shopstar\exceptions\wechat\WechatException;
 use shopstar\helpers\DateTimeHelper;
-use shopstar\wechat\constants\WechatMediaTypeConstant;
+use shopstar\constants\wechat\WechatMediaTypeConstant;
+use yii\base\InvalidConfigException;
+use yii\db\Exception;
 
 /**
  * This is the model class for table "{{%wechat_rule_images_reply}}".
@@ -28,11 +31,10 @@ use shopstar\wechat\constants\WechatMediaTypeConstant;
  */
 class WechatRuleImagesReplyModel extends BaseActiveRecord
 {
-
     /**
      * {@inheritdoc}
      */
-    public static function tableName()
+    public static function tableName(): string
     {
         return '{{%wechat_rule_images_reply}}';
     }
@@ -40,7 +42,7 @@ class WechatRuleImagesReplyModel extends BaseActiveRecord
     /**
      * {@inheritdoc}
      */
-    public function rules()
+    public function rules(): array
     {
         return [
             [['rule_id'], 'integer'],
@@ -52,7 +54,7 @@ class WechatRuleImagesReplyModel extends BaseActiveRecord
     /**
      * {@inheritdoc}
      */
-    public function attributeLabels()
+    public function attributeLabels(): array
     {
         return [
             'id' => 'ID',
@@ -63,12 +65,24 @@ class WechatRuleImagesReplyModel extends BaseActiveRecord
         ];
     }
 
-    public static function addData($params, $ruleId)
+    /**
+     * 保存数据
+     * @param $params
+     * @param $ruleId
+     * @return bool
+     * @throws Exception
+     * @throws InvalidConfigException
+     * @throws ReflectionException
+     * @throws WechatException
+     * @author 青岛开店星信息技术有限公司
+     */
+    public static function addData($params, $ruleId): bool
     {
         foreach ($params as $value) {
             if ($value['containtype'] == 'text') {
                 continue;
             }
+
             $result = self::getMediaId($value['attachment_id']);
             $data[] = [
                 'rule_id' => $ruleId,
@@ -77,10 +91,13 @@ class WechatRuleImagesReplyModel extends BaseActiveRecord
                 'created_at' => DateTimeHelper::now(),
             ];
         }
+
         $result = self::batchInsert(array_keys($data[0]), $data);
+
         if (!$result) {
             throw new WechatException(WechatException::SAVE_FAILURE_ERROR);
         }
+
         return true;
     }
 
@@ -102,15 +119,20 @@ class WechatRuleImagesReplyModel extends BaseActiveRecord
      * @param string $flag
      * @param int $attachmentId
      * @return bool
+     * @throws InvalidConfigException
+     * @throws ReflectionException
      * @throws WechatException
      * @author 青岛开店星信息技术有限公司
      */
-    public static function updateData(array $params, int $ruleId, $flag = '', int $attachmentId = 0)
+    public static function updateData(array $params, int $ruleId, string $flag = '', int $attachmentId = 0): bool
     {
+        $modelIds = [];
+
         foreach ($params as $value) {
             if ($value['containtype'] == 'text') {
                 continue;
             }
+
             $info = self::findOne(['id' => $value['id'], 'rule_id' => $ruleId]);
             if (!$info) {
                 $info = new self();
@@ -126,30 +148,36 @@ class WechatRuleImagesReplyModel extends BaseActiveRecord
             if (!$info->save()) {
                 throw new WechatException(WechatException::UPDATE_FAILURE_ERROR);
             }
+
             $modelIds[] = $info->id;
         }
+
         self::deleteAll([
             'and',
             ['rule_id' => $ruleId],
             ['not in', 'id', $modelIds]
         ]);
+
         return true;
     }
 
     /**
      * 获取微信端素材id
-     * @param string $path
      * @param int $attachmentId
      * @return array
      * @throws WechatException
+     * @throws ReflectionException
+     * @throws InvalidConfigException
      * @author 青岛开店星信息技术有限公司
      */
-    public static function getMediaId(int $attachmentId)
+    public static function getMediaId(int $attachmentId): array
     {
         $result = WechatMaterialModel::upload($attachmentId, WechatMediaTypeConstant::WECHAT_MEDIA_TYPE_IMAGE);
+
         if (is_error($result)) {
             throw new WechatException(WechatException::IMAGES_UPLOAD_ERROR, $result['message']);
         }
+
         return $result ?? [];
     }
 
@@ -158,12 +186,13 @@ class WechatRuleImagesReplyModel extends BaseActiveRecord
      * @param int $ruleId
      * @param string $type
      * @param string $count
-     * @return array|\yii\db\ActiveRecord[]|null
+     * @return array|null
      * @author 青岛开店星信息技术有限公司
      */
-    public static function getinfoByRuleId(int $ruleId, string $type, string $count = '')
+    public static function getinfoByRuleId(int $ruleId, string $type, string $count = ''): ?array
     {
         $query = self::find()->where(['rule_id' => $ruleId])->select(['media_id', 'path']);
+
         if ($count == 'all') {
             $result = $query->asArray()->all();
             foreach ($result as &$value) {

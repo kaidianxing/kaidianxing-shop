@@ -12,15 +12,21 @@
 
 namespace shopstar\models\wechat;
 
-use shopstar\wechat\constants\WechatMediaTypeConstant;
+use ReflectionException;
 use shopstar\bases\model\BaseActiveRecord;
+use shopstar\components\wechat\helpers\OfficialAccountDraftsHelper;
 use shopstar\components\wechat\helpers\OfficialAccountMediaHelper;
+use shopstar\constants\wechat\WechatMediaTypeConstant;
 use shopstar\helpers\DateTimeHelper;
 use shopstar\helpers\FileHelper;
 use shopstar\helpers\LogHelper;
 use shopstar\helpers\StringHelper;
 use shopstar\models\core\attachment\CoreAttachmentModel;
 use shopstar\services\core\attachment\CoreAttachmentService;
+use Throwable;
+use Yii;
+use yii\base\Exception;
+use yii\base\InvalidConfigException;
 use yii\web\UploadedFile;
 
 /**
@@ -37,11 +43,10 @@ use yii\web\UploadedFile;
  */
 class WechatMaterialModel extends BaseActiveRecord
 {
-
     /**
      * {@inheritdoc}
      */
-    public static function tableName()
+    public static function tableName(): string
     {
         return '{{%wechat_material}}';
     }
@@ -49,7 +54,7 @@ class WechatMaterialModel extends BaseActiveRecord
     /**
      * {@inheritdoc}
      */
-    public function rules()
+    public function rules(): array
     {
         return [
             [['attachment_id'], 'integer'],
@@ -64,7 +69,7 @@ class WechatMaterialModel extends BaseActiveRecord
     /**
      * {@inheritdoc}
      */
-    public function attributeLabels()
+    public function attributeLabels(): array
     {
         return [
             'id' => 'ID',
@@ -79,13 +84,14 @@ class WechatMaterialModel extends BaseActiveRecord
     }
 
     /**
-     *
+     * 同步素材
      * @param array $options
-     * @return mixed
-     * @throws \yii\db\Exception
-     * @author 青岛开店星信息技术有限公司.
+     * @return array|bool
+     * @throws Exception
+     * @throws InvalidConfigException
+     * @author 青岛开店星信息技术有限公司
      */
-    public static function sync(array $options = []): bool
+    public static function sync(array $options = [])
     {
         $options = array_merge([
             'type' => WechatMediaTypeConstant::WECHAT_MEDIA_TYPE_IMAGE,
@@ -104,21 +110,26 @@ class WechatMaterialModel extends BaseActiveRecord
             return true;
         }
 
-        $tr = \Yii::$app->db->beginTransaction();
+        $tr = Yii::$app->db->beginTransaction();
 
         try {
             //删除之前素材
             self::deleteAll(['type' => $options['type']]);
 
             if ($options['type'] == WechatMediaTypeConstant::WECHAT_MEDIA_TYPE_NEWS) {
-                WechatMaterialNewsEntity::deleteAll();
+                WechatMaterialNewsModel::deleteAll();
             }
 
             $page = 0;
 
             //循环同步素材
             do {
-                $data = OfficialAccountMediaHelper::getColl($options['type'], $page * 20);
+                if ($options['type'] == WechatMediaTypeConstant::WECHAT_MEDIA_TYPE_NEWS) {
+                    $data = OfficialAccountDraftsHelper::batchGet($page * 20);
+                } else {
+                    $data = OfficialAccountMediaHelper::getList($options['type'], $page * 20);
+                }
+
                 if (!empty($data['item'])) {
                     foreach ($data['item'] as $item) {
 
@@ -169,7 +180,7 @@ class WechatMaterialModel extends BaseActiveRecord
                             if (empty($insetData)) continue;
 
                             //批量入库
-                            WechatMaterialNewsEntity::batchInsert(array_keys(current($insetData)), $insetData);
+                            WechatMaterialNewsModel::batchInsert(array_keys(current($insetData)), $insetData);
                         }
                     }
                 }
@@ -178,7 +189,7 @@ class WechatMaterialModel extends BaseActiveRecord
             } while ($data['item_count'] == 20);
 
             $tr->commit();
-        } catch (\Throwable $throwable) {
+        } catch (Throwable $throwable) {
             LogHelper::error('[WECHAT MATERIAL SYNC ERROR]:', [
                 'message' => $throwable->getMessage()
             ]);
@@ -195,11 +206,11 @@ class WechatMaterialModel extends BaseActiveRecord
      * @param string $type
      * @param array $options
      * @return array
-     * @throws \yii\base\InvalidConfigException
-     * @throws \ReflectionException
-     * @author 青岛开店星信息技术有限公司.
+     * @throws Exception
+     * @throws InvalidConfigException
+     * @author 青岛开店星信息技术有限公司
      */
-    public static function upload(int $attachmentId, string $type, array $options = [])
+    public static function upload(int $attachmentId, string $type, array $options = []): array
     {
         $options = array_merge([
             'video_title' => '',
@@ -263,7 +274,6 @@ class WechatMaterialModel extends BaseActiveRecord
 
             //写入本地
             $fileResult = FileHelper::write($localPath, $file);
-
         } else {
             //上传文件
             $file = UploadedFile::getInstanceByName('file');
@@ -282,7 +292,6 @@ class WechatMaterialModel extends BaseActiveRecord
 
             //保存文件
             $fileResult = $file->saveAs($localPath);
-
         }
 
         if (is_error($fileResult)) {
@@ -328,11 +337,10 @@ class WechatMaterialModel extends BaseActiveRecord
      * 获取写入链接
      * @param string $fileName
      * @return string
-     * @author 青岛开店星信息技术有限公司.
+     * @author 青岛开店星信息技术有限公司
      */
     public static function getWriteFilePath(string $fileName): string
     {
         return SHOP_STAR_PUBLIC_TMP_PATH . '/wechat_tmp_media_file/' . '/' . md5(time() . StringHelper::random(5)) . '.' . FileHelper::getExtension($fileName);
     }
-
 }

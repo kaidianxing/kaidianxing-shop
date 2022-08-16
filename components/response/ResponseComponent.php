@@ -42,7 +42,7 @@ class ResponseComponent extends Component
      * 事件对应模块
      * @var array
      */
-    private static $channerMap = [
+    private static array $channerMap = [
         ResponseChannelConstant::CHANNEL_OFFICIAL_ACCOUNT => 'wechat'
     ];
 
@@ -50,7 +50,7 @@ class ResponseComponent extends Component
      * 获取实例
      * @param string $channel
      * @param array $config
-     * @return array
+     * @return array|bool
      * @throws \yii\base\InvalidConfigException
      * @author 青岛开店星信息技术有限公司
      */
@@ -97,7 +97,7 @@ class ResponseComponent extends Component
             // 去除相同rule_id 和 containtype 的数据, 避免respond时循环造成多次调用
             $processRule = [];
             foreach ($rule as $item) {
-                $index = $item['rule_id'] . '_' . $item['containtype'];
+                $index = $item['rule_id'] . '_' . $item['containtype'] . '_' . $item['type'];
                 if (isset($processRule[$index])) {
                     continue;
                 }

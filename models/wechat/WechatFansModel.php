@@ -15,7 +15,7 @@ namespace shopstar\models\wechat;
 use shopstar\bases\model\BaseActiveRecord;
 use shopstar\components\wechat\helpers\OfficialAccountFansHelper;
 use shopstar\helpers\DateTimeHelper;
-use shopstar\helpers\LogHelper;
+use yii\db\Exception;
 
 /**
  * This is the model class for table "{{%wechat_fans}}".
@@ -44,7 +44,7 @@ class WechatFansModel extends BaseActiveRecord
     /**
      * {@inheritdoc}
      */
-    public static function tableName()
+    public static function tableName(): string
     {
         return '{{%wechat_fans}}';
     }
@@ -52,7 +52,7 @@ class WechatFansModel extends BaseActiveRecord
     /**
      * {@inheritdoc}
      */
-    public function rules()
+    public function rules(): array
     {
         return [
             [['is_follow', 'is_black', 'sex'], 'integer'],
@@ -65,7 +65,7 @@ class WechatFansModel extends BaseActiveRecord
     /**
      * {@inheritdoc}
      */
-    public function attributeLabels()
+    public function attributeLabels(): array
     {
         return [
             'id' => 'ID',
@@ -152,13 +152,12 @@ class WechatFansModel extends BaseActiveRecord
     /**
      * 获取公众号粉丝
      * @param array $options
-     * @return mixed
-     * @throws \yii\db\Exception
+     * @return array|bool|int
+     * @throws Exception
      * @author 青岛开店星信息技术有限公司.
      */
-    public static function sync(array $options = []): bool
+    public static function sync(array $options = [])
     {
-
         $options = array_merge([
         ], $options);
 
@@ -232,7 +231,7 @@ class WechatFansModel extends BaseActiveRecord
                 $attributes['black_time'] = $time;
             }
 
-            $fansModel = new WechatFansEntity();
+            $fansModel = new self();
             $fansModel->setAttributes($attributes);
 
             //保存标签
@@ -264,10 +263,10 @@ class WechatFansModel extends BaseActiveRecord
      * 递归获取用户
      * @param null $nextOpenId
      * @param bool $isBlack
-     * @return array|bool|mixed
+     * @return array
      * @author 青岛开店星信息技术有限公司.
      */
-    private static function recursiveGetWechatUser($nextOpenId = null, $isBlack = false)
+    private static function recursiveGetWechatUser($nextOpenId = null, bool $isBlack = false): array
     {
         if ($isBlack) {
             $data = OfficialAccountFansHelper::getBlackList($nextOpenId);

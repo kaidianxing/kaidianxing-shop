@@ -35,18 +35,16 @@ use shopstar\bases\model\BaseActiveRecord;
  */
 class CoreAttachmentModel extends BaseActiveRecord
 {
-
     /**
      * 托管存储
      */
     public const HOSTING = 10;
 
-
     /**
      * 映射
      * @var array
      */
-    public static $storageModelMap = [
+    public static array $storageModelMap = [
         self::HOSTING => '托管存储',
     ];
 
@@ -55,7 +53,7 @@ class CoreAttachmentModel extends BaseActiveRecord
     /**
      * {@inheritdoc}
      */
-    public static function tableName()
+    public static function tableName(): string
     {
         return '{{%core_attachment}}';
     }
@@ -63,7 +61,7 @@ class CoreAttachmentModel extends BaseActiveRecord
     /**
      * {@inheritdoc}
      */
-    public function rules()
+    public function rules(): array
     {
         return [
             [['group_id', 'account_id', 'type', 'scene', 'size', 'year', 'month'], 'integer'],
@@ -80,7 +78,7 @@ class CoreAttachmentModel extends BaseActiveRecord
     /**
      * {@inheritdoc}
      */
-    public function attributeLabels()
+    public function attributeLabels(): array
     {
         return [
             'id' => 'ID',

@@ -58,7 +58,7 @@ class StorageDriverConstant extends BaseConstant
     /**
      * @var array 映射Map
      */
-    private static $map = [
+    private static array $map = [
         self::DRIVE_LOCAL => [
             'name' => '本地存储',
             'class' => 'shopstar\components\storage\drivers\LocalDriver'
