@@ -110,7 +110,7 @@ class CoreAttachmentService
         // 处理连接数据
         $settings = static::getSettings();
 
-        $storageType = 'local';
+        $storageType = $settings['type'] ?? 'local';
         static $instance;
         if ($options['static'] === false || is_null($instance)) {
             $instance = StorageComponent::getInstance($storageType, $settings[$storageType]);
@@ -237,7 +237,7 @@ class CoreAttachmentService
         $settings = static::getSettings();
 
         // 获取储存方式
-        $storageType = 'local';
+        $storageType = $settings['type'];
 
         /**
          * 获取存储组件实例
@@ -307,7 +307,7 @@ class CoreAttachmentService
         }
 
         // 获取储存方式
-        $storageType = 'local';
+        $storageType = $settings['type'] ?? 'local';
 
         /**
          * 获取存储组件实例

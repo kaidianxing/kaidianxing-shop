@@ -134,6 +134,7 @@ class FtpDriver extends BaseStorageDriver implements StorageDriverInterface
             return;
         }
 
+        ftp_set_option($this->resource, FTP_USEPASVADDRESS, false);
         // 设置被动模式
         ftp_pasv($this->resource, $this->passive_mode);
     }
