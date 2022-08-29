@@ -26,7 +26,7 @@ defined('SHOP_STAR_PUBLIC_DATA_PATH') or define('SHOP_STAR_PUBLIC_DATA_PATH', SH
 
 // 检测vendor包是否存在
 if (!is_dir(SHOP_STAR_VENDOR_PATH)) {
-    exit('请先使用composer安装依赖!');
+    exit('请先使用composer安装依赖！详细步骤请查看 <a href="https://q.kaidianxing.com/thread/11" target="_blank">https://q.kaidianxing.com/thread/11</a>');
 }
 
 /**
