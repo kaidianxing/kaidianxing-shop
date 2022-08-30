@@ -203,6 +203,16 @@ return [
         'category' =>  10,
         'sort_by' =>  0,
     ],
+    'creditShop' => [
+        'name' => '积分商城',
+        'type' => 10,
+        'identity' => 'creditShop',
+        'logo' =>  '/static/dist/shop/plugin_icon/icon-creditShop.png',
+        'description' => '积分购买商品，形成积分营销闭环',
+        'route' =>  '/creditShop/statistics/index',
+        'category' =>  10,
+        'sort_by' =>  0,
+    ],
     'wxTransactionComponent' => [
         'name' => '自定义交易组件(视频号商城)',
         'type' => 10,

@@ -65,7 +65,7 @@ class CollectDataHandler implements HandlerInterface
             'option_title' => $goodsData['option_title'],
             'thumb' => $goodsData['thumb'],
             'option_thumb' => $goodsData['option_thumb'],
-            'goods_code' => $goodsData['goods_code'],
+            'goods_sku' => $goodsData['goods_sku'],
             'unit' => $goodsData['unit'],
             'type' => $goodsData['type'],
             'goods_id' => $goodsData['goods_id'],

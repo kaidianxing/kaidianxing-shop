@@ -17,6 +17,14 @@
 //     with_live: false, //直播
 //     with_recharge: false// 个人中心 支付入口
 // };
+var config = {
+	base_url: 'https://free-shopstar.v5bsklk.getpkg.cn/h5/api',
+	attachment_url: 'https://free-shopstar.v5bsklk.getpkg.cn/data/attachment/',
+	public_url: 'https://free-shopstar.v5bsklk.getpkg.cn/',
+	wap_dist_url:
+		'https://free-shopstar.v5bsklk.getpkg.cn/static/dist/shop/kdx_wap/',
+	wap_url: 'https://free-shopstar.v5bsklk.getpkg.cn/h5',
+};
 // var config = {
 //     "base_url": "http://kdx-free-mbw.v5dev.getpkg.cn/h5/api",
 //     "attachment_url": "http://kdx-free-mbw.v5dev.getpkg.cn/data/attachment/",
@@ -24,38 +32,42 @@
 //     "wap_dist_url": "http://kdx-free-mbw.v5dev.getpkg.cn/static/dist/shop/kdx_wap/",
 //     "wap_url": "http://kdx-free-mbw.v5dev.getpkg.cn/h5"
 // }
-var config = {//测试站
-    "base_url": "https://free-shopstar.v5bsklk.getpkg.cn/h5/api",
-    "attachment_url": "https://free-shopstar.v5bsklk.getpkg.cn/data/attachment/",
-    "public_url": "https://free-shopstar.v5bsklk.getpkg.cn/",
-    "wap_dist_url": "https://free-shopstar.v5bsklk.getpkg.cn/static/dist/shop/kdx_wap/",
-    "wap_url": "https://free-shopstar.v5bsklk.getpkg.cn/h5",
-    "with_recharge" :true
-}
-
+// var config = {
+//     "base_url": "http://likexin.shopstar.cn/h5/api",
+//     "attachment_url": "http://likexin.shopstar.cn/data/attachment/",
+//     "public_url": "http://likexin.shopstar.cn/",
+//     "wap_dist_url": "http://likexin.shopstar.cn/static/dist/shop/kdx_wap/",
+//     "wap_url": "http://likexin.shopstar.cn/h5"
+// }
+// var config = {//测试站
+//     "base_url": "https://free-shopstar.v5bsklk.getpkg.cn/h5/api",
+//     "attachment_url": "https://free-shopstar.v5bsklk.getpkg.cn/data/attachment/",
+//     "public_url": "https://free-shopstar.v5bsklk.getpkg.cn/",
+//     "wap_dist_url": "https://free-shopstar.v5bsklk.getpkg.cn/static/dist/shop/kdx_wap/",
+//     "wap_url": "https://free-shopstar.v5bsklk.getpkg.cn/h5",
+//     "with_recharge" :true
+// }
 
 // window.wxDebug = false;
 // console.log(config);
 
 /*
-*  with_live （小程序直播为true时请在以下路径内打开 playerPlugin 注释）
-*  src/common/util.js    playerPlugin = null  =>  playerPlugin = requirePlugin('live-player-plugin')
-* */
+ *  with_live （小程序直播为true时请在以下路径内打开 playerPlugin 注释）
+ *  src/common/util.js    playerPlugin = null  =>  playerPlugin = requirePlugin('live-player-plugin')
+ * */
 
 // with_recharge    支付
 // with_live     直播
 
 //#ifdef H5
 try {
-    if (window) {
-        window.config = window.config ? window.config : config;
-        config = window.config;
-    }
-} catch (e) {
-}
+	if (window) {
+		window.config = window.config ? window.config : config;
+		config = window.config;
+	}
+} catch (e) {}
 
 //#endif
 try {
-    exports.config = config;
-} catch (e) {
-}
+	exports.config = config;
+} catch (e) {}

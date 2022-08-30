@@ -18,12 +18,15 @@ use shopstar\constants\order\OrderConstant;
 use shopstar\constants\order\OrderDispatchExpressConstant;
 use shopstar\constants\order\OrderSceneConstant;
 use shopstar\constants\order\OrderStatusConstant;
+use shopstar\constants\order\OrderTypeConstant;
 use shopstar\constants\RefundConstant;
 use shopstar\helpers\DateTimeHelper;
+use shopstar\models\creditShop\CreditShopOrderModel;
 use shopstar\models\order\OrderGoodsModel;
 use shopstar\models\order\OrderModel;
 use shopstar\models\order\refund\OrderRefundModel;
 use shopstar\models\shop\ShopSettings;
+use shopstar\services\creditShop\CreditShopOrderService;
 use shopstar\services\order\OrderService;
 use shopstar\services\wxTransactionComponent\WxTransactionComponentOrderService;
 use yii\helpers\Json;
@@ -67,6 +70,16 @@ class OrderRefundService extends BaseService
             }
         }
 
+        // 积分商城优惠券订单 单独判断
+        if ($order->order_type == OrderTypeConstant::ORDER_TYPE_CREDIT_SHOP_COUPON) {
+            $res = CreditShopOrderService::checkRefund($order->id);
+
+            // 不可维权
+            if (is_error($res)) {
+                return $res;
+            }
+        }
+
         // 如果订单已完成 且 (订单没维权状态 或者 拒绝过)
         if ($order->status == OrderStatusConstant::ORDER_STATUS_SUCCESS
             && (empty($refund) || (!empty($refund) && $refund->status == RefundConstant::REFUND_STATUS_REJECT))) {
@@ -80,7 +93,7 @@ class OrderRefundService extends BaseService
             // 积分商城走自己的设置
             if ($order->activity_type == OrderActivityTypeConstant::ACTIVITY_TYPE_CREDIT_SHOP) {
                 // 获取积分商城设置
-                $creditSet = ShopSettings::get('plugin_credit_shop');
+                $creditSet = ShopSettings::get('credit_shop');
                 // 走系统默认
                 if ($creditSet['refund_type'] == 0) {
                     // 设置了维权天数
@@ -349,7 +362,7 @@ class OrderRefundService extends BaseService
         if ($order->activity_type == OrderActivityTypeConstant::ACTIVITY_TYPE_CREDIT_SHOP) {
             // 积分商城的 加上积分字段  单品和整单没区别
             // 判断设置 是否退积分
-            $creditShopSetting = ShopSettings::get('plugin_credit_shop');
+            $creditShopSetting = ShopSettings::get('credit_shop');
             if ($creditShopSetting['refund_rule'] == 0) {
                 $creditShopOrder = CreditShopOrderModel::find()->select(['order_id', 'pay_credit'])->where(['order_id' => $order->id])->first();
                 $data['credit'] = $creditShopOrder['pay_credit'];
@@ -453,7 +466,7 @@ class OrderRefundService extends BaseService
                 ['refund_status' => RefundConstant::REFUND_STATUS_CANCEL, 'refund_type' => 0, 'is_single_refund' => 0],
                 ['order_id' => $orderId, 'id' => $orderGoodsId]
             );
-        } 
+        }
 
         return success();
     }

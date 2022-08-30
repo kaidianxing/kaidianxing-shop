@@ -96,4 +96,38 @@ class CreditShopGoodsModel extends BaseActiveRecord
         ];
     }
 
+    /**
+     * @return array
+     * @author 青岛开店星信息技术有限公司
+     */
+    public function logAttributeLabels(): array
+    {
+        return [
+            'id' => 'id',
+            'type' => '类型',
+            'title' => '商品/优惠券名称',
+            'option' => [
+                'title' => '规格',
+                'item' => [
+                    'title' => '标题',
+                    'is_join' => '是否参与',
+                    'credit_shop_credit' => '积分',
+                    'credit_shop_price' => '金额',
+                    'credit_shop_stock' => '库存',
+                ]
+            ],
+            'credit_shop_credit' => '积分价',
+            'credit_shop_price' => '金额',
+            'credit_shop_stock' => '库存',
+            'dispatch_type' => '运费设置',
+            'member_level_limit_type' => '会员等级限制',
+            'member_level_id' => '会员等级id',
+            'member_group_limit_type' => '会员标签限制',
+            'member_group_id' => '会员标签id',
+            'goods_limit_type' => '商品限购类型',
+            'goods_limit_num' => '每人限购',
+            'goods_limit_day' => '每天限购',
+            'status' => '状态',
+        ];
+    }
 }

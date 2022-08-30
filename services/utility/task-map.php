@@ -34,13 +34,13 @@ return [
         'class' => ['\shopstar\models\broadcast\BroadcastGoodsModel', 'syncStatus'],
         'settings_key' => 'plugin_broadcast_goods_sync_status',
     ],
-    
+
     // 商品预售数据统计
     'plugin_presell_statistics' => [
         'class' => ['\apps\presell\models\PresellStatisticsModel', 'createDayStatistic'],
         'settings_key' => 'plugin_presell_statistics',
     ],
-    
+
     // 秒杀数据统计
     'plugin_seckill_statistics' => [
         'class' => ['\shopstar\models\activity\MarketingStatisticsModel', 'createDayStatistic'],
@@ -68,7 +68,7 @@ return [
     ],
     // 积分商城数据统计
     'plugin_credit_shop_statistics' => [
-        'class' => ['\apps\creditShop\models\CreditShopStatisticsModel', 'createDayStatistic'],
+        'class' => ['\shopstar\services\creditShopCreditShopStatisticsService', 'createDayStatistic'],
         'settings_key' => 'plugin_credit_shop_statistics',
     ],
 ];

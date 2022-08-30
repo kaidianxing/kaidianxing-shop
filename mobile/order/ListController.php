@@ -17,6 +17,7 @@ use shopstar\constants\order\OrderActivityTypeConstant;
 use shopstar\constants\order\OrderStatusConstant;
 use shopstar\constants\RefundConstant;
 use shopstar\helpers\ValueHelper;
+use shopstar\models\creditShop\CreditShopOrderModel;
 use shopstar\models\order\OrderModel;
 use shopstar\models\order\refund\OrderRefundModel;
 use shopstar\models\shop\ShopSettings;
@@ -232,6 +233,17 @@ class ListController extends BaseMobileApiController
                 }
             }
         }
+
+        // 积分商城订单
+        if (!empty($creditShopOrderId)) {
+            $creditShopOrder = CreditShopOrderModel::find()->select(['order_id', 'pay_credit', 'credit_unit'])->where(['order_id' => $creditShopOrderId])->indexBy('order_id')->get();
+            foreach ($creditShopOrder as $orderId => $order) {
+                $list['list'][$orderId]['pay_credit'] = $order['pay_credit'];
+                $list['list'][$orderId]['orderGoods'][0]['credit'] = $order['pay_credit']; // 只有一个商品
+                $list['list'][$orderId]['orderGoods'][0]['credit_unit'] = $order['credit_unit']; // 只有一个商品
+            }
+        }
+
 
         $list['list'] = array_values($list['list']);
 

@@ -23,6 +23,7 @@ use shopstar\constants\SyssetTypeConstant;
 use shopstar\exceptions\order\OrderException;
 use shopstar\helpers\DateTimeHelper;
 use shopstar\models\core\CoreExpressModel;
+use shopstar\models\creditShop\CreditShopOrderModel;
 use shopstar\models\form\FormLogModel;
 use shopstar\models\goods\GoodsModel;
 use shopstar\models\member\MemberModel;

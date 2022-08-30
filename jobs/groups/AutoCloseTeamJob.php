@@ -42,10 +42,10 @@ class AutoCloseTeamJob extends BaseObject implements JobInterface
      */
     public function execute($queue)
     {
-        echo "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<拼团关闭:{$this->data['shop_id']}--{$this->data['sub_shop_id']}--{$this->data['team_id']}>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n";
-        $result = GroupsTeamService::autoCloseTeam($this->data['shop_id'], $this->data['team_id'], (bool)$this->data['delete_activity'], $this->data['sub_shop_id']);
+        echo "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<拼团关闭:{$this->data['team_id']}>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n";
+        $result = GroupsTeamService::autoCloseTeam($this->data['team_id'], (bool)$this->data['delete_activity']);
         if (is_error($result)) {
-            echo "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<拼团关闭失败:{$this->data['shop_id']}--{$this->data['sub_shop_id']}--{$this->data['team_id']}----{$result['message']}>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n";
+            echo "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<拼团关闭失败:{$this->data['team_id']}----{$result['message']}>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n";
             exit;
         }
 

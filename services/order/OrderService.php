@@ -64,6 +64,7 @@ use shopstar\models\virtualAccount\VirtualAccountOrderMapModel;
 use shopstar\services\commission\CommissionOrderService;
 use shopstar\services\commission\CommissionService;
 use shopstar\services\consumeReward\ConsumeRewardLogService;
+use shopstar\services\creditShop\CreditShopOrderService;
 use shopstar\services\goods\GoodsService;
 use shopstar\services\groups\GroupsGoodsService;
 use shopstar\services\groups\GroupsTeamService;
@@ -189,6 +190,11 @@ class OrderService extends BaseService
                 if (is_error($resultVideo)) {
                     throw new Exception($result['message']);
                 }
+            }
+
+            // 关闭积分订单
+            if ($order['activity_type'] == OrderActivityTypeConstant::ACTIVITY_TYPE_CREDIT_SHOP) {
+                CreditShopOrderService::closeOrder($order->id);
             }
 
             $options['transaction'] && $tr->commit();
@@ -583,6 +589,12 @@ class OrderService extends BaseService
             if (is_error($virtualRes)) {
                 return error($virtualRes['message']);
             }
+        }
+
+
+        // 积分商城优惠券订单 支付后发放优惠券
+        if ($order['activity_type'] == OrderActivityTypeConstant::ACTIVITY_TYPE_CREDIT_SHOP) {
+            CreditShopOrderService::paySuccess($orderPaySuccessStruct->accountId, $orderPaySuccessStruct->orderId);
         }
 
         //减库存
@@ -1411,6 +1423,11 @@ class OrderService extends BaseService
 
             // 修改分销订单状态
             CommissionOrderService::updateRefundStatus($orderInfo['member_id'], $orderInfo['id']);
+
+            // 关闭积分订单
+            if ($orderInfo['activity_type'] == OrderActivityTypeConstant::ACTIVITY_TYPE_CREDIT_SHOP) {
+                CreditShopOrderService::closeOrder($orderInfo['id']);
+            }
 
             $options['transaction'] && $transaction->commit();
 

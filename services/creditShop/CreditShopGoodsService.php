@@ -257,7 +257,7 @@ class CreditShopGoodsService
                 //如果是多规格
                 if ($item['has_option'] == 1) {
                     // 保存多规格 计算最小价格 赋值积分商品
-                    $optionFields = ['shop_id', 'goods_id', 'credit_shop_goods_id', 'option_id', 'credit_shop_credit', 'credit_shop_price', 'credit_shop_stock', 'original_stock', 'is_join'];
+                    $optionFields = ['goods_id', 'credit_shop_goods_id', 'option_id', 'credit_shop_credit', 'credit_shop_price', 'credit_shop_stock', 'original_stock', 'is_join'];
                     $optionData = [];
                     // 先赋值最大值
                     $creditShopGoods->min_price = 99999999.99;
@@ -412,7 +412,7 @@ class CreditShopGoodsService
 
             // 重新保存
             // 保存多规格 计算最小价格 赋值积分商品
-            $optionFields = ['shop_id', 'goods_id', 'credit_shop_goods_id', 'option_id', 'credit_shop_credit', 'credit_shop_price', 'credit_shop_stock', 'original_stock', 'is_join'];
+            $optionFields = ['goods_id', 'credit_shop_goods_id', 'option_id', 'credit_shop_credit', 'credit_shop_price', 'credit_shop_stock', 'original_stock', 'is_join'];
             $optionData = [];
             // 先赋值最大值
             $creditShopGoods->min_price = 99999999.99;

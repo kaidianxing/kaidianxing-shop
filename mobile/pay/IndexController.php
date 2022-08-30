@@ -30,6 +30,7 @@ use shopstar\models\order\OrderActivityModel;
 use shopstar\models\order\OrderGoodsModel;
 use shopstar\models\order\OrderModel;
 use shopstar\models\shop\ShopSettings;
+use shopstar\services\creditShop\CreditShopOrderService;
 use shopstar\services\groups\GroupsGoodsService;
 use shopstar\services\order\OrderService;
 use shopstar\services\tradeOrder\TradeOrderService;
@@ -159,6 +160,12 @@ class IndexController extends BaseMobileApiController
             $result = GroupsGoodsService::orderPayCheckGroupsGoodsStock($orderActivity['activity_id'], $orderGoods['goods_id'], $orderGoods['option_id'], $orderGoods['total']);
             if (is_error($result)) {
                 throw new OrderException(OrderException::ORDER_PAY_GROUPS_STOCK_ERROR);
+            }
+        } else if ($order[0]['activity_type'] == OrderActivityTypeConstant::ACTIVITY_TYPE_CREDIT_SHOP) { // 积分商城订单 检测库存
+            $result = CreditShopOrderService::checkStock($order[0]['id']);
+
+            if (is_error($result)) {
+                throw new OrderException(OrderException::ORDER_PAY_CREDIT_SHOP_STOCK_ERROR);
             }
         }
 

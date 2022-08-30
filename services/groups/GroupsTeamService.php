@@ -113,7 +113,6 @@ class GroupsTeamService
             'id' => $orderId,
         ])->select([
             'id',
-            'sub_shop_id',
             'goods_info',
             'dispatch_type',
             'member_id',
@@ -889,7 +888,6 @@ class GroupsTeamService
                     'data' => [
                         'delete_activity' => true,
                         'team_id' => $item,
-                        'sub_shop_id' => 0,
                     ]
                 ]));
             }

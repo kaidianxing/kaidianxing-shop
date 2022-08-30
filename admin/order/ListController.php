@@ -23,6 +23,7 @@ use shopstar\constants\order\OrderTypeConstant;
 use shopstar\constants\RefundConstant;
 use shopstar\helpers\RequestHelper;
 use shopstar\models\commission\CommissionOrderDataModel;
+use shopstar\models\creditShop\CreditShopOrderModel;
 use shopstar\models\order\OrderGoodsModel;
 use shopstar\models\order\OrderModel;
 use shopstar\models\order\OrderPackageModel;
@@ -71,6 +72,7 @@ class ListController extends KdxAdminApiController
         $needPermType = [
             ['key' => OrderActivityTypeConstant::ACTIVITY_TYPE_SECKILL, 'value' => '秒杀订单', 'identity' => 'seckill'],
             ['key' => OrderActivityTypeConstant::ACTIVITY_TYPE_GROUPS, 'value' => '拼团订单', 'identity' => 'groups'],
+            ['key' => OrderActivityTypeConstant::ACTIVITY_TYPE_CREDIT_SHOP, 'value' => '积分商城订单', 'identity' => 'creditShop'],
         ];
 
         foreach ($needPermType as $item) {
@@ -409,10 +411,11 @@ class ListController extends KdxAdminApiController
 
         //拼团订单id
         $groupsOrderId = [];
+        $creditShopOrderId = []; // 积分商城订单id
 
         //查询订单
         $orders = OrderModel::getColl($params, [
-            'callable' => function (&$row) use (&$groupsOrderId) {
+            'callable' => function (&$row) use (&$groupsOrderId, &$creditShopOrderId) {
                 $row = OrderModel::decode($row);
                 $row['auto_close_time'] = strtotime($row['auto_close_time']);
                 // 查找订单分销信息
@@ -434,6 +437,9 @@ class ListController extends KdxAdminApiController
                 if ($row['activity_type'] == OrderActivityTypeConstant::ACTIVITY_TYPE_GROUPS) {
                     //获取拼团订单的id
                     $groupsOrderId[] = $row['id'];
+                } else if ($row['activity_type'] == OrderActivityTypeConstant::ACTIVITY_TYPE_CREDIT_SHOP) {
+                    // 积分商城订单
+                    $creditShopOrderId[] = $row['id'];
                 }
 
             }
@@ -443,6 +449,11 @@ class ListController extends KdxAdminApiController
         $orderGoodsWhere = [
             'order_id' => array_keys($orders['list']),
         ];
+
+        // 如果有积分商城订单  过滤掉
+        if (!empty($creditShopOrderId)) {
+            $andWhere[] = ['not in', 'order_id', $creditShopOrderId];
+        }
 
         //如果有快递助手 and 不等于代付款时 需要验证是否存在其他快递
         if ($status != 'WAIT_PAY') {
@@ -523,6 +534,17 @@ class ListController extends KdxAdminApiController
                 if ($listItem['activity_type'] == OrderActivityTypeConstant::ACTIVITY_TYPE_GROUPS) {
                     $listItem['groups_team_info'] = $groupsTeamInfo[$listItem['id']]['team'] ?? [];
                 }
+            }
+        }
+
+        // 积分商城订单
+        if (!empty($creditShopOrderId)) {
+            $creditShopOrder = CreditShopOrderModel::find()->select(['order_id', 'pay_credit', 'credit_unit'])->where(['order_id' => $creditShopOrderId])->indexBy('order_id')->get();
+
+            foreach ($creditShopOrder as $orderId => $order) {
+                $orders['list'][$orderId]['pay_credit'] = $order['pay_credit'];
+                $orders['list'][$orderId]['order_goods'][0]['credit'] = $order['pay_credit']; // 只有一个商品
+                $orders['list'][$orderId]['order_goods'][0]['credit_unit'] = $order['credit_unit']; // 只有一个商品
             }
         }
 

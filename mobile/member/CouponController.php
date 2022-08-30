@@ -17,14 +17,18 @@ use shopstar\constants\base\PayTypeConstant;
 use shopstar\constants\ClientTypeConstant;
 use shopstar\constants\coupon\CouponConstant;
 use shopstar\constants\coupon\CouponTimeLimitConstant;
+use shopstar\constants\creditShop\CreditShopConstant;
 use shopstar\constants\member\MemberCreditRecordStatusConstant;
 use shopstar\constants\tradeOrder\TradeOrderTypeConstant;
 use shopstar\exceptions\sale\CouponException;
 use shopstar\helpers\DateTimeHelper;
 use shopstar\helpers\RequestHelper;
 use shopstar\helpers\ValueHelper;
+use shopstar\models\creditShop\CreditShopGoodsModel;
 use shopstar\models\goods\category\GoodsCategoryModel;
 use shopstar\models\goods\GoodsModel;
+use shopstar\models\member\group\MemberGroupMapModel;
+use shopstar\models\member\group\MemberGroupModel;
 use shopstar\models\member\MemberDouyinModel;
 use shopstar\models\member\MemberLevelModel;
 use shopstar\models\member\MemberModel;
@@ -190,6 +194,57 @@ class CouponController extends BaseMobileApiController
                     break;
             }
             $detail['goods'] = $goods;
+        }
+
+        if (RequestHelper::get('is_credit_shop')) {
+            // 查找商品
+            $detail['credit_shop'] = CreditShopGoodsModel::find()->where(['goods_id' => $id, 'type' => 1])->first();
+            if (empty($detail['credit_shop'])) {
+                return $this->error('积分商品不存在');
+            }
+
+            // 会员等级限制
+            if ($detail['credit_shop']['member_level_limit_type'] != 0) {
+                $memberLevelId = explode(',', $detail['credit_shop']['member_level_id']);
+                $detail['credit_shop']['member_level_name'] = MemberLevelModel::find()->select('level_name')->where(['id' => $memberLevelId])->column();
+            }
+
+            // 会员等级限制
+            if ($detail['credit_shop']['member_group_limit_type'] != 0) {
+                $memberGroupId = explode(',', $detail['credit_shop']['member_group_id']);
+                $detail['credit_shop']['member_group_name'] = MemberGroupModel::find()->select('group_name')->where(['id' => $memberGroupId])->column();
+            }
+
+            // 检测购买权限
+            $detail['credit_shop']['perm']['buy'] = true;
+
+            if (!empty($this->memberId)) {
+                // 判断购买权限 会员等级和标签的限制 读自己设置的
+                // 会员等级限制
+                if ($detail['credit_shop']['member_level_limit_type'] != CreditShopConstant::MEMBER_LEVEL_LIMIT_TYPE_NOT_LIMIT) {
+                    $limitLevelId = explode(',', $detail['credit_shop']['member_level_id']);
+                    $memberLevelId = MemberModel::find()->select('level_id')->where(['id' => $this->memberId])->first();
+                    // 无权限
+                    if (($detail['credit_shop']['member_level_limit_type'] == CreditShopConstant::MEMBER_LEVEL_LIMIT_TYPE_ALLOW && !in_array($memberLevelId['level_id'], $limitLevelId))
+                        || ($detail['credit_shop']['member_level_limit_type'] == CreditShopConstant::MEMBER_LEVEL_LIMIT_TYPE_DENY && in_array($memberLevelId['level_id'], $limitLevelId))) {
+                        $detail['credit_shop']['perm']['buy'] = false;
+                    }
+                }
+
+                // 标签限制
+                if ($detail['credit_shop']['perm']['buy'] && $detail['credit_shop']['member_group_limit_type'] != CreditShopConstant::MEMBER_GROUP_LIMIT_TYPE_NOT_LIMIT) {
+                    $limitGroupId = explode(',', $detail['credit_shop']['member_group_id']);
+                    // 获取会员标签
+                    $memberGroupId = MemberGroupMapModel::getGroupIdByMemberId($this->memberId);
+                    // 判断有没有交集
+                    $isIntersect = array_intersect($limitGroupId, $memberGroupId);
+                    // 无权限
+                    if (($detail['credit_shop']['member_group_limit_type'] == CreditShopConstant::MEMBER_LEVEL_LIMIT_TYPE_ALLOW && $isIntersect)
+                        || ($detail['credit_shop']['member_group_limit_type'] == CreditShopConstant::MEMBER_LEVEL_LIMIT_TYPE_DENY && !$isIntersect)) {
+                        $detail['credit_shop']['perm']['buy'] = false;
+                    }
+                }
+            }
         }
 
         return $this->result(['data' => $detail]);

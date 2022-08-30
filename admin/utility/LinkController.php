@@ -196,6 +196,21 @@ class LinkController extends KdxAdminUtilityController
     ];
 
     /**
+     * @var array 积分商城应用插件
+     */
+    private array $creditShopLink = [
+        [
+            'name' => '积分商城',
+            'links' => [
+                [
+                    'name' => '积分商城首页',
+                    'url' => '/kdxCreditShop/index',
+                ],
+            ],
+        ]
+    ];
+
+    /**
      * 获取列表
      * @author likexin
      */
@@ -208,6 +223,8 @@ class LinkController extends KdxAdminUtilityController
 
         // 判断有分销应用时合并分销的链接
         $appArray = array_merge($appArray, $this->commissionLink);
+        // 积分商城
+        $appArray = array_merge($appArray, $this->creditShopLink);
 
         $service['wx_service'] = [
             'name' => '小程序客服',

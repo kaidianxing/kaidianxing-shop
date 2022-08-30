@@ -18,8 +18,10 @@ use shopstar\components\payment\PayComponent;
 use shopstar\constants\finance\RefundLogConstant;
 use shopstar\constants\log\order\OrderLogConstant;
 use shopstar\constants\member\MemberCreditRecordStatusConstant;
+use shopstar\constants\order\OrderActivityTypeConstant;
 use shopstar\constants\order\OrderPaymentTypeConstant;
 use shopstar\constants\order\OrderSceneConstant;
+use shopstar\constants\order\OrderTypeConstant;
 use shopstar\constants\RefundConstant;
 use shopstar\exceptions\order\RefundException;
 use shopstar\helpers\OrderNoHelper;
@@ -38,6 +40,7 @@ use shopstar\models\shoppingReward\ShoppingRewardLogModel;
 use shopstar\models\sysset\RefundAddressModel;
 use shopstar\services\commission\CommissionOrderService;
 use shopstar\services\consumeReward\ConsumeRewardLogService;
+use shopstar\services\creditShop\CreditShopOrderService;
 use shopstar\services\order\refund\OrderRefundService;
 use shopstar\services\tradeOrder\TradeOrderService;
 use shopstar\services\wxTransactionComponent\WxTransactionComponentOrderService;
@@ -474,6 +477,17 @@ class RefundController extends KdxAdminApiController
             throw new RefundException(RefundException::REFUND_MANUAL_REFUND_IS_FINISH);
         }
 
+        // 积分商城优惠券订单 检测是否有用了的优惠券
+        if ($order->order_type == OrderTypeConstant::ORDER_TYPE_CREDIT_SHOP_COUPON) {
+            // 积分商城优惠券订单 单独判断
+            $res = CreditShopOrderService::checkRefund($order->id);
+
+            // 不可维权
+            if (is_error($res)) {
+                throw new RefundException(RefundException::REFUND_MANUAL_COUPON_IS_USE);
+            }
+        }
+
         $transaction = Yii::$app->getDb()->beginTransaction();
         try {
             // 修改
@@ -632,6 +646,17 @@ class RefundController extends KdxAdminApiController
             throw new RefundException(RefundException::REFUND_MANUAL_REFUND_IS_FINISH);
         }
 
+        // 积分商城优惠券订单 检测是否有用了的优惠券
+        if ($order->order_type == OrderTypeConstant::ORDER_TYPE_CREDIT_SHOP_COUPON) {
+            // 积分商城优惠券订单 单独判断
+            $res = CreditShopOrderService::checkRefund($order->id);
+
+            // 不可维权
+            if (is_error($res)) {
+                throw new RefundException(RefundException::REFUND_MANUAL_COUPON_IS_USE);
+            }
+        }
+
         $transaction = Yii::$app->getDb()->beginTransaction();
         try {
             // 如果退款单号为空 则生成
@@ -730,6 +755,11 @@ class RefundController extends KdxAdminApiController
                     // 退回余额抵扣出错
                     throw new RefundException(RefundException::CREDIT_STATUS_CREDIT_SHOP_REFUND);
                 }
+            }
+
+            // 积分商城优惠券订单 回收优惠券
+            if ($order->activity_type == OrderActivityTypeConstant::ACTIVITY_TYPE_CREDIT_SHOP) {
+                CreditShopOrderService::refund($order->id);
             }
 
             // 日志

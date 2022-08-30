@@ -34,6 +34,7 @@ use shopstar\models\order\OrderPackageModel;
 use shopstar\models\shop\ShopSettings;
 use shopstar\models\virtualAccount\VirtualAccountModel;
 use shopstar\models\virtualAccount\VirtualAccountOrderMapModel;
+use shopstar\services\creditShop\CreditShopOrderService;
 use shopstar\services\groups\GroupsTeamService;
 use yii\db\Exception;
 use yii\helpers\Json;
@@ -141,7 +142,7 @@ class DetailController extends BaseMobileApiController
         $this->getExpectedDeliveryTime($orderInfo);
         //同城配送显示文案
         $this->getIntracityDispatchText($orderInfo);
-        
+
         // 拼团
         if ($orderInfo['activity_type'] == OrderActivityTypeConstant::ACTIVITY_TYPE_GROUPS) {
             $groupsTeamInfo = GroupsTeamService::getGroupsInfo($orderId);
@@ -178,6 +179,16 @@ class DetailController extends BaseMobileApiController
                     $orderGoodsInfo['auto_deliver'] = $goodsInfoItem['auto_deliver'];
                     $orderGoodsInfo['auto_deliver_content'] = $goodsInfoItem['auto_deliver_content'];
 
+                    if ($orderInfo['order_type'] == OrderTypeConstant::ORDER_TYPE_CREDIT_SHOP_COUPON) {
+                        // 积分商城优惠券订单 单独判断
+                        $res = CreditShopOrderService::checkRefund($orderInfo['id']);
+
+                        // 不可维权
+                        if (is_error($res)) {
+                            $orderGoodsInfo['refund_rule']['refund'] = '0';
+                        }
+                    }
+
                 }
             }
         }
@@ -198,7 +209,7 @@ class DetailController extends BaseMobileApiController
         // 判断积分商城订单的设置
         if ($orderInfo['activity_type'] == OrderActivityTypeConstant::ACTIVITY_TYPE_CREDIT_SHOP) {
             // 获取积分商城设置
-            $creditSet = ShopSettings::get('plugin_credit_shop');
+            $creditSet = ShopSettings::get('credit_shop');
             // 走系统默认
             if ($creditSet['refund_type'] == 0) {
                 if ($orderInfo['refund_setting']['apply_type'] == 2) {

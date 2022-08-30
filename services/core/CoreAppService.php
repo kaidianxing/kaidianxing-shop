@@ -27,20 +27,13 @@ class CoreAppService
     public static function getAppListNew($type = 'all')
     {
         if (!isset(static::$_appList[$type]) || empty(static::$_appList[$type])) {
-
             $appConfigs = [];
-            foreach (glob(SHOP_STAR_PATH . '/config/apps/AppConfig.php') as $filename) {
-                $appConfig = require($filename);
-                if ($type != 'all') {
-                    foreach ($appConfig as $k => $v) {
-                        if ($v['type'] == $type) {
-                            $appConfigs[$k] = $v;
-                        }
-                    }
-                }
+            $appConfig = require(SHOP_STAR_PATH . '/config/apps/AppConfig.php');
 
+            foreach ($appConfig as $k => $v) {
+                static::$_appList[$v['type']][$k] = $v;
+                static::$_appList['all'][$k] = $v;
             }
-            static::$_appList[$type] = $appConfigs;
         }
 
         return static::$_appList[$type];

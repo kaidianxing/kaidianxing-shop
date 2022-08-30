@@ -65,7 +65,7 @@ class GoodsHandler implements HandlerInterface
         'dispatch_type',
         'dispatch_price',
         'dispatch_id',
-        'goods_code',
+        'goods_sku',
         'bar_code',
         'ext_field',
         'has_option',
@@ -107,7 +107,7 @@ class GoodsHandler implements HandlerInterface
         'cost_price',
         'stock',
         'weight',
-        'goods_code',
+        'goods_sku',
         'thumb as option_thumb',
     ];
 
@@ -362,7 +362,7 @@ class GoodsHandler implements HandlerInterface
                     'option_id' => $goods['option_id'],
                     'option_title' => $goods['option_title'],
                     'thumb' => !empty($goods['option_thumb']) ? $goods['option_thumb'] : $goods['thumb'],
-                    'goods_code' => $goods['goods_code'],
+                    'goods_sku' => $goods['goods_sku'],
                     'bar_code' => $goods['bar_code'],
                     'unit' => $goods['unit'] ?: '件',
                     'deduct_credit' => 0,

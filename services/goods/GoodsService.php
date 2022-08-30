@@ -17,6 +17,7 @@ use shopstar\constants\goods\GoodsBuyButtonConstant;
 use shopstar\constants\goods\GoodsReductionTypeConstant;
 use shopstar\constants\goods\GoodsTypeConstant;
 use shopstar\constants\log\goods\GoodsLogConstant;
+use shopstar\constants\order\OrderActivityTypeConstant;
 use shopstar\constants\order\OrderTypeConstant;
 use shopstar\exceptions\goods\GoodsException;
 use shopstar\helpers\DateTimeHelper;
@@ -38,6 +39,7 @@ use shopstar\models\order\OrderModel;
 use shopstar\models\shop\ShopSettings;
 use shopstar\models\virtualAccount\VirtualAccountDataModel;
 use shopstar\services\core\attachment\CoreAttachmentService;
+use shopstar\services\creditShop\CreditShopOrderService;
 use yii\db\Expression;
 use yii\helpers\Json;
 
@@ -428,6 +430,15 @@ class GoodsService extends BaseService
 
         // 获取订单类型  分发减库存方法
         $order = OrderModel::find()->select(['id', 'activity_type'])->where(['id' => $orderId])->first();
+        // 积分商品 走自己的减库存方法
+        if ($order['activity_type'] == OrderActivityTypeConstant::ACTIVITY_TYPE_CREDIT_SHOP) {
+            // 非付款减库存进来的跳出
+            if ($reductionType != GoodsReductionTypeConstant::GOODS_REDUCTION_TYPE_PAYMENT) {
+                return true;
+            } else {
+                return CreditShopOrderService::updateStock($reduce, $orderId, $options);
+            }
+        }
 
         $options['transaction'] && $tr = \Yii::$app->db->beginTransaction();
 
