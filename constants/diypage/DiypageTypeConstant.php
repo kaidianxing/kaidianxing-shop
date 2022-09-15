@@ -31,6 +31,7 @@ class DiypageTypeConstant extends BaseConstant
         self::TYPE_HOME,
         self::TYPE_GOODS_DETAIL,
         self::TYPE_MEMBER,
+        self::TYPE_DIY,
     ];
 
     /**
@@ -39,6 +40,11 @@ class DiypageTypeConstant extends BaseConstant
     public static $pageAppMap = [
         self::TYPE_APP_COMMISSION,
     ];
+
+    /**
+     * @Message("自定义页面")
+     */
+    public const TYPE_DIY = 0;
 
     /**
      * @Message("商城首页")

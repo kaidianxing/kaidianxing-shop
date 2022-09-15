@@ -221,7 +221,7 @@ class CategoryController extends KdxAdminApiController
             'level' => $post['level'] ?: 0, //等级
             'style' => $post['style'] ?: 0, //样式
             'adv_url' => $post['adv_url'] ?: '', //广告
-            'template_type' => 0, //模板类型
+            'template_type' => $post['template_type'] ?: 0, //模板类型
             'title' => $post['title'] ?: ShopSettings::getDefaultSettings('goods_category.title'), //分类页面title
         ]);
 

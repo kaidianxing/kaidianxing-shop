@@ -16,6 +16,7 @@ use shopstar\bases\KdxAdminApiController;
 use shopstar\constants\diypage\DiypageTypeConstant;
 use shopstar\helpers\RequestHelper;
 use shopstar\models\diypage\DiypageModel;
+use yii\web\Response;
 
 /**
  * 页面列表
@@ -37,7 +38,7 @@ class ListController extends KdxAdminApiController
 
     /**
      * 商城页面列表
-     * @return array|\yii\web\Response
+     * @return array|Response
      * @author likexin
      */
     public function actionGetShop()
@@ -58,9 +59,22 @@ class ListController extends KdxAdminApiController
         return $this->result($result);
     }
 
+
+    /**
+     * @return array|int[]|Response
+     * @author yuning
+     */
+    public function actionGetDiy()
+    {
+        // 获取页面列表
+        $result = DiypageModel::getListResult(DiypageTypeConstant::TYPE_DIY);
+        return $this->result($result);
+    }
+
+
     /**
      * 应用页面列表
-     * @return array|\yii\web\Response
+     * @return array|Response
      * @author likexin
      */
     public function actionGetApp()
@@ -83,7 +97,7 @@ class ListController extends KdxAdminApiController
 
     /**
      * 添加页面
-     * @return array|\yii\web\Response
+     * @return array|Response
      * @author likexin
      */
     public function actionAdd()
@@ -106,7 +120,7 @@ class ListController extends KdxAdminApiController
 
     /**
      * 编辑页面
-     * @return array|\yii\web\Response
+     * @return array|Response
      * @author likexin
      */
     public function actionEdit()
@@ -129,7 +143,7 @@ class ListController extends KdxAdminApiController
 
     /**
      * 修改状态
-     * @return array|\yii\web\Response
+     * @return array|Response
      * @author likexin
      */
     public function actionChangeStatus()
@@ -152,7 +166,7 @@ class ListController extends KdxAdminApiController
 
     /**
      * 删除页面
-     * @return array|\yii\web\Response
+     * @return array|Response
      * @throws \ReflectionException
      * @throws \Throwable
      * @throws \yii\db\StaleObjectException
