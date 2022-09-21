@@ -36,7 +36,7 @@ class m220524_021611_wx_transaction_component extends Migration
      */
     public function safeUp(): bool
     {
-        $this->execute("CREATE TABLE `{$this->getTableName()}` (
+        $this->execute("CREATE TABLE IF NOT EXISTS `{$this->getTableName()}` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `goods_id` int(11) NOT NULL DEFAULT '0' COMMENT '商品id',
   `category_id` int(11) NOT NULL DEFAULT '0' COMMENT '分类id',

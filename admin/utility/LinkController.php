@@ -211,6 +211,14 @@ class LinkController extends KdxAdminUtilityController
     ];
 
     /**
+     * @var array[] 微信客服
+     */
+    public array $wechatCustomerServiceLink = [
+        'name' => '微信客服',
+        'url' => 'wechatCustomerService',
+    ];
+
+    /**
      * 获取列表
      * @author likexin
      */
@@ -230,6 +238,8 @@ class LinkController extends KdxAdminUtilityController
             'name' => '小程序客服',
             'url' => 'wx_service',
         ];
+
+        $service['wechat_customer_service'] = $this->wechatCustomerServiceLink;
 
         // 合并优惠券
         $saleArray = array_merge($saleArray, $this->couponLink);

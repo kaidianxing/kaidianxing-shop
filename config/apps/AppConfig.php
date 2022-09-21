@@ -31,6 +31,17 @@ return [
         'sort_by' =>  0,
     ],
 
+    'wechatCustomerService' => [
+        'name' => '微信客服',
+        'type' => 10,
+        'identity' => 'wechatCustomerService',
+        'logo' =>  '/static/dist/shop/plugin_icon/icon-wechatCustomerService.png',
+        'description' => '对接企业微信，实时回复消息',
+        'route' =>  '/wechatCustomerService/manage/company/index',
+        'category' =>  30,
+        'sort_by' =>  0,
+    ],
+
     'commentHelper' => [
         'name' => '评价助手',
         'type' => 10,

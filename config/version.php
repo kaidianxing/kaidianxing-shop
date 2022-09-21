@@ -10,5 +10,5 @@
  * @warning 未经许可禁止私自删除版权信息
  */
 
-!defined('SHOP_STAR_VERSION') && define('SHOP_STAR_VERSION', '1.1.4');
-!defined('SHOP_STAR_RELEASE') && define('SHOP_STAR_RELEASE', '20220920141000');
+!defined('SHOP_STAR_VERSION') && define('SHOP_STAR_VERSION', '1.1.0');
+!defined('SHOP_STAR_RELEASE') && define('SHOP_STAR_RELEASE', '20220804141000');

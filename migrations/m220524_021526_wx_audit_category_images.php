@@ -36,7 +36,7 @@ class m220524_021526_wx_audit_category_images extends Migration
      */
     public function safeUp(): bool
     {
-        $this->execute("CREATE TABLE `{$this->getTableName()}` (
+        $this->execute("CREATE TABLE IF NOT EXISTS `{$this->getTableName()}` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `wx_id` int(11) NOT NULL DEFAULT '0' COMMENT '关联自定义交易表id',
   `audit_category_id` int(11) NOT NULL DEFAULT '0' COMMENT '关联的分类审核表id',
