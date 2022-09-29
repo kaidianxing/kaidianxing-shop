@@ -219,6 +219,21 @@ class LinkController extends KdxAdminUtilityController
     ];
 
     /**
+     * @var string[][] 积分签到奖励
+     */
+    public array $creditSignLink = [
+        [
+            'name' => '签到',
+            'links' => [
+                [
+                    'name' => '积分签到',
+                    'url' => '/kdxSignIn/index',
+                ]
+            ],
+        ],
+    ];
+
+    /**
      * 获取列表
      * @author likexin
      */
@@ -233,6 +248,8 @@ class LinkController extends KdxAdminUtilityController
         $appArray = array_merge($appArray, $this->commissionLink);
         // 积分商城
         $appArray = array_merge($appArray, $this->creditShopLink);
+        // 积分签到
+        $appArray = array_merge($appArray, $this->creditSignLink);
 
         $service['wx_service'] = [
             'name' => '小程序客服',

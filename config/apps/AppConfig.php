@@ -42,6 +42,18 @@ return [
         'sort_by' =>  0,
     ],
 
+
+    'creditSign' => [
+        'name' => '积分签到',
+        'type' => 10,
+        'identity' => 'creditSign',
+        'logo' =>  '/static/dist/shop/plugin_icon/icon-creditSign.png',
+        'description' => '多种签到玩法，深度促活留存',
+        'route' =>  '/creditSign/manage/index',
+        'category' =>  20,
+        'sort_by' =>  0,
+    ],
+
     'commentHelper' => [
         'name' => '评价助手',
         'type' => 10,

@@ -301,5 +301,10 @@ class NoticeTypeConstant extends BaseConstant
      */
     public const RXY_ADVISORY_REMINDER_REPLY = 'rxy_advisory_reminder_reply';
 
+    // 积分签到
+    /**
+     * @Text("积分签到定时通知")
+     */
+    public const CREDIT_SIGN_NOTICE = 'credit_sign_notice';
     
 }

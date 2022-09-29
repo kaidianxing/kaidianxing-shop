@@ -41,17 +41,17 @@ class SystemPermissionConfig extends BasePermissionConfig
      * @var array[] 权限配置
      */
     public $config = [
-        'system/apps/index' => [
-            'title' => '未安装应用列表',
-            'alias' => 'system.apps.index',
-            'perm' => [
-                'view' => [
-                    'title' => '查看',
-                    'actions' => ['get-list']
-                ],
-
-            ]
-        ],
+//        'system/apps/index' => [
+//            'title' => '未安装应用列表',
+//            'alias' => 'system.apps.index',
+//            'perm' => [
+//                'view' => [
+//                    'title' => '查看',
+//                    'actions' => ['get-list']
+//                ],
+//
+//            ]
+//        ],
 
 
         'system/tools/crontab' => [

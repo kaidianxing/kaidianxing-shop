@@ -247,4 +247,30 @@ class MemberCreditRecordStatusConstant extends BaseConstant
      * 注意: 新添加类型一定要去 MemberCreditRecordModel 下的 $balanceSendType 等 变量里添加上
      * @var MemberCreditRecordModel
      */
+
+    /**
+     * @Message("签到日签奖励")
+     */
+    public const CREDIT_SIGN_REWARD_SEND_CREDIT_DAY = 51;
+
+    /**
+     * @Message("签到递增奖励")
+     */
+    public const CREDIT_SIGN_REWARD_SEND_CREDIT_INCREASING = 52;
+
+    /**
+     * @Message("签到连签奖励")
+     */
+    public const CREDIT_SIGN_REWARD_SEND_CREDIT_CONTINUITY = 53;
+
+    /**
+     * @Message("积分签到补签消耗")
+     */
+    public const CREDIT_SIGN_REWARD_CREDIT_CONSUME = 54;
+
+    /**
+     * @Message("积分签到")
+     */
+    public const CREDIT_SIGN_REWARD_SEND_CREDIT = 50;
+
 }

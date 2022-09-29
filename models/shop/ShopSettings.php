@@ -1247,6 +1247,22 @@ class ShopSettings extends BaseSettings
                             'is_send_line' => 0, // 是否开启 人信云消息通知
                         ],
                     ],
+                    NoticeTypeConstant::CREDIT_SIGN_NOTICE => [ // 积分签到每日提醒通知
+                        'wechat' => [ //公众号
+                            'status' => '0',
+                            'template_id' => '',
+                            'is_default' => 1, //是否默认
+                        ],
+                        'wxapp' => [
+                            'status' => '0', //是否开启1是0否
+                            'template_id' => ''
+
+                        ],
+                        'sms' => [ //短信
+                            'status' => '0',
+                            'template_id' => 0
+                        ]
+                    ],
                     NoticeTypeConstant::RXY_ADVISORY_REMINDER_REPLY => [ // 人信云咨询回复提醒通知
                         'wechat' => [ //公众号
                             'status' => '0',

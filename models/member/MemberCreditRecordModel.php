@@ -128,7 +128,7 @@ class MemberCreditRecordModel extends BaseActiveRecord
     /**
      * @var array 余额发放类型
      */
-    public static $balanceSendType = [
+    public static array $balanceSendType = [
         MemberCreditRecordStatusConstant::BALANCE_STATUS_RECHARGE, // 余额充值
         MemberCreditRecordStatusConstant::BALANCE_STATUS_BACKGROUND, // 后台余额充值
         MemberCreditRecordStatusConstant::NEW_MEMBER_SEND_BALANCE, // 新人送礼
@@ -139,12 +139,13 @@ class MemberCreditRecordModel extends BaseActiveRecord
         MemberCreditRecordStatusConstant::COMMENT_REWARD_SEND_BALANCE, // 评价奖励
         MemberCreditRecordStatusConstant::BALANCE_STATUS_GROUPS_REBATE, // 拼团返利
         MemberCreditRecordStatusConstant::PERFORMANCE_AWARD_BALANCE, // 分销直推奖
+
     ];
 
     /**
      * @var array 余额退回类型
      */
-    public static $balanceBackType = [
+    public static array $balanceBackType = [
         MemberCreditRecordStatusConstant::CONSUME_REWARD_REFUND_BALANCE, // 消费奖励退回
         MemberCreditRecordStatusConstant::SHOPPING_REWARD_REFUND_BALANCE, // 购物奖励退回
         MemberCreditRecordStatusConstant::BALANCE_STATUS_WITHDRAW, // 余额提现
@@ -153,7 +154,7 @@ class MemberCreditRecordModel extends BaseActiveRecord
     /**
      * @var array 余额使用类型
      */
-    public static $balanceUseType = [
+    public static array $balanceUseType = [
         MemberCreditRecordStatusConstant::BALANCE_STATUS_DEDUCTION, // 余额抵扣
         MemberCreditRecordStatusConstant::BALANCE_STATUS_PAY, // 余额支付
     ];
@@ -161,14 +162,14 @@ class MemberCreditRecordModel extends BaseActiveRecord
     /**
      * @var array 余额退款类型
      */
-    public static $balanceRefundType = [
+    public static array $balanceRefundType = [
         MemberCreditRecordStatusConstant::BALANCE_STATUS_REFUND, // 余额退款
     ];
 
     /**
      * @var array 积分发放类型
      */
-    public static $creditSendType = [
+    public static array $creditSendType = [
         MemberCreditRecordStatusConstant::CREDIT_STATUS_BACKGROUND, // 后台充值
         MemberCreditRecordStatusConstant::NEW_MEMBER_SEND_CREDIT, // 新人送礼
         MemberCreditRecordStatusConstant::RECHARGE_REWARD_SEND_CREDIT, // 充值奖励
@@ -179,12 +180,15 @@ class MemberCreditRecordModel extends BaseActiveRecord
         MemberCreditRecordStatusConstant::COMMENT_REWARD_SEND_CREDIT, // 评价奖励
         MemberCreditRecordStatusConstant::ORDER_GIVE_CREDIT, // 购物送积分
         MemberCreditRecordStatusConstant::PERFORMANCE_AWARD_CREDIT, // 分销直推奖
+        MemberCreditRecordStatusConstant::CREDIT_SIGN_REWARD_SEND_CREDIT_DAY, // 签到日签奖励
+        MemberCreditRecordStatusConstant::CREDIT_SIGN_REWARD_SEND_CREDIT_INCREASING, // 签到递增奖励
+        MemberCreditRecordStatusConstant::CREDIT_SIGN_REWARD_SEND_CREDIT_CONTINUITY, // 签到连签奖励
     ];
 
     /**
      * @var array 积分返还类型
      */
-    public static $creditBackType = [
+    public static array $creditBackType = [
         MemberCreditRecordStatusConstant::CONSUME_REWARD_REFUND_CREDIT, // 消费奖励退回
         MemberCreditRecordStatusConstant::SHOPPING_REWARD_REFUND_CREDIT, // 购物奖励退回
     ];
@@ -192,7 +196,7 @@ class MemberCreditRecordModel extends BaseActiveRecord
     /**
      * @var array 积分使用类型
      */
-    public static $creditUseType = [
+    public static array $creditUseType = [
         MemberCreditRecordStatusConstant::CREDIT_SHOP_PAY, // 积分商城支付
         MemberCreditRecordStatusConstant::CREDIT_STATUS_DEDUCTION, // 积分抵扣
     ];
@@ -200,7 +204,7 @@ class MemberCreditRecordModel extends BaseActiveRecord
     /**
      * @var array 积分退款类型
      */
-    public static $creditRefundType = [
+    public static array $creditRefundType = [
         MemberCreditRecordStatusConstant::CREDIT_STATUS_REFUND, // 售后商品退还积分
         MemberCreditRecordStatusConstant::CREDIT_STATUS_CREDIT_SHOP_REFUND, // 积分商城售后退还积分
     ];
@@ -209,7 +213,7 @@ class MemberCreditRecordModel extends BaseActiveRecord
      * 移动端积分记录用
      * @var array 积分获得
      */
-    public static $creditGet = [
+    public static array $creditGet = [
         MemberCreditRecordStatusConstant::CREDIT_STATUS_BACKGROUND, // 后台充值
         MemberCreditRecordStatusConstant::NEW_MEMBER_SEND_CREDIT, // 新人送礼
         MemberCreditRecordStatusConstant::RECHARGE_REWARD_SEND_CREDIT, // 充值奖励
@@ -222,13 +226,16 @@ class MemberCreditRecordModel extends BaseActiveRecord
         MemberCreditRecordStatusConstant::CONSUME_REWARD_REFUND_CREDIT, // 消费奖励退回
         MemberCreditRecordStatusConstant::SHOPPING_REWARD_REFUND_CREDIT, // 购物奖励退回
         MemberCreditRecordStatusConstant::ARTICLE_REWARD_SEND_CREDIT, // 店铺笔记奖励
+        MemberCreditRecordStatusConstant::CREDIT_SIGN_REWARD_SEND_CREDIT_DAY, // 签到日签奖励
+        MemberCreditRecordStatusConstant::CREDIT_SIGN_REWARD_SEND_CREDIT_INCREASING, // 签到递增奖励
+        MemberCreditRecordStatusConstant::CREDIT_SIGN_REWARD_SEND_CREDIT_CONTINUITY, // 签到连签奖励
     ];
 
     /**
      * 移动端积分记录用
      * @var array 积分抵扣
      */
-    public static $creditDeduct = [
+    public static array $creditDeduct = [
 
         MemberCreditRecordStatusConstant::CREDIT_STATUS_DEDUCTION, // 积分抵扣
         MemberCreditRecordStatusConstant::CREDIT_STATUS_REFUND, // 售后商品退还积分
@@ -238,7 +245,7 @@ class MemberCreditRecordModel extends BaseActiveRecord
      * 移动端积分记录用
      * @var array 积分使用
      */
-    public static $creditPay = [
+    public static array $creditPay = [
         MemberCreditRecordStatusConstant::CREDIT_SHOP_PAY, // 积分商城支付
         MemberCreditRecordStatusConstant::CREDIT_STATUS_CREDIT_SHOP_REFUND, // 积分商城售后退还积分
     ];
