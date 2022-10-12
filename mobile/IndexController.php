@@ -230,6 +230,9 @@ class IndexController extends BaseMobileApiController
         // 主题色
         $set['theme_color'] = ShopSettings::get('diypage.theme_color');
 
+        // 文章营销设置
+        $set['article'] = ShopSettings::get('article');
+
         return $this->result($set);
     }
 

@@ -13,6 +13,7 @@
 namespace shopstar\mobile\member;
 
 use shopstar\bases\controller\BaseMobileApiController;
+use shopstar\constants\article\ArticleSellDataConstant;
 use shopstar\constants\base\PayTypeConstant;
 use shopstar\constants\ClientTypeConstant;
 use shopstar\constants\coupon\CouponConstant;
@@ -42,6 +43,7 @@ use shopstar\models\sale\CouponMemberModel;
 use shopstar\models\sale\CouponModel;
 use shopstar\models\sale\CouponRuleModel;
 use shopstar\models\shop\ShopSettings;
+use shopstar\services\article\ArticleSellDataService;
 use shopstar\services\sale\CouponMemberService;
 use shopstar\services\sale\CouponService;
 use shopstar\services\tradeOrder\TradeOrderService;
@@ -292,6 +294,10 @@ class CouponController extends BaseMobileApiController
             throw new CouponException(CouponException::FAIL_TO_RECEIVE, $res['message']);
         }
 
+        if ($articleId) {
+            ArticleSellDataService::saveSellData($this->memberId, ArticleSellDataConstant::TYPE_COUPON, $articleId, $res, $id);
+        }
+
         return $this->success();
     }
 
@@ -354,6 +360,10 @@ class CouponController extends BaseMobileApiController
                 $res = CouponMemberService::sendCoupon($this->memberId, $coupon, 12, ['get_id' => true]);
                 if (is_error($res)) {
                     throw new CouponException(CouponException::FAIL_TO_RECEIVE, $res['message']);
+                }
+
+                if ($articleId) {
+                    ArticleSellDataService::saveSellData($this->memberId, ArticleSellDataConstant::TYPE_COUPON, $articleId, $res, $id);
                 }
 
             }

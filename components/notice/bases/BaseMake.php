@@ -27,7 +27,7 @@ class BaseMake extends Component implements MakeInterface
      * @author 青岛开店星信息技术有限公司
      * @var array
      */
-    public array $reserveField = [];
+    public $reserveField = [];
 
     /**
      * 组成数据

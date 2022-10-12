@@ -192,7 +192,7 @@ class CreateController extends BaseMobileApiController
             // 虚拟卡密的接收邮箱
             'virtual_email' => RequestHelper::post('virtual_email'),
 
-            // 店铺笔记-文章id
+            // 文章营销-文章id
             'article_id' => RequestHelper::postInt('article_id'),
         ];
     }

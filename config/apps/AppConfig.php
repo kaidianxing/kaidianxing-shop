@@ -41,7 +41,16 @@ return [
         'category' =>  30,
         'sort_by' =>  0,
     ],
-
+    'article' => [
+        'name' => '文章营销',
+        'type' => 10,
+        'identity' => 'article',
+        'logo' =>  '/static/dist/shop/plugin_icon/icon-article.png',
+        'description' => '文章挂载商品，实现内容变现',
+        'route' =>  '/article/article/list',
+        'category' =>  20,
+        'sort_by' =>  0,
+    ],
 
     'creditSign' => [
         'name' => '积分签到',

@@ -233,12 +233,12 @@ class MemberCreditRecordStatusConstant extends BaseConstant
 
 
     /**
-     * @Message("店铺笔记奖励")
+     * @Message("文章营销奖励")
      */
     public const ARTICLE_REWARD_SEND_CREDIT = 49;
 
     /**
-     * @Message("店铺笔记奖励")
+     * @Message("文章营销奖励")
      */
     public const ARTICLE_REWARD_SEND_BALANCE = 50;
 
@@ -271,6 +271,6 @@ class MemberCreditRecordStatusConstant extends BaseConstant
     /**
      * @Message("积分签到")
      */
-    public const CREDIT_SIGN_REWARD_SEND_CREDIT = 50;
+    public const CREDIT_SIGN_REWARD_SEND_CREDIT = 55;
 
 }

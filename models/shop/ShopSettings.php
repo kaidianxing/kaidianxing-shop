@@ -1552,13 +1552,7 @@ class ShopSettings extends BaseSettings
                 'active_limit_num' => '0', // 每天激活数量
                 'active_note' => '', // 激活说明
             ],
-            // 店铺笔记设置
-            'plugin_article' => [
-                'title' => '专题文章',// 专题页面自定义title
-                'template_type' => '1',// 专题页面模板 1:小图模式 2: 瀑布流
-                'banner' => [],// 专题页面banner, 数组格式, 0-5个图片
-                'reward_time_limit' => '15',// 阅读n秒后, 进行奖励发放 10-60
-            ],
+
             // 状态20为尊享会员专享
             'copyright' => [                          // 版权信息
                 'mobile' => [
@@ -1650,6 +1644,9 @@ class ShopSettings extends BaseSettings
 
             // 积分商城
             'credit_shop' => self::defaultCreditShopSettings(),
+
+            // 文章营销
+            'article' => self::defaultArticleSettings(),
         ];
     }
 
@@ -1704,6 +1701,27 @@ class ShopSettings extends BaseSettings
             'finish_order_refund_type' => '0',
             'finish_order_refund_days' => '0',
             'refund_rule' => '0'
+        ];
+    }
+
+    /**
+     * 文章营销默认值
+     * @return array
+     * @author yuning
+     */
+    private static function defaultArticleSettings(): array
+    {
+        return [
+            'title' => '专题文章',// 专题页面自定义title
+            'template_type' => '1',// 专题页面模板 1:小图模式 2: 瀑布流
+            'banner' => [],// 专题页面banner, 数组格式, 0-5个图片
+            'reward_time_limit' => '15',// 阅读n秒后, 进行奖励发放 10-60
+            'bottom_menu' => '0',// 0 隐藏 1 显示
+            'click_save_type' => '0', // 一键保存图片 1 开启 0 关闭
+            'customer' => '0',  // 0关闭 rr人信云 wx微信小程序 tx腾讯云智服 wechat微信客服
+            'customer_channel' => '0',  // 0人信云原生 1企业微信客服
+            'link_url' => '',
+            'customer_name' => '',
         ];
     }
 }

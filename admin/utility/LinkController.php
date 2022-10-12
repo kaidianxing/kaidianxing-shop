@@ -234,6 +234,21 @@ class LinkController extends KdxAdminUtilityController
     ];
 
     /**
+     * @var array
+     */
+    public array $articleLink = [
+        [
+            'name' => '文章营销',
+            'links' => [
+                [
+                    'name' => '文章营销列表',
+                    'url' => '/kdxArticle/list/index',
+                ]
+            ],
+        ],
+    ];
+
+    /**
      * 获取列表
      * @author likexin
      */
@@ -250,6 +265,9 @@ class LinkController extends KdxAdminUtilityController
         $appArray = array_merge($appArray, $this->creditShopLink);
         // 积分签到
         $appArray = array_merge($appArray, $this->creditSignLink);
+
+        // 文章营销
+        $appArray = array_merge($appArray, $this->articleLink);
 
         $service['wx_service'] = [
             'name' => '小程序客服',

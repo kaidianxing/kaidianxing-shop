@@ -225,7 +225,8 @@ class MemberCreditRecordModel extends BaseActiveRecord
         MemberCreditRecordStatusConstant::ORDER_GIVE_CREDIT, // 购物送积分
         MemberCreditRecordStatusConstant::CONSUME_REWARD_REFUND_CREDIT, // 消费奖励退回
         MemberCreditRecordStatusConstant::SHOPPING_REWARD_REFUND_CREDIT, // 购物奖励退回
-        MemberCreditRecordStatusConstant::ARTICLE_REWARD_SEND_CREDIT, // 店铺笔记奖励
+        MemberCreditRecordStatusConstant::ARTICLE_REWARD_SEND_CREDIT, // 文章营销奖励
+        MemberCreditRecordStatusConstant::CREDIT_SIGN_REWARD_SEND_CREDIT, // 积分签到
         MemberCreditRecordStatusConstant::CREDIT_SIGN_REWARD_SEND_CREDIT_DAY, // 签到日签奖励
         MemberCreditRecordStatusConstant::CREDIT_SIGN_REWARD_SEND_CREDIT_INCREASING, // 签到递增奖励
         MemberCreditRecordStatusConstant::CREDIT_SIGN_REWARD_SEND_CREDIT_CONTINUITY, // 签到连签奖励
@@ -239,6 +240,7 @@ class MemberCreditRecordModel extends BaseActiveRecord
 
         MemberCreditRecordStatusConstant::CREDIT_STATUS_DEDUCTION, // 积分抵扣
         MemberCreditRecordStatusConstant::CREDIT_STATUS_REFUND, // 售后商品退还积分
+        MemberCreditRecordStatusConstant::CREDIT_SIGN_REWARD_CREDIT_CONSUME, // 积分签到补签
     ];
 
     /**
@@ -248,6 +250,7 @@ class MemberCreditRecordModel extends BaseActiveRecord
     public static array $creditPay = [
         MemberCreditRecordStatusConstant::CREDIT_SHOP_PAY, // 积分商城支付
         MemberCreditRecordStatusConstant::CREDIT_STATUS_CREDIT_SHOP_REFUND, // 积分商城售后退还积分
+        MemberCreditRecordStatusConstant::CREDIT_SIGN_REWARD_CREDIT_CONSUME, // 积分签到
     ];
 
 }

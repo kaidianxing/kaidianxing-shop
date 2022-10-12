@@ -50,6 +50,7 @@ class KdxAdminAccountApiController extends BaseApiController
             $this->checkClientType();
         }
 
+
         // 检测SessionId
         if (!isset($this->configActions['allowSessionActions']) || !is_array($this->configActions['allowSessionActions'])
             || (!in_array('*', $this->configActions['allowSessionActions']) && !in_array($action->id, $this->configActions['allowSessionActions']))

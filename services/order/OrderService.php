@@ -19,6 +19,7 @@ use shopstar\components\dispatch\DispatchComponent;
 use shopstar\components\notice\NoticeComponent;
 use shopstar\components\payment\base\PayOrderTypeConstant;
 use shopstar\components\payment\PayComponent;
+use shopstar\constants\article\ArticleSellDataConstant;
 use shopstar\constants\ClientTypeConstant;
 use shopstar\constants\components\notice\NoticeTypeConstant;
 use shopstar\constants\finance\RefundLogConstant;
@@ -61,6 +62,7 @@ use shopstar\models\shop\ShopSettings;
 use shopstar\models\shoppingReward\ShoppingRewardLogModel;
 use shopstar\models\virtualAccount\VirtualAccountDataModel;
 use shopstar\models\virtualAccount\VirtualAccountOrderMapModel;
+use shopstar\services\article\ArticleSellDataService;
 use shopstar\services\commission\CommissionOrderService;
 use shopstar\services\commission\CommissionService;
 use shopstar\services\consumeReward\ConsumeRewardLogService;
@@ -386,6 +388,9 @@ class OrderService extends BaseService
             return error('订单不存在');
         }
 
+        // 额外数据
+        $extraPackage = Json::decode($order->extra_package) ?? [];
+
         // 不是待支付状态
         if ($order->status != OrderStatusConstant::ORDER_STATUS_WAIT_PAY) {
             if ($order->status == OrderStatusConstant::ORDER_STATUS_CLOSE) {  //如果等于已关闭
@@ -595,6 +600,11 @@ class OrderService extends BaseService
         // 积分商城优惠券订单 支付后发放优惠券
         if ($order['activity_type'] == OrderActivityTypeConstant::ACTIVITY_TYPE_CREDIT_SHOP) {
             CreditShopOrderService::paySuccess($orderPaySuccessStruct->accountId, $orderPaySuccessStruct->orderId);
+        }
+
+        // 文章营销
+        if ($extraPackage['article_id'] ) {
+            ArticleSellDataService::saveSellData( $order->member_id,ArticleSellDataConstant::TYPE_GOODS, $extraPackage['article_id'], $order->id);
         }
 
         //减库存

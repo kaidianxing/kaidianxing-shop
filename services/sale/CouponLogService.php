@@ -13,9 +13,13 @@
 namespace shopstar\services\sale;
 
 use shopstar\bases\service\BaseService;
+use shopstar\constants\article\ArticleSellDataConstant;
+use shopstar\exceptions\article\ArticleException;
 use shopstar\models\sale\CouponLogModel;
 use shopstar\models\sale\CouponModel;
+use shopstar\services\article\ArticleSellDataService;
 use shopstar\structs\order\OrderPaySuccessStruct;
+use yii\db\Exception;
 
 /**
  * @author 青岛开店星信息技术有限公司
@@ -27,7 +31,9 @@ class CouponLogService extends BaseService
      * 支付成功
      * @param OrderPaySuccessStruct $orderPaySuccessStruct
      * @return array|bool
-     * @author 青岛开店星信息技术有限公司
+     * @throws ArticleException
+     * @throws Exception
+     * @author yuning
      */
     public static function paySuccess(OrderPaySuccessStruct $orderPaySuccessStruct)
     {
@@ -70,6 +76,10 @@ class CouponLogService extends BaseService
 
         if (!$order->save()) {
             return error('订单状态修改失败');
+        }
+
+        if ($order->article_id) {
+            ArticleSellDataService::saveSellData($orderPaySuccessStruct->accountId, ArticleSellDataConstant::TYPE_COUPON, $order->article_id, $memberCouponSendRes, $order->coupon_id);
         }
 
         return true;

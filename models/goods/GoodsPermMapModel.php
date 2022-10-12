@@ -57,6 +57,11 @@ class GoodsPermMapModel extends BaseActiveRecord
     const PERM_BUY = 1;
 
     /**
+     * 价格浏览权限
+     */
+    const PERM_PRICE = 2;
+
+    /**
      * {@inheritdoc}
      */
     public static function tableName()
@@ -141,13 +146,13 @@ class GoodsPermMapModel extends BaseActiveRecord
 
     /**
      * 检测商品权限
-     * @param $goodsId
+     * @param int $goodsId
      * @param int $memberId
      * @param int $permType
      * @return bool
      * @author 青岛开店星信息技术有限公司
      */
-    public static function checkGoodsPerm(int $goodsId, int $memberId, $permType = self::PERM_VIEW): bool
+    public static function checkGoodsPerm(int $goodsId, int $memberId, int $permType = self::PERM_VIEW): bool
     {
 
         $permData = GoodsPermMapModel::find()->where(['goods_id' => $goodsId, 'perm_type' => $permType])->asArray()->all();
