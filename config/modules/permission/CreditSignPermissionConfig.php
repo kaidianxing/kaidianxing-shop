@@ -29,7 +29,7 @@ class CreditSignPermissionConfig extends BasePermissionConfig
     /**
      * @var string 路由前缀
      */
-    protected $prefix = 'manage/creditShop/';
+    protected $prefix = 'manage/creditSign/';
 
     /**
      * @var string 分组名称

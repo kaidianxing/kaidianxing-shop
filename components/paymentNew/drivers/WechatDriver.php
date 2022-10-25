@@ -113,6 +113,7 @@ class WechatDriver extends BasePaymentNewDriver implements PaymentNewDriverInter
             ClientTypeConstant::CLIENT_WXAPP => 'miniapp',
             ClientTypeConstant::CLIENT_H5 => 'wap',
             ClientTypeConstant::MANAGE_PC => 'scan',
+            ClientTypeConstant::CLIENT_PC => 'scan',
         ];
     }
 

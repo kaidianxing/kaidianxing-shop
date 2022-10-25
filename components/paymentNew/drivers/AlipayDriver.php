@@ -93,7 +93,7 @@ class AlipayDriver extends BasePaymentNewDriver implements PaymentNewDriverInter
             ClientTypeConstant::CLIENT_WXAPP => 'wap',
             ClientTypeConstant::CLIENT_H5 => 'wap',
             ClientTypeConstant::MANAGE_PC => 'scan',
-
+            ClientTypeConstant::CLIENT_PC => 'scan',
         ];
     }
 
@@ -112,7 +112,7 @@ class AlipayDriver extends BasePaymentNewDriver implements PaymentNewDriverInter
 
         try {
             // 调用支付SDK
-            if ($this->clientType == ClientTypeConstant::MANAGE_PC) {
+            if (in_array($this->clientType, [ClientTypeConstant::MANAGE_PC, ClientTypeConstant::CLIENT_PC])) {
                 $pay = Pay::alipay($this->buildConfig())->$method($this->buildOrderParams())->qr_code;
             } else {
                 $pay = Pay::alipay($this->buildConfig())->$method($this->buildOrderParams())->headers->get('location');
