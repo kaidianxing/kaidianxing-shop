@@ -131,7 +131,7 @@ class CreditSignActivityService
      * 获取积分签到活动详情
      * @param int $activityId
      * @return array|ActiveRecord|null
-     * @author miaobowen
+     * @author 青岛开店星信息技术有限公司
      */
     public static function getActivityDetail( int $activityId)
     {
@@ -168,7 +168,7 @@ class CreditSignActivityService
     /**
      * 获取正在进行中的活动
      * @return array
-     * @author miaobowen
+     * @author 青岛开店星信息技术有限公司
      */
     public static function getActivityOne(): array
     {
@@ -191,7 +191,7 @@ class CreditSignActivityService
      * 添加积分签到活动
      * @param int $userId
      * @return array|void
-     * @author miaobowen
+     * @author 青岛开店星信息技术有限公司
      */
     public static function addResult(int $userId)
     {
@@ -335,7 +335,7 @@ class CreditSignActivityService
      * @param string $endTime
      * @param int $activityId
      * @return bool
-     * @author miaobowen
+     * @author 青岛开店星信息技术有限公司
      */
     public static function checkExistsByTime(string $startTime, string $endTime, int $activityId = 0): bool
     {
@@ -407,7 +407,7 @@ class CreditSignActivityService
      * 检测积分签到活动参数
      * @param $data
      * @return array|bool
-     * @author miaobowen
+     * @author 青岛开店星信息技术有限公司
      */
     public static function saveCheckParams($data)
     {

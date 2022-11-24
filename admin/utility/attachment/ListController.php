@@ -12,13 +12,19 @@
 
 namespace shopstar\admin\utility\attachment;
 
+use Exception;
 use shopstar\bases\KdxAdminUtilityController;
 use shopstar\helpers\RequestHelper;
 use shopstar\helpers\VideoHelper;
 use shopstar\models\core\attachment\CoreAttachmentGroupModel;
 use shopstar\models\core\attachment\CoreAttachmentModel;
 use shopstar\services\core\attachment\CoreAttachmentService;
+use Throwable;
+use Yii;
+use yii\base\InvalidConfigException;
+use yii\db\StaleObjectException;
 use yii\helpers\Json;
+use yii\web\Response;
 
 /**
  * 附件管理
@@ -36,12 +42,14 @@ class ListController extends KdxAdminUtilityController
         'postActions' => [
             'upload',
             'delete',
+            'rename',
+            'change-group',
         ]
     ];
 
     /**
      * 获取设置
-     * @return array|\yii\web\Response
+     * @return array|Response
      * @author likexin
      */
     public function actionGetSettings()
@@ -53,7 +61,7 @@ class ListController extends KdxAdminUtilityController
 
     /**
      * 获取列表
-     * @return array|\yii\web\Response
+     * @return array|Response
      * @author likexin
      */
     public function actionGetList()
@@ -97,9 +105,9 @@ class ListController extends KdxAdminUtilityController
 
     /**
      * 上传附件
-     * @return array|\yii\web\Response
-     * @throws \ReflectionException
+     * @return array|Response
      * @throws \yii\base\Exception
+     * @throws InvalidConfigException
      * @author likexin
      */
     public function actionUpload()
@@ -128,9 +136,9 @@ class ListController extends KdxAdminUtilityController
 
     /**
      * 删除附件
-     * @return array|\yii\web\Response
-     * @throws \Throwable
-     * @throws \yii\db\StaleObjectException
+     * @return array|Response
+     * @throws Throwable
+     * @throws StaleObjectException
      * @author likexin
      */
     public function actionDelete()
@@ -162,11 +170,92 @@ class ListController extends KdxAdminUtilityController
     }
 
     /**
-     * 提取tx视频
-     * @return \yii\web\Response
+     * 附件重命名
+     * @return array|int[]|Response
      * @author 青岛开店星信息技术有限公司
      */
-    public function actionGetTencentVideo(): \yii\web\Response
+    public function actionRename()
+    {
+        $id = RequestHelper::postInt('id');
+        $name = RequestHelper::post('name');
+        if (!$id || !$name) {
+            return $this->error('缺少参数');
+        }
+
+        $model = CoreAttachmentModel::findOne($id);
+        if (!$model) {
+            return $this->error('获取数据失败');
+        }
+        $model->name = $name;
+        if (!$model->save()) {
+            return $this->error('保存失败');
+        }
+
+        return $this->success();
+    }
+
+    /**
+     * 更改分组
+     * @return array|int[]|Response
+     * @author 青岛开店星信息技术有限公司
+     */
+    public function actionChangeGroup()
+    {
+        $groupId = RequestHelper::postInt('group_id');
+        $ids = RequestHelper::post('ids');
+        if (!$ids) {
+            return $this->error('缺少参数');
+        }
+
+        $idsArray = explode(',', $ids);
+        if (!$idsArray) {
+            return $this->error('参数错误');
+        }
+
+        // 不是默认分组或内置分组时, 查询是否存在分组
+        if ($groupId > 0) {
+            $group = CoreAttachmentGroupModel::findOne($groupId);
+            if (!$group) {
+                return $this->error('无效的分组');
+            }
+        }
+
+        $tr = Yii::$app->db->beginTransaction();
+        try {
+            // 查询每个素材的旧分组数据
+            $oldGroupsCount = CoreAttachmentModel::find()->select('count(1) as count,group_id')->where(['id' => $idsArray])->andWhere(['>', 'group_id', 0])->groupBy('group_id')->get();
+            $rows = CoreAttachmentModel::updateAll(['group_id' => $groupId], ['id' => $idsArray]);
+            if ($rows) {
+
+                // 旧分组减少数
+                if (!empty($oldGroupsCount)) {
+                    foreach ($oldGroupsCount as $oldGroup) {
+                        CoreAttachmentGroupModel::updateAllCounters(['total' => -$oldGroup['count']], ['id' => $oldGroup['group_id']]);
+                    }
+                }
+                if (isset($group)) {
+                    // 更改新分组的附件总数
+                    $group->total = $group->total + $rows;
+                    if (!$group->save()) {
+                        throw new Exception('分组附件总数更新失败');
+                    }
+                }
+            }
+            $tr->commit();
+        } catch (Throwable $exception) {
+            $tr->rollBack();
+            return $this->error($exception->getMessage());
+        }
+
+        return $this->success();
+    }
+
+    /**
+     * 提取tx视频
+     * @return Response
+     * @author 青岛开店星信息技术有限公司
+     */
+    public function actionGetTencentVideo(): Response
     {
         $url = RequestHelper::post('url');
         $url = trim($url);

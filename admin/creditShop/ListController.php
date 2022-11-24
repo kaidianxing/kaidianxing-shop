@@ -323,7 +323,7 @@ class ListController extends KdxAdminApiController
             ]), [
                 'directory' => $savePatchDir,
                 'fileName' => $fileName,
-                'page' => 'pagesCreditShop/detail' // TODO miaobowen
+                'page' => 'pagesCreditShop/detail' // TODO 青岛开店星信息技术有限公司
             ]);
 
             if (is_error($result)) {

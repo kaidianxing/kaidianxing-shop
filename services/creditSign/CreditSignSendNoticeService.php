@@ -25,7 +25,7 @@ class CreditSignSendNoticeService
      * @param int $memberId
      * @param int $activityId
      * @return array|bool
-     * @author miaobowen
+     * @author 青岛开店星信息技术有限公司
      */
     public static function sendNotice(int $memberId, int $activityId)
     {
@@ -103,7 +103,7 @@ class CreditSignSendNoticeService
      * 积分签到提醒入队列
      * @param int $memberId
      * @param int $activityId
-     * @author miaobowen
+     * @author 青岛开店星信息技术有限公司
      */
     public static function sendNoticeQueue(int $memberId, int $activityId)
     {

@@ -11,7 +11,7 @@
             '<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0' +
             (coverSupport ? ', viewport-fit=cover' : '') +
             '" />'
-        )</script><link rel="stylesheet" href="https://at.alicdn.com/t/c/font_1534025_zhk9m4y0v6.css"><link rel="stylesheet" href="https://at.alicdn.com/t/font_1872121_xxkupf2vsz.css"><link rel="stylesheet" href="https://at.alicdn.com/t/font_2199566_7pueb97i5h.css"><link rel="stylesheet" href="https://at.alicdn.com/t/font_2199488_00ye6ht7d6zp.css"><link rel=stylesheet href=/static/dist/shop_wap/index.5ca1c9cc.css><script>window.config = <?php echo $settingsJson ?? ''?>;
+        )</script><link rel="stylesheet" href="https://at.alicdn.com/t/font_1534025_a0tl5bh9pd4.css"><link rel="stylesheet" href="https://at.alicdn.com/t/font_1872121_xxkupf2vsz.css"><link rel="stylesheet" href="https://at.alicdn.com/t/font_2199566_7pueb97i5h.css"><link rel="stylesheet" href="https://at.alicdn.com/t/font_2199488_00ye6ht7d6zp.css"><link rel=stylesheet href=/static/dist/shop_wap/index.5ca1c9cc.css><script>window.config = <?php echo $settingsJson ?? ''?>;
         window.wxDebug = false;</script><style>/* remixicon图标库 */
         [class^="ri-"],
         [class*=" ri-"] {
@@ -81,7 +81,7 @@
                     window.vconsolecallback()
                 }
             }
-        }</script></head><body><div id="vconsole-btn"></div><div id="app"><style>.search {
+        }</script></head><body><span style="display:none"><?php echo $globalCode ?? '' ?></span><div id="vconsole-btn"></div><div id="app"><style>.search {
             width: 100%;
             height: 12.2vw;
             display: flex;
@@ -235,4 +235,4 @@
             margin: auto;
             height: 3vw;
             border-radius: 0.6vw;
-        }</style><div class="app-loading-skeleten"><div class="search"></div><div class="swiper"><div class="dots"><p></p><p></p><p></p><p style="background:#fff"></p></div></div><div class="btns"><p class="btn"></p><p class="btn"></p><p class="btn"></p><p class="btn"></p><p class="btn"></p><p class="btn"></p><p class="btn"></p><p class="btn"></p><p class="btn"></p><p class="btn"></p></div><div class="title"></div><div class="goods"><p class="good"></p><p class="good"></p><p class="good-info"></p><p class="good-info"></p></div></div></div><script src="/static/dist/shop_wap/static/js/chunk-vendors.js?v=1665452576985"></script><script src="/static/dist/shop_wap/static/js/index.js?v=1665452576985"></script></body></html>
+        }</style><div class="app-loading-skeleten"><div class="search"></div><div class="swiper"><div class="dots"><p></p><p></p><p></p><p style="background:#fff"></p></div></div><div class="btns"><p class="btn"></p><p class="btn"></p><p class="btn"></p><p class="btn"></p><p class="btn"></p><p class="btn"></p><p class="btn"></p><p class="btn"></p><p class="btn"></p><p class="btn"></p></div><div class="title"></div><div class="goods"><p class="good"></p><p class="good"></p><p class="good-info"></p><p class="good-info"></p></div></div></div><script src="/static/dist/shop_wap/static/js/chunk-vendors.js?v=1669253780971"></script><script src="/static/dist/shop_wap/static/js/index.js?v=1669253780971"></script></body></html>

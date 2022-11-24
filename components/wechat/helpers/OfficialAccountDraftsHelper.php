@@ -25,7 +25,7 @@ class OfficialAccountDraftsHelper
      * 开发者可新增常用的素材到草稿箱中进行使用。上传到草稿箱中的素材被群发或发布后，该素材将从草稿箱中移除。新增草稿可在公众平台官网-草稿箱中查看和管理。
      * @param array $data
      * @return array|bool|mixed
-     * @author miaobowen
+     * @author 青岛开店星信息技术有限公司
      */
     public static function add(array $data)
     {
@@ -50,7 +50,7 @@ class OfficialAccountDraftsHelper
      * 新增草稿后，开发者可以根据草稿指定的字段来下载草稿
      * @param string $mediaId 要获取的草稿的media_id
      * @return array|bool|mixed
-     * @author miaobowen
+     * @author 青岛开店星信息技术有限公司
      */
     public static function get(string $mediaId)
     {
@@ -75,7 +75,7 @@ class OfficialAccountDraftsHelper
      * 新增草稿后，开发者可以根据本接口来删除不再需要的草稿，节省空间。此操作无法撤销，请谨慎操作。
      * @param string $mediaId 要删除的图文消息的id
      * @return array|bool|mixed
-     * @author miaobowen
+     * @author 青岛开店星信息技术有限公司
      */
     public static function delete(string $mediaId)
     {
@@ -102,7 +102,7 @@ class OfficialAccountDraftsHelper
      * @param int $index 要更新的文章在图文消息中的位置（多图文消息时，此字段才有意义），第一篇为0
      * @param array $data
      * @return array|bool|mixed
-     * @author miaobowen
+     * @author 青岛开店星信息技术有限公司
      */
     public static function update(string $mediaId, int $index, array $data)
     {
@@ -130,7 +130,7 @@ class OfficialAccountDraftsHelper
      * 获取草稿总数
      * 开发者可以根据本接口来获取草稿的总数。此接口只统计数量，不返回草稿的具体内容
      * @return array|bool|mixed
-     * @author miaobowen
+     * @author 青岛开店星信息技术有限公司
      */
     public static function count()
     {
@@ -157,7 +157,7 @@ class OfficialAccountDraftsHelper
      * @param int $count 返回素材的数量，取值在1到20之间
      * @param int $noContent 1 表示不返回 content 字段，0 表示正常返回，默认为 0
      * @return array|bool|mixed
-     * @author miaobowen
+     * @author 青岛开店星信息技术有限公司
      */
     public static function batchGet(int $offset, int $count = 20, int $noContent = 0)
     {

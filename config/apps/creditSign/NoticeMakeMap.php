@@ -18,7 +18,7 @@ class NoticeMakeMap implements NoticeMakeTypeMapInterface
 
     /**
      * @return array[]
-     * @author miaobowen
+     * @author 青岛开店星信息技术有限公司
      */
     public static function getNoticeMap(): array
     {

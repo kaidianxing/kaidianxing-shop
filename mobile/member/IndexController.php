@@ -13,7 +13,6 @@
 namespace shopstar\mobile\member;
 
 use shopstar\bases\controller\BaseMobileApiController;
-use shopstar\bases\exception\BaseApiException;
 use shopstar\components\notice\NoticeComponent;
 use shopstar\constants\CacheTypeConstant;
 use shopstar\constants\ClientTypeConstant;
@@ -40,6 +39,9 @@ use shopstar\models\sale\CouponMemberModel;
 use shopstar\models\shop\ShopSettings;
 use shopstar\services\member\MemberService;
 use shopstar\services\role\ManagerService;
+use Throwable;
+use Yii;
+use yii\web\Response;
 
 /**
  * Class IndexController
@@ -83,7 +85,7 @@ class IndexController extends BaseMobileApiController
     ];
 
     /**
-     * @return \yii\web\Response
+     * @return Response
      * @author likexin
      */
     public function actionIndex()
@@ -143,7 +145,7 @@ class IndexController extends BaseMobileApiController
     /**
      * 通过验证码登录
      * @action login-by-code
-     * @return array|\yii\web\Response
+     * @return array|Response
      * @throws MemberException
      * @author 青岛开店星信息技术有限公司
      */
@@ -185,7 +187,7 @@ class IndexController extends BaseMobileApiController
     /**
      * 找回密码
      * @action forget-password
-     * @return array|\yii\web\Response
+     * @return array|Response
      * @throws MemberException
      * @author 青岛开店星信息技术有限公司
      */
@@ -227,11 +229,11 @@ class IndexController extends BaseMobileApiController
     }
 
     /**
-     * @return \yii\web\Response
+     * @return Response
      * @throws MemberException
      * @author 青岛开店星信息技术有限公司
      */
-    public function actionChangePassword(): \yii\web\Response
+    public function actionChangePassword(): Response
     {
         $post = RequestHelper::post();
 
@@ -266,7 +268,7 @@ class IndexController extends BaseMobileApiController
     /**
      * 用户绑定手机号
      * @action bind-mobile
-     * @return array|\yii\web\Response
+     * @return array|Response
      * @throws MemberException
      * @author 青岛开店星信息技术有限公司
      */
@@ -337,7 +339,7 @@ class IndexController extends BaseMobileApiController
 
     /**
      * 用户合并
-     * @return array|\yii\web\Response
+     * @return array|Response
      * @throws MemberException
      * @author 青岛开店星信息技术有限公司
      */
@@ -351,7 +353,7 @@ class IndexController extends BaseMobileApiController
         //需要绑定的手机号
         $mobile = $post['mobile'];
 
-        $tr = \Yii::$app->db->beginTransaction();
+        $tr = Yii::$app->db->beginTransaction();
         try {
             if (empty($discardMemberId) || empty($selectMemberId) || empty($mobile)) {
                 throw new MemberException(MemberException::MEMBER_MERGE_PARAMS_ERROR);
@@ -387,7 +389,7 @@ class IndexController extends BaseMobileApiController
             //重新写入session
             MemberSession::set($this->sessionId, $selectMemberId, $this->clientType, 'member', $selectMemberModel->getAttributes());
             $tr->commit();
-        } catch (\Throwable $throwable) {
+        } catch (Throwable $throwable) {
             $tr->rollBack();
             throw new MemberException($throwable->getCode(), $throwable->getMessage());
         }
@@ -398,7 +400,7 @@ class IndexController extends BaseMobileApiController
     /**
      * 更换手机号
      * @action change-bind-mobile
-     * @return array|\yii\web\Response
+     * @return array|Response
      * @throws MemberException
      * @author 青岛开店星信息技术有限公司
      */
@@ -443,7 +445,7 @@ class IndexController extends BaseMobileApiController
     /**
      * 用户注册
      * @action register
-     * @return array|\yii\web\Response
+     * @return array|Response
      * @throws MemberException
      * @author 青岛开店星信息技术有限公司
      */
@@ -472,7 +474,7 @@ class IndexController extends BaseMobileApiController
         $pass = md5($password . $salt);
 
         //保存会员
-        $transaction = \Yii::$app->db->beginTransaction();
+        $transaction = Yii::$app->db->beginTransaction();
         try {
             $result = MemberModel::saveMember([
                 'mobile' => $mobile,
@@ -484,7 +486,7 @@ class IndexController extends BaseMobileApiController
             ]);
 
             $transaction->commit();
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             $transaction->rollBack();
             return $this->result($e->getMessage(), $e->getCode());
         }
@@ -558,7 +560,7 @@ class IndexController extends BaseMobileApiController
     /**
      * 获取sessionid
      * @action get-session-id
-     * @return string
+     * @return array|int[]|Response
      * @author 青岛开店星信息技术有限公司
      */
     public function actionGetSessionId()
@@ -574,7 +576,7 @@ class IndexController extends BaseMobileApiController
 
     /**
      * 会员中心
-     * @return array|\yii\web\Response
+     * @return array|Response
      * @throws MemberException
      * @author 青岛开店星信息技术有限公司
      */
@@ -616,12 +618,23 @@ class IndexController extends BaseMobileApiController
         //加密会员id
         $result['hash_member_id'] = CryptHelper::encrypt($this->memberId . '-hash_member_id');
 
+        if ($this->clientType != ClientTypeConstant::CLIENT_PC) {
+            // 用户名和头像都为默认时, 用户名修改
+            $parseUrl = parse_url($result['data']['avatar'] ?? '') ?? [];
+
+            $defaultNicknamePrefix = (mb_substr($result['data']['nickname'], 0, mb_strlen(MemberModel::$defaultNicknamePrefix)) == MemberModel::$defaultNicknamePrefix);
+            $defaultNicknameLength = (mb_strlen($result['data']['nickname']) == MemberModel::$defaultNicknameLength);
+            if (($defaultNicknamePrefix && $defaultNicknameLength) && (isset($parseUrl['path']) && $parseUrl['path'] == MemberModel::$defaultAvatar)) {
+                $result['data']['nickname'] = MemberModel::$defaultNickNameTips;
+            }
+        }
+
         return $this->result($result);
     }
 
     /**
      * 修改用户资料
-     * @return array|\yii\web\Response
+     * @return array|Response
      * @throws MemberException
      * @author 青岛开店星信息技术有限公司
      */
@@ -656,7 +669,7 @@ class IndexController extends BaseMobileApiController
 
     /**
      * 获取登录状态
-     * @return array|\yii\web\Response
+     * @return array|Response
      * @author 青岛开店星信息技术有限公司
      */
     public function actionGetLoginStatus()
@@ -675,7 +688,7 @@ class IndexController extends BaseMobileApiController
 
     /**
      * 获取用户是否关注
-     * @return array|int[]|\yii\web\Response
+     * @return array|int[]|Response
      * @author 青岛开店星信息技术有限公司
      */
     public function actionGetMemberFollowStatus()
@@ -687,11 +700,11 @@ class IndexController extends BaseMobileApiController
 
     /**
      * 登录之后回调绑定核销员
-     * @return \yii\web\Response
+     * @return Response
      * @throws MemberException
      * @author 青岛开店星信息技术有限公司
      */
-    public function actionLoginAfter(): \yii\web\Response
+    public function actionLoginAfter(): Response
     {
         $memberId = RequestHelper::post('member_id');
         $uid = RequestHelper::post('uid');
@@ -745,11 +758,11 @@ class IndexController extends BaseMobileApiController
 
     /**
      * 判断二维码是否失效
-     * @return \yii\web\Response
+     * @return Response
      * @throws MemberException
      * @author 青岛开店星信息技术有限公司
      */
-    public function actionInvalid(): \yii\web\Response
+    public function actionInvalid(): Response
     {
         $clientType = RequestHelper::header('Client-Type');
         $time = RequestHelper::postInt('time');
@@ -763,11 +776,11 @@ class IndexController extends BaseMobileApiController
 
     /**
      * 绑定核销员
-     * @return \yii\web\Response
+     * @return Response
      * @throws MemberException
      * @author 青岛开店星信息技术有限公司
      */
-    public function actionBindVerifier(): \yii\web\Response
+    public function actionBindVerifier(): Response
     {
         $uid = RequestHelper::post('uid');
         $time = RequestHelper::postInt('time');

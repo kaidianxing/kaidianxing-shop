@@ -318,6 +318,8 @@ class ShopSettings extends BaseSettings
                         'agreement_name' => '',
                         'agreement_content' => '',
                         'icp_code' => '', // ICP备案号
+
+                        'global_code' => '', // 全局统计代码
                     ],
                     'share' => [ // 分享设置
                         'title_type' => '1',

@@ -15,6 +15,7 @@ namespace shopstar\controllers;
 use shopstar\bases\controller\BaseViewController;
 use shopstar\helpers\RequestHelper;
 use shopstar\helpers\ShopUrlHelper;
+use shopstar\models\shop\ShopSettings;
 use shopstar\services\core\attachment\CoreAttachmentService;
 use yii\helpers\Json;
 use yii\helpers\Url;
@@ -49,6 +50,9 @@ class H5Controller extends BaseViewController
         return $this->render([
             'settingsJson' => Json::encode($params),
             'settingsArray' => $params,
+
+            // 全局代码统计
+            'globalCode' => ShopSettings::get('sysset.mall.basic.global_code') ?: '',
         ]);
     }
 

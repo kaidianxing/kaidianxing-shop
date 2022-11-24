@@ -25,7 +25,7 @@ class CreditSignTotalService
      * @param int $memberId
      * @param int $activityId
      * @return int[]
-     * @author miaobowen
+     * @author 青岛开店星信息技术有限公司
      */
     public static function calculateTodayAndTomorrowIntegral(int $memberId, int $activityId): array
     {
@@ -83,7 +83,7 @@ class CreditSignTotalService
      * @param int $memberId
      * @param int $activityId
      * @return array|mixed
-     * @author miaobowen
+     * @author 青岛开店星信息技术有限公司
      */
     public static function getContinuityInfo(int $memberId, int $activityId)
     {

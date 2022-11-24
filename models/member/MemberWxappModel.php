@@ -11,9 +11,13 @@
  */
 
 namespace shopstar\models\member;
-use shopstar\models\member\MemberModel;
-use shopstar\services\member\MemberWechatService;
+
+use Exception;
+use shopstar\bases\model\BaseActiveRecord;
 use shopstar\exceptions\member\MemberException;
+use shopstar\services\member\MemberWechatService;
+use Yii;
+use yii\helpers\Url;
 
 /**
  * This is the model class for table "{{%member_wxapp}}".
@@ -28,13 +32,17 @@ use shopstar\exceptions\member\MemberException;
  * @property string $wechat_id 微信号
  * @property string $is_deleted 是否删除 1是0否
  */
-class MemberWxappModel extends \shopstar\bases\model\BaseActiveRecord
+class MemberWxappModel extends BaseActiveRecord
 {
+    /**
+     * @var string
+     */
+    public static string $defaultNickname = '微信用户';
 
     /**
      * {@inheritdoc}
      */
-    public static function tableName()
+    public static function tableName(): string
     {
         return '{{%member_wxapp}}';
     }
@@ -42,7 +50,7 @@ class MemberWxappModel extends \shopstar\bases\model\BaseActiveRecord
     /**
      * {@inheritdoc}
      */
-    public function rules()
+    public function rules(): array
     {
         return [
             [['openid'], 'required'],
@@ -56,7 +64,7 @@ class MemberWxappModel extends \shopstar\bases\model\BaseActiveRecord
     /**
      * {@inheritdoc}
      */
-    public function attributeLabels()
+    public function attributeLabels(): array
     {
         return [
             'id' => 'ID',
@@ -76,12 +84,11 @@ class MemberWxappModel extends \shopstar\bases\model\BaseActiveRecord
      * @param array $wxappMember 小程序会员信息
      * @param int $clientType 客户端类型
      * @return array
-     * @throws \common\exceptions\member\MemberException
+     * @throws MemberException
      */
     public static function checkMember(array $wxappMember, int $clientType): array
     {
-
-        $transaction = \Yii::$app->db->beginTransaction();
+        $transaction = Yii::$app->db->beginTransaction();
         try {
             // 当前操作渠道会员
             $model = null;
@@ -123,15 +130,33 @@ class MemberWxappModel extends \shopstar\bases\model\BaseActiveRecord
                 self::checkBlackList($memberId);
             }
 
-            //保存会员主体信息
-            $memberInfo = MemberModel::saveMember([
+            // 保存会员主体信息
+            $data = [
                 'id' => $memberId,
                 'avatar' => $wxappMember['avatarUrl'],
                 'nickname' => $wxappMember['nickName'],
                 'province' => $wxappMember['province'],
                 'city' => $wxappMember['city'],
                 'source' => $clientType,
-            ], true);
+            ];
+
+            // 小程序不会再返回用户名和头像, 如果返回了默认名字和头像, 替换成商城的规则
+            // 用户名: 用户+6位随机数
+            // 头像: 替换成商城的随机头像
+            // 老用户不处理
+            if (!isset($wxappMember['nickName']) || !$wxappMember['nickName'] || $wxappMember['nickName'] == self::$defaultNickname) {
+                // 新用户, 生成随机的用户名及使用默认头像
+                if (!$memberId) {
+                    $data['nickname'] = MemberModel::getDefaultNickname();
+                    $data['avatar'] = Url::base(true) . MemberModel::$defaultAvatar;
+                } else {
+                    // 老用户, 不使用
+                    unset($data['nickname'], $data['avatar']);
+                }
+            }
+
+            //保存会员主体信息
+            $memberInfo = MemberModel::saveMember($data, true);
             if (is_error($memberInfo)) {
                 throw new MemberException(MemberException::MEMBER_WXAPP_SUBJECT_ACCOUNT_CREATE_ERROR, $memberInfo['message']);
             }
@@ -151,7 +176,7 @@ class MemberWxappModel extends \shopstar\bases\model\BaseActiveRecord
 
             $transaction->commit();
 
-        } catch (\Exception $exception) {
+        } catch (Exception $exception) {
             $transaction->rollBack();
 
             // 继续抛出异常
@@ -164,9 +189,11 @@ class MemberWxappModel extends \shopstar\bases\model\BaseActiveRecord
     /**
      * 检测会员黑名单
      * @param int $memberId 会员ID
+     * @return void
      * @throws MemberException
+     * @author 青岛开店星信息技术有限公司
      */
-    private static function checkBlackList(int $memberId)
+    private static function checkBlackList(int $memberId): void
     {
         /**
          * @var MemberModel $member
@@ -180,15 +207,12 @@ class MemberWxappModel extends \shopstar\bases\model\BaseActiveRecord
         if (!empty($member) && $member->is_black == 1) {
             throw new MemberException(MemberException::MEMBER_WECHAT_PC_CHECK_IN_BLACK_LIST);
         }
-
-        return $member;
     }
-
 
     /**
      * 获取openId
      * @param $memberId
-     * @return array|null
+     * @return array|null|string
      * @author 青岛开店星信息技术有限公司
      */
     public static function getOpenId($memberId)

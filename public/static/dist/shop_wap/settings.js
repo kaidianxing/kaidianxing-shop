@@ -17,8 +17,7 @@
 //     with_live: false, //直播
 //     with_recharge: false// 个人中心 支付入口
 // };
-
-// var config = {//yuning
+// var config = {
 // 	base_url: 'http://yuning-free.kdxdev.com/h5/api',
 // 	attachment_url: 'http://yuning-free.kdxdev.com/data/attachment/',
 // 	public_url: 'http://yuning-free.kdxdev.com/',

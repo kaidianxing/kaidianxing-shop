@@ -16,6 +16,7 @@ use shopstar\bases\model\BaseActiveRecord;
 use shopstar\constants\ClientTypeConstant;
 use shopstar\constants\MemberTypeConstant;
 use shopstar\helpers\DateTimeHelper;
+use shopstar\helpers\StringHelper;
 use shopstar\helpers\ValueHelper;
 use shopstar\models\commission\CommissionAgentModel;
 use shopstar\models\commission\CommissionLevelModel;
@@ -24,27 +25,89 @@ use shopstar\models\member\group\MemberGroupModel;
 use shopstar\models\pc\MemberWechatPcModel;
 use shopstar\models\sale\CouponMemberModel;
 use shopstar\models\shop\ShopSettings;
+use Throwable;
+use Yii;
 use yii\db\ActiveQuery;
+use yii\db\ActiveRecord;
 
+/**
+ * This is the model class for table "{{%renren_shop_member}}".
+ *
+ * @property int $id
+ * @property int $shop_id 店铺id
+ * @property string $avatar 头像
+ * @property string $nickname 用户昵称
+ * @property string $realname 用户真实名
+ * @property string $mobile 手机号
+ * @property string $password 密码
+ * @property string $salt 盐
+ * @property int $credit 积分
+ * @property string $balance 余额
+ * @property int $is_black 是否黑名单 0:否;1:是
+ * @property int $level_id 等级id
+ * @property string $birth_year 出生年
+ * @property string $birth_month 出生月
+ * @property string $birth_day 出生日
+ * @property string $remark 备注
+ * @property string $province 所在省
+ * @property string $city 所在市
+ * @property string $credit_limit 积分上限  0:读取系统设置;其他:自定义;
+ * @property int $source 用户来源 0: 未知;10:H5;20: 微信公众号;21: 微信小程序;4:抖音小程序;5:支付宝小程序;
+ * @property int $is_bind_mobile 是否绑定手机号 0:否;1:是;
+ * @property int $audit_status 审核状态 0默认 10 没有手机号 20 待审核 30 审核通过 40 审核未通过;
+ * @property int $register_form_status 注册表单状态 0默认 10 未填写 20 填写完成;
+ * @property string $audit_time 审核时间
+ * @property string $last_time 最后一次登录时间
+ * @property int $inviter 邀请人id
+ * @property string $invite_time 邀请时间
+ * @property string $extra_package 扩展字段
+ * @property int $is_deleted 是否废弃 0否 1是
+ * @property string $created_at 创建时间
+ * @property string $updated_at 更新时间
+ */
 class MemberModel extends BaseActiveRecord
 {
+    /**
+     * 默认头像
+     * @var string
+     */
+    public static string $defaultAvatar = '/static/dist/shop/renren_wap/default/default_avator.png';
+
+    /**
+     * 默认用户名前缀
+     * @var string
+     */
+    public static string $defaultNicknamePrefix = '用户';
+
+    /**
+     * 默认用户名长度(前缀+ 随机字符的长度)
+     * @var int
+     */
+    public static int $defaultNicknameLength = 8;
+
+    /**
+     * 默认用户名提示文字
+     * @var string
+     */
+    public static string $defaultNickNameTips = '点击显示微信头像';
+
     /**
      * 黑名单
      * @var array
      */
-    public static $isBlack = ['否', '是'];
+    public static array $isBlack = ['否', '是'];
 
     /**
      * 关注状态
      * @var array
      */
-    public static $isFollow = ['未关注', '已关注', '已取消'];
+    public static array $isFollow = ['未关注', '已关注', '已取消'];
 
     /**
      * 导出会员字段
      * @var array
      */
-    public static $memberColumns = [
+    public static array $memberColumns = [
         ['title' => '会员ID', 'field' => 'id', 'width' => 12],
         ['title' => '会员昵称', 'field' => 'nickname', 'width' => 24],
         ['title' => '真实姓名', 'field' => 'realname', 'width' => 18],
@@ -63,7 +126,7 @@ class MemberModel extends BaseActiveRecord
      * 查找字段
      * @var string[]
      */
-    private static $select = [
+    private static array $select = [
         'm.id',
         'm.avatar',
         'm.nickname',
@@ -93,7 +156,7 @@ class MemberModel extends BaseActiveRecord
     /**
      * {@inheritdoc}
      */
-    public static function tableName()
+    public static function tableName(): string
     {
         return '{{%member}}';
     }
@@ -101,7 +164,7 @@ class MemberModel extends BaseActiveRecord
     /**
      * {@inheritdoc}
      */
-    public function rules()
+    public function rules(): array
     {
         return [
             [['credit', 'is_black', 'level_id', 'source', 'is_bind_mobile', 'inviter', 'is_deleted'], 'integer'],
@@ -117,7 +180,7 @@ class MemberModel extends BaseActiveRecord
     }
 
 
-    public function logAttributeLabels()
+    public function logAttributeLabels(): array
     {
         return [
             'id' => 'id',
@@ -150,7 +213,7 @@ class MemberModel extends BaseActiveRecord
     /**
      * {@inheritdoc}
      */
-    public function attributeLabels()
+    public function attributeLabels(): array
     {
         return [
             'id' => 'ID',
@@ -187,7 +250,7 @@ class MemberModel extends BaseActiveRecord
      * @return ActiveQuery
      * @author 青岛开店星信息技术有限公司
      */
-    public function getGroupsMap()
+    public function getGroupsMap(): ActiveQuery
     {
         return $this->hasMany(MemberGroupMapModel::class, ['member_id' => 'id']);
     }
@@ -197,7 +260,7 @@ class MemberModel extends BaseActiveRecord
      * @return ActiveQuery
      * @author 青岛开店星信息技术有限公司
      */
-    public function getWechatMember()
+    public function getWechatMember(): ActiveQuery
     {
         return $this->hasOne(MemberWechatModel::class, ['member_id' => 'id']);
     }
@@ -207,7 +270,7 @@ class MemberModel extends BaseActiveRecord
      * @return ActiveQuery
      * @author 青岛开店星信息技术有限公司
      */
-    public function getWxappMember()
+    public function getWxappMember(): ActiveQuery
     {
         return $this->hasOne(MemberWxappModel::class, ['member_id' => 'id']);
     }
@@ -217,7 +280,7 @@ class MemberModel extends BaseActiveRecord
      * @return ActiveQuery
      * @author 青岛开店星信息技术有限公司
      */
-    public function getDouyinMember()
+    public function getDouyinMember(): ActiveQuery
     {
         return $this->hasOne(MemberDouyinModel::class, ['member_id' => 'id']);
     }
@@ -227,7 +290,7 @@ class MemberModel extends BaseActiveRecord
      * @return ActiveQuery
      * @author 青岛开店星信息技术有限公司
      */
-    public function getToutiaoMember()
+    public function getToutiaoMember(): ActiveQuery
     {
         return $this->hasOne(MemberToutiaoModel::class, ['member_id' => 'id']);
     }
@@ -237,7 +300,7 @@ class MemberModel extends BaseActiveRecord
      * @return ActiveQuery
      * @author 青岛开店星信息技术有限公司
      */
-    public function getGroups()
+    public function getGroups(): ActiveQuery
     {
         return $this->hasMany(MemberGroupModel::class, ['id' => 'group_id'])->via('groupsMap');
     }
@@ -247,7 +310,7 @@ class MemberModel extends BaseActiveRecord
      * @return ActiveQuery
      * @author 青岛开店星信息技术有限公司
      */
-    public function getLevel()
+    public function getLevel(): ActiveQuery
     {
         return $this->hasOne(MemberLevelModel::class, ['id' => 'level_id']);
     }
@@ -257,7 +320,7 @@ class MemberModel extends BaseActiveRecord
      * @return ActiveQuery
      * @author 青岛开店星信息技术有限公司
      */
-    public function getMemberCoupons()
+    public function getMemberCoupons(): ActiveQuery
     {
         return $this->hasMany(CouponMemberModel::class, ['member_id' => 'id']);
     }
@@ -267,17 +330,18 @@ class MemberModel extends BaseActiveRecord
      * @return ActiveQuery
      * @author 青岛开店星信息技术有限公司
      */
-    public function getOrders()
+    public function getOrders(): ActiveQuery
     {
         return $this->hasMany(CouponMemberModel::class, ['member_id' => 'id']);
     }
 
     /**
      * 获取用户信息
+     * @param int $memberId
      * @return array|null
      * @author 青岛开店星信息技术有限公司
      */
-    public static function getMemberDetail(int $memberId)
+    public static function getMemberDetail(int $memberId): ?array
     {
         $member = self::find()
             ->alias('m')
@@ -416,9 +480,9 @@ class MemberModel extends BaseActiveRecord
      * @return bool
      * @author 青岛开店星信息技术有限公司
      */
-    public static function updateLastTime(int $id, string $sessionId)
+    public static function updateLastTime(int $id, string $sessionId): bool
     {
-        $redis = \Yii::$app->redis;
+        $redis = Yii::$app->redis;
         $key = 'kdx_shop_' . '_' . $sessionId . '_last_time';
         // 缓存是否存在 不存在则更新
         $isExists = $redis->get($key);
@@ -428,7 +492,7 @@ class MemberModel extends BaseActiveRecord
             $redis->setex($key, $expireTime, DateTimeHelper::now());
             try {
                 MemberModel::updateAll(['last_time' => DateTimeHelper::now()], ['id' => $id]);
-            } catch (\Throwable $exception) {
+            } catch (Throwable $exception) {
                 // 不作处理
             }
         }
@@ -495,13 +559,12 @@ class MemberModel extends BaseActiveRecord
 
     }
 
-
     /**
      * 校验手机号是否绑定
      * @param $mobile
      * @return bool
      */
-    public static function checkMobileIsBind($mobile)
+    public static function checkMobileIsBind($mobile): bool
     {
         $result = self::find()
             ->where(['mobile' => $mobile, 'is_deleted' => 0])
@@ -509,14 +572,13 @@ class MemberModel extends BaseActiveRecord
         return $result === null;
     }
 
-
     /**
      * 获取积分排名
      * @param $memberId
      * @return int
      * @author 青岛开店星信息技术有限公司
      */
-    public static function getCreditRanking($memberId)
+    public static function getCreditRanking($memberId): int
     {
         // 获取当前积分
         $memberCredit = self::getCredit($memberId);
@@ -535,7 +597,7 @@ class MemberModel extends BaseActiveRecord
      * @return array
      * @author 青岛开店星信息技术有限公司
      */
-    public static function getMemberAllSource(int $memberId, int $firstSource, string $mobile = '')
+    public static function getMemberAllSource(int $memberId, int $firstSource, string $mobile = ''): array
     {
         $all = [
             ClientTypeConstant::CLIENT_H5 => [ // H5
@@ -598,7 +660,7 @@ class MemberModel extends BaseActiveRecord
             $all[ClientTypeConstant::CLIENT_BYTE_DANCE_DOUYIN]['is_register'] = 1;
         }
         // PC
-        $isPc = MemberWechatPcModel::findOne(['member_id' => $memberId,  'is_deleted' => 0]);
+        $isPc = MemberWechatPcModel::findOne(['member_id' => $memberId, 'is_deleted' => 0]);
         if (!empty($isPc)) {
             $all[ClientTypeConstant::CLIENT_PC]['is_register'] = 1;
         }
@@ -610,10 +672,10 @@ class MemberModel extends BaseActiveRecord
     /**
      * 获取会员下所有账号
      * @param int $memberId
-     * @return array|\yii\db\ActiveRecord[]
+     * @return array|ActiveRecord[]
      * @author 青岛开店星信息技术有限公司
      */
-    public static function getMemberAllInfo(int $memberId)
+    public static function getMemberAllInfo(int $memberId): ?array
     {
         return MemberModel::find()
             ->with([
@@ -658,7 +720,7 @@ class MemberModel extends BaseActiveRecord
      * @return bool
      * @author 青岛开店星信息技术有限公司
      */
-    public static function checkDeleted($memberId)
+    public static function checkDeleted($memberId): bool
     {
         // 存在删除的用户
         return !self::find()->where(['id' => $memberId, 'is_deleted' => 1])->exists();
@@ -875,7 +937,7 @@ class MemberModel extends BaseActiveRecord
             }
         }
 
-        return (array)array_slice((array)$member, 0, $number);
+        return array_slice($member, 0, $number);
     }
 
 
@@ -885,7 +947,7 @@ class MemberModel extends BaseActiveRecord
      * @return array|null
      * @author 青岛开店星信息技术有限公司
      */
-    public static function getMemberInfo(int $memberId)
+    public static function getMemberInfo(int $memberId): ?array
     {
         $memberInfo = MemberModel::find()
             ->alias('m')
@@ -931,11 +993,11 @@ class MemberModel extends BaseActiveRecord
         if ($info) {
             $info['source_name'] = ClientTypeConstant::getText($info['source']);
             $info['group_name'] = MemberGroupModel::find()
-                    ->alias('group')
-                    ->leftJoin(MemberGroupMapModel::tableName() . ' group_map', 'group_map.group_id = group.id')
-                    ->where(['group_map.member_id' => $info['id']])
-                    ->select('group.group_name')
-                    ->first()['group_name'] ?? '';
+                ->alias('group')
+                ->leftJoin(MemberGroupMapModel::tableName() . ' group_map', 'group_map.group_id = group.id')
+                ->where(['group_map.member_id' => $info['id']])
+                ->select('group.group_name')
+                ->first()['group_name'] ?? '';
             $levelList = MemberLevelModel::find()
                 ->select('id, level_name')
                 ->indexBy('id')
@@ -945,4 +1007,13 @@ class MemberModel extends BaseActiveRecord
         return $info ?? [];
     }
 
+    /**
+     * 获取默认的昵称
+     * @return string
+     * @author 青岛开店星信息技术有限公司
+     */
+    public static function getDefaultNickname(): string
+    {
+        return self::$defaultNicknamePrefix . StringHelper::random(self::$defaultNicknameLength - mb_strlen(self::$defaultNicknamePrefix));
+    }
 }
