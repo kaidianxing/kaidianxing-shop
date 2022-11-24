@@ -1,4 +1,10 @@
-<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><title></title><script>document.addEventListener('DOMContentLoaded', function () {
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta content="IE=edge" http-equiv="X-UA-Compatible">
+    <title></title>
+    <script>document.addEventListener('DOMContentLoaded', function () {
             document.documentElement.style.fontSize =
                 document.documentElement.clientWidth / 20 + 'px'
         })
@@ -11,8 +17,15 @@
             '<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0' +
             (coverSupport ? ', viewport-fit=cover' : '') +
             '" />'
-        )</script><link rel="stylesheet" href="https://at.alicdn.com/t/font_1534025_a0tl5bh9pd4.css"><link rel="stylesheet" href="https://at.alicdn.com/t/font_1872121_xxkupf2vsz.css"><link rel="stylesheet" href="https://at.alicdn.com/t/font_2199566_7pueb97i5h.css"><link rel="stylesheet" href="https://at.alicdn.com/t/font_2199488_00ye6ht7d6zp.css"><link rel=stylesheet href=/static/dist/shop_wap/index.5ca1c9cc.css><script>window.config = <?php echo $settingsJson ?? ''?>;
-        window.wxDebug = false;</script><style>/* remixicon图标库 */
+        )</script>
+    <link href="https://at.alicdn.com/t/c/font_1534025_zhk9m4y0v6.css" rel="stylesheet">
+    <link href="https://at.alicdn.com/t/font_1872121_xxkupf2vsz.css" rel="stylesheet">
+    <link href="https://at.alicdn.com/t/font_2199566_7pueb97i5h.css" rel="stylesheet">
+    <link href="https://at.alicdn.com/t/font_2199488_00ye6ht7d6zp.css" rel="stylesheet">
+    <link href=/static/dist/shop_wap/index.5ca1c9cc.css rel=stylesheet>
+    <script>window.config = <?php echo $settingsJson ?? ''?>;
+        window.wxDebug = false;</script>
+    <style>/* remixicon图标库 */
         [class^="ri-"],
         [class*=" ri-"] {
             font-family: "iconfont-def";
@@ -20,6 +33,7 @@
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
         }
+
         [class^="ri-"]::before,
         [class*=" ri-"]::before {
             content: "\e7dd";
@@ -30,22 +44,26 @@
             z-index: 9999999 !important;
             /* display: none!important; */
         }
-        #__vconsole{
+
+        #__vconsole {
             display: none;
         }
-        #vconsole-btn{
+
+        #vconsole-btn {
             position: fixed;
             /* border: 1px solid #ccc; */
-            width:20px;
+            width: 20px;
             height: 20px;
-            z-index: 9999999 ;
+            z-index: 9999999;
             top: 0;
             bottom: 0;
-            margin:auto;
+            margin: auto;
         }
+
         .special_redpacket {
             border: 1px solid #2d8cf0;
-        }</style><script>function loadStyle(url) {
+        }</style>
+    <script>function loadStyle(url) {
             var link = document.createElement('link');
             link.type = 'text/css';
             link.rel = 'stylesheet';
@@ -53,6 +71,7 @@
             var head = document.getElementsByTagName('head')[0];
             head.appendChild(link);
         }
+
         function IsPC() {
             if (document.documentElement.clientWidth > 415) {//浏览器调试环境
                 return false;
@@ -71,17 +90,23 @@
             }
             return flag;
         }
+
         if (IsPC()) {
             loadStyle('/static/css/IsPC.css');
             var windowresizing = null;
         }
-        window.onload=function () {
-            document.getElementById('vconsole-btn').onclick=function () {
-                if(typeof window.vconsolecallback == 'function'){
+        window.onload = function () {
+            document.getElementById('vconsole-btn').onclick = function () {
+                if (typeof window.vconsolecallback == 'function') {
                     window.vconsolecallback()
                 }
             }
-        }</script></head><body><span style="display:none"><?php echo $globalCode ?? '' ?></span><div id="vconsole-btn"></div><div id="app"><style>.search {
+        }</script>
+</head>
+<body><span style="display:none"><?php echo $globalCode ?? '' ?></span>
+<div id="vconsole-btn"></div>
+<div id="app">
+    <style>.search {
             width: 100%;
             height: 12.2vw;
             display: flex;
@@ -160,7 +185,7 @@
             display: flex;
             flex-direction: column;
             justify-content: space-around;
-            padding: 12rpx 0;
+            padding: 12 rpx 0;
             box-sizing: border-box;
         }
 
@@ -235,4 +260,33 @@
             margin: auto;
             height: 3vw;
             border-radius: 0.6vw;
-        }</style><div class="app-loading-skeleten"><div class="search"></div><div class="swiper"><div class="dots"><p></p><p></p><p></p><p style="background:#fff"></p></div></div><div class="btns"><p class="btn"></p><p class="btn"></p><p class="btn"></p><p class="btn"></p><p class="btn"></p><p class="btn"></p><p class="btn"></p><p class="btn"></p><p class="btn"></p><p class="btn"></p></div><div class="title"></div><div class="goods"><p class="good"></p><p class="good"></p><p class="good-info"></p><p class="good-info"></p></div></div></div><script src="/static/dist/shop_wap/static/js/chunk-vendors.js?v=1669253780971"></script><script src="/static/dist/shop_wap/static/js/index.js?v=1669253780971"></script></body></html>
+        }</style>
+    <div class="app-loading-skeleten">
+        <div class="search"></div>
+        <div class="swiper">
+            <div class="dots"><p></p>
+                <p></p>
+                <p></p>
+                <p style="background:#fff"></p></div>
+        </div>
+        <div class="btns"><p class="btn"></p>
+            <p class="btn"></p>
+            <p class="btn"></p>
+            <p class="btn"></p>
+            <p class="btn"></p>
+            <p class="btn"></p>
+            <p class="btn"></p>
+            <p class="btn"></p>
+            <p class="btn"></p>
+            <p class="btn"></p></div>
+        <div class="title"></div>
+        <div class="goods"><p class="good"></p>
+            <p class="good"></p>
+            <p class="good-info"></p>
+            <p class="good-info"></p></div>
+    </div>
+</div>
+<script src="/static/dist/shop_wap/static/js/chunk-vendors.js?v=1669276597765"></script>
+<script src="/static/dist/shop_wap/static/js/index.js?v=1669276597765"></script>
+</body>
+</html>
