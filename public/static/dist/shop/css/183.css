@@ -1,2 +1,7 @@
-.ivu-menu-vertical.ivu-menu-light:after{background:rgba(0,0,0,0)}.iconfont.icon-move{font-size:26px;color:white}.icon-selector .ivu-modal-mask,.icon-selector .ivu-modal-wrap{z-index:999999 !important}.diymenu .list .submenu-box{z-index:100 !important}.phone-main .gotop,.phone-main .danmu,.phone-main .layer,.phone-main .customer{z-index:1003 !important}.ivu-drawer-wrap{z-index:1100 !important}.noManagePerm{cursor:not-allowed !important;opacity:0.5 !important}.van-slider__bar{background:var(--theme-color) !important}.logistics{padding:40px;margin:20px auto 0;background:#fff;min-height:100%;border-radius:2px}.logistics .ivu-alert{max-width:100%;margin-bottom:40px}.logistics .tip{color:var(--text-second);font-size:12px;line-height:24px}
+
+.change-price-record[data-v-55fc4eca] {
+    padding: 0 20px 20px 20px;
+    background-color: #FFFFFF;
+    margin-top: 20px;
+}
 
