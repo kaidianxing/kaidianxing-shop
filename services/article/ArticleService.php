@@ -547,7 +547,7 @@ class ArticleService extends ArticleBaseService
             $idsArray = ArrayHelper::explode(',', $ids) ?: [];
             //重置排序
             $orderBy = [
-                new \yii\db\Expression('FIELD (article.id,' . $ids . ')'),
+                new \yii\db\Expression('LOCATE (article.id, :id)', [':id' => $ids]),
                 'article.id' => SORT_DESC,
             ];
             $andWhere[] = ['article.id' => $idsArray];

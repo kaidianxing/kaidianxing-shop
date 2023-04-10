@@ -377,7 +377,7 @@ class GoodsAdminQueryService extends BaseService
 
             //重置排序
             $params['orderBy'] = [
-                new \yii\db\Expression('FIELD (goods.id,' . implode(',', $goodsId) . ')'),
+                new \yii\db\Expression('LOCATE (goods.id, :id)', [':id' => implode(',', $goodsId)]),
                 'sort_by' => SORT_DESC,
                 'created_at' => SORT_DESC,
             ];

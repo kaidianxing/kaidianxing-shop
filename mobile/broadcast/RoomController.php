@@ -84,7 +84,7 @@ class RoomController extends BaseMobileApiController
         $orderBy = [];
         if (!empty($roomId)) {
             $where['id'] = ArrayHelper::explode(',', $roomId);
-            $orderBy[] = new \yii\db\Expression('FIELD (id, ' . $roomId . ')');
+            $orderBy[] = new \yii\db\Expression('LOCATE (id, :id)', [':id' => $roomId]);
         }
 
         $orderBy = array_merge($orderBy, [

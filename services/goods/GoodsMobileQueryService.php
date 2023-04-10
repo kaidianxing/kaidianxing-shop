@@ -128,7 +128,7 @@ class GoodsMobileQueryService extends BaseService
             $andWhere[] = ['goods.id' => $goodsId];
             //重置排序
             $orderBy = [
-                new \yii\db\Expression('FIELD (id,' . $get['id'] . ')'),
+                new \yii\db\Expression('LOCATE (goods.id, :id)', [':id' => $get['id']]),
                 'sort_by' => SORT_DESC,
                 'created_at' => SORT_DESC,
             ];
